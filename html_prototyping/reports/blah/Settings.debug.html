@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>Settings</title>
+    
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+          crossorigin="anonymous">
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <!-- bootstrap ext libs -->
+    <script src="../../lib/bootstrap-number-input/bootstrap-number-input.js"></script>
+    <script src="../../lib/bootstrap-switch/bootstrap-switch.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+  </head>
+
+  <body>
+    <script>
+function logIt(someText) {
+  document.getElementById('rtLog').innerHTML += someText + '<br>';
+}
+
+function updateDbValue(key) {
+  if (!psid) {
+    return
+  }
+
+  let ele = document.getElementById(key);
+  let value = null;
+  if (ele.getAttribute("type") === "number") {
+    value = ele.value;
+  } else if (ele.getAttribute("type") === "checkbox") {
+    value = ele.checked;
+  }
+
+  if (value !== null) {
+    let preferencesRef = firebase.database().ref('global/sugarinfoai/' + psid + '/preferences');
+
+    let keyRef = preferencesRef.child(key);
+    keyRef.set(value);
+
+    if (key === 'currentWeight') {
+      // Also need to write to the current date formatted string (TODO)
+      //logIt('tz: ' + tz);
+    }
+  }
+}
+    </script>
+
+    <div class="container">
+      <form>
+        <fieldset>
+
+          <div class="form-group">
+            <div class="row">
+              <div class="col-xs-12 col-md-9">
+                <label class="control-label">Maximum sugar each day (grams)</label>
+              </div>
+              <div class="col-xs-12 col-md-3" onclick="updateDbValue('currentGoalSugar')">
+                <input id="currentGoalSugar" class="form-control" type="number" value="36" min="0" max="100"/> 
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row">
+              <div class="col-xs-12 col-md-9">
+                <label class="control-label">My target weight (pounds)</label>
+              </div>
+              <div class="col-xs-12 col-md-3" onclick="updateDbValue('currentGoalWeight')">
+                <input id="currentGoalWeight" class="form-control" type="number" value="150" min="50" max="1000"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row">
+              <div class="col-xs-12 col-md-9">
+                <label class="control-label">My current weight (pounds)</label>
+              </div>
+              <div class="col-xs-12 col-md-3" onclick="updateDbValue('currentWeight')">
+                <input id="currentWeight" class="form-control" type="number" value="150" min="50" max="1000"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row">
+              <div class="col-xs-8 col-md-9">
+                <label class="control-label">Nightly food journal summary</label>
+              </div>
+              <div class="col-xs-4 col-md-3">
+                <input id="nightlySummary" type="checkbox" onchange="updateDbValue('nightlySummary')"/>
+              </div>
+            </div>
+          </div>
+
+        </fieldset>
+      </form>
+    </div>
+
+    <!-- debug o/p -->
+    </div>
+      <p id="rtLog"></p>
+    </div>
+
+    <script>
+      // Styling for spinners/number input and switch
+      $('.form-control').bootstrapNumber({
+        upClass:'danger',
+        downClass:'success',
+        center:false
+      });
+      $("#nightlySummary").bootstrapSwitch({
+        size: 'sm'
+      });
+
+      // Function to insert Facebook Messenger Extensions
+      (function(d, s, id){
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {return;}
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'Messenger'));
+
+      // Asynchronous init function on window object called by FB on load to get values from FB messenger
+      // scoped to this page.
+      window.extAsyncInit = function() {
+        logIt('extAsyncInit called');
+        MessengerExtensions.getUserID(
+          function success(uids) {
+            var psid = uids.psid;
+
+            initAndAuthDb();
+            initValuesFromDb(psid);
+          },
+          function error(err, errorMessage) {
+            console.log(errorMessage);
+          }
+        );
+      }
+
+      function initAndAuthDb() {
+        firebase.initializeApp({
+          apiKey: 'AIzaSyBQTHsQA5GuDG7Ttk17o3LBQfXjn7MtUQ8',
+          authDomain: 'inphooddb-e0dfd.firebaseapp.com',
+          databaseURL: 'https://inphooddb-e0dfd.firebaseio.com',
+        });
+
+        firebase.auth().signInAnonymously().catch(function(error) {
+          console.log(error);
+        });
+      }
+
+      function initValuesFromDb(psid) {
+        let preferencesRef = firebase.database().ref('global/sugarinfoai/' + psid + '/preferences');
+        preferencesRef.once('value', function(snapshot) {
+          let preferences = snapshot.val();
+          document.getElementById('currentGoalSugar').setAttribute("value", preferences.currentGoalSugar);
+          document.getElementById('currentGoalWeight').setAttribute("value", preferences.currentGoalWeight);
+          document.getElementById('currentWeight').setAttribute("value", preferences.currentWeight);
+
+          if (preferences.nightlySummary === true) {
+            let checkBoxObj = document.getElementById('nightlySummary');
+            checkBoxObj.setAttribute("checked", "checked");
+
+            let evt = new Event('change');
+            checkBoxObj.dispatchEvent(evt);
+          }
+        });
+
+        let profileTzRef = firebase.database().ref('global/sugarinfoai/' + psid + '/profile/timezone');
+        profileTzRef.once('value', function(snapshot) {
+          tz = snapshot.val();
+        });
+      }
+
+var tz=0
+var psid=1547345815338571
+initAndAuthDb();
+initValuesFromDb(psid);
+
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>Edit Food Journal Entry</title>
+    
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+    <!-- Optional theme -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+          crossorigin="anonymous">
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <!-- bootstrap ext libs -->
+    <script src="lib/bootstrap-number-input/bootstrap-number-input.js"></script>
+    <script src="lib/spin.js.org/spin.min.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+  </head>
+  <body>
+    <!-- debug o/p -->
+    <div style="margin: 3px; padding: 5px; border: black solid 1px">
+      <p id="rtLog"></p>
+    </div>
+    <!-- order is important in this script tags.-->
+    <script src="scripts/debug.js"></script>
+    <script src="scripts/timeUtils.js"></script>
+    <script src="scripts/foodJournalEntry.js"></script>
+    <script src="scripts/dbConnection.js"></script>
+
+
+    <div id="foodEditor" class="container-fluid">
+
+      <!-- Single food example -->
+      <div class="row">
+        <div class="col-xs-9" style="padding-left: 5px">
+          <h4>
+            salad
+          </h4>
+        </div>
+        <div class="col-xs-3">
+          <script>delBtn('all')</script>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12" style="height:10px; border-top: 1px solid black"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-3" style="padding-left: 5px; padding-right: 5px" >
+          <input class="form-control text-right" type="number" value="2" min="0" max="100"/> 
+        </div>
+        <div class="col-xs-6" style="padding-left:5px">
+          <label class="control-label">grams of sugars</label>
+        </div>
+        <!--div class="col-xs-3">
+          <img src="https://d2eawub7utcl6.cloudfront.net/images/nix-apple-grey.png" class="pull-right" alt="toast image" width="64" height="64">
+        </div-->
+      </div>
+
+      <div class="row" style="height:25px"></div>
+
+      <!-- Main food entry -->
+      <div class="row">
+        <div class="col-xs-9" style="padding-left: 5px">
+          <h4>
+            toast, red pepper, chutney
+          </h4>
+        </div>
+        <div class="col-xs-3">
+          <script>delBtn('all')</script>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12" style="height:10px; border-top: 1px solid black"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-9" style="padding-left: 5px">
+          <b>3 grams of sugars</b>
+        </div>
+        <!-- If there is no image, don't put one in. -->
+        <!--div class="col-xs-3">
+          <img src="assets/blank.png" class="pull-right" alt="blank image" width="64" height="64">
+        </div-->
+      </div>
+
+      <!-- spacer -->
+      <div style="height:15px"></div>
+
+      <!-- Main food sub-components -->
+      <!-- item 1 -->
+      <div class="row">
+        <!-- indent spacer: -->
+        <div class="col-xs-1"></div>
+        <div class="col-xs-8" style="padding-left: 0px">
+          <h4>
+            toast
+          </h4>
+        </div>
+        <div class="col-xs-3" style="padding-left: 0px">
+          <script>delBtn('0')</script>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-11" style="height:10px; border-top: 1px solid lightgray"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-3" style="padding-left: 0px; padding-right: 5px" >
+          <input class="form-control text-right" type="number" value="1" min="0" max="100"/> 
+        </div>
+        <div class="col-xs-5" style="padding-left:5px">
+          <label class="control-label">sugars (g)</label>
+        </div>
+        <!--detect nix-apple-grey and ignore it-->
+        <!--div class="col-xs-3">
+          <img src="https://d2eawub7utcl6.cloudfront.net/images/nix-apple-grey.png" class="pull-right" alt="toast image" width="64" height="64">
+        </div-->
+      </div>
+
+      <!-- spacer -->
+      <div style="height:1px"></div>
+
+      <!-- item 2 -->
+      <div class="row">
+        <!-- indent spacer: -->
+        <div class="col-xs-1"></div>
+        <div class="col-xs-8" style="padding-left: 0px">
+          <h4>
+            red pepper
+          </h4>
+        </div>
+        <div class="col-xs-3" style="padding-left: 0px">
+          <script>delBtn('1')</script>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-11" style="height:10px; border-top: 1px solid lightgray"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-3" style="padding-left: 0px; padding-right: 5px" >
+          <input class="form-control text-right" type="number" value="2" min="0" max="100"/> 
+        </div>
+        <div class="col-xs-5" style="padding-left:5px">
+          <label class="control-label">sugars (g)</label>
+        </div>
+        <!--div class="col-xs-3">
+          <img src="https://d2eawub7utcl6.cloudfront.net/images/nix-apple-grey.png" class="pull-right" alt="red pepper image" width="64" height="64">
+        </div-->
+      </div>
+      
+      <!-- spacer -->
+      <div style="height:10px"></div>
+
+      <!-- item 3 -->
+      <div class="row">
+        <!-- indent spacer: -->
+        <div class="col-xs-1"></div>
+        <div class="col-xs-8" style="padding-left: 0px">
+          <h4>
+            chutney
+          </h4>
+        </div>
+        <div class="col-xs-3" style="padding-left: 0px">
+          <script>delBtn('2')</script>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-11" style="height:10px; border-top: 1px solid lightgray"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-3" style="padding-left: 0px; padding-right: 5px" >
+          <input class="form-control text-right" type="number" value="2" min="0" max="100"/> 
+        </div>
+        <div class="col-xs-5" style="padding-left:5px">
+          <label class="control-label">sugars (g)</label>
+        </div>
+        <div class="col-xs-3">
+              <img src="https://d2xdmhkmkbyw75.cloudfront.net/3553_thumb.jpg" class="pull-right" alt="chutney " width="64" height="64">
+        </div>
+      </div>
+
+
+    </div>
+
+    <div class="container" id="elaborateMe">
+    </div>
+
+    <script>testInit();</script>
+  </body>
+</html> 

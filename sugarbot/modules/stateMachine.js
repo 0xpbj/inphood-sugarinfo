@@ -1,0 +1,239 @@
+const ocrUtils = require('./ocrUtils.js')
+const sugarUtils = require('./sugarUtils.js')
+const utils = require('./utils.js')
+const fire = require('./firebaseUtils.js')
+const image = require('./imageUtils.js')
+const nutrition = require ('./nutritionix.js')
+const constants = require('./constants.js')
+const timeUtils = require('./timeUtils.js')
+
+const botBuilder = require('claudia-bot-builder')
+const fbTemplate = botBuilder.fbTemplate
+
+const requestPromise = require('request-promise')
+const sentiment = require('sentiment');
+
+const firebase = require('firebase')
+if (firebase.apps.length === 0) {
+  firebase.initializeApp(constants.fbConfig)
+}
+const isTestBot = false
+const {Wit} = require('node-wit')
+const witClient = new Wit({accessToken: process.env.WIT_TOKEN})
+
+exports.bot = function(request, messageText, userId) {
+  const tempRef = firebase.database().ref("/global/sugarinfoai/" + userId)
+  return tempRef.once("value")
+  .then(function(snapshot) {
+    const favorites = snapshot.child('/myfoods/').val()
+    const question = snapshot.child('/temp/data/question/flag').val()
+    const favFlag = snapshot.child('/temp/data/favorites/flag').val()
+    const timezone = snapshot.child('/profile/timezone').val() ? snapshot.child('/profile/timezone').val() : -7
+    const {timestamp} = request.originalRequest
+    const date = timeUtils.getUserDateString(timestamp, timezone)
+    var messageAttachments = (request.originalRequest && request.originalRequest.message) ? request.originalRequest.message.attachments : null
+    if (messageText && !isNaN(messageText)) {
+      return image.fdaProcess(userId, messageText, date, timestamp)
+    }
+    else if (favFlag && messageText) {
+      return fire.findMyFavorites(request.text, userId, date, timestamp)
+    }
+    else if (question && messageText) {
+      return nutrition.getNutritionix(messageText, userId, date, timestamp)
+    }
+    else if (messageText) {
+      console.log('Entering wit proccessing area for: ', messageText)
+      return witClient.message(messageText, {})
+      .then((data) => {
+        console.log('Yay, got Wit.ai response: ' + JSON.stringify(data));
+        // const funcString = data.entities.intent[0].value
+        const featureString = data.entities.features ? data.entities.features[0].value : data._text
+        console.log('FEATURE STRING', featureString)
+        switch (featureString) {
+          case 'start': {
+            return fire.trackUserProfile(userId)
+            .then(() => {
+              return firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data").remove()
+              .then(() => {
+                return firebase.database().ref("/global/sugarinfoai/" + userId + "/profile/").once("value")
+                .then(function(snapshot) {
+                  let intro = ''
+                  if (snapshot.child('first_name').exists()) {
+                    intro = 'Hi ' + snapshot.child('first_name').val() + ', I’m sugarinfoAI! I can help you understand how much sugar you are eating and help you bring it within recommended limits. Would you like that?'
+                  }
+                  else {
+                    intro = 'Hi, I’m sugarinfoAI! I can help you understand how much sugar you are eating and help you bring it within recommended limits. Would you like that?'
+                  }
+                  return new fbTemplate.Button(intro)
+                  .addButton('Sure, let\'s go', 'food question')
+                  .addButton('Maybe later', 'say adios')
+                  .get()
+                })
+              })
+            })
+          }
+          case 'reset': 
+          case 'say adios': {
+            return firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data").remove()
+            .then(() => {
+              return 'No problem! If you have any questions later just type: help'
+            })
+          }
+          case 'journal': {
+            return new fbTemplate.Button('I\'m all ears! How would you like to enter your meal?')
+            .addButton('Describe Food ⌨️', 'food question')
+            .addButton('Scan UPC Code 🔬', 'label')
+            // .addButton('Photo 🥗', 'send food picture')
+            .get()
+          }
+          case 'report': {
+            console.log('REPORT ------------------------------------------------')
+            const reportRequest = {
+              reportType: 'dailySummary',
+              userId: userId,
+              userTimeStamp: timestamp
+            }
+            console.log('  adding report request to firebase')
+            const dbReportQueue = firebase.database().ref("/global/sugarinfoai/reportQueue")
+            const dbReportQueueRequest = dbReportQueue.push()
+            dbReportQueueRequest.set(reportRequest)
+            console.log('  returning')
+            return 'A report is on the way.'
+          }
+          case 'scan upc code':
+          case 'label': {
+            return [
+              new fbTemplate
+              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/upc.jpg')
+              .get(),
+              "Please send me a photo of the UPC 📷 or type the number manually ⌨️"
+            ]
+          }
+          case 'favorites':
+          case 'my favorites': {
+            if (!favorites) {
+              return 'Favorites are shown once you add meals to your journal'
+            }
+            return tempRef.child('/temp/data/favorites').update({
+              flag: true
+            })
+            .then(() => {
+              return utils.parseMyFavorites(favorites)
+            })
+          }
+          case 'describe food':
+          case 'food question': {
+            const timeUser = timeUtils.getUserTimeObj(Date.now(), timezone)
+            let mealInfo = '? (e.g: almonds and cranberries)'
+            let mealType = 'snack'
+            const {hour} = timeUser
+            if (hour > 4 && hour < 13) {
+              mealType = 'breakfast'
+              mealInfo = ' this morning? (e.g: I had two eggs, avocado, and toast)'
+            }
+            else if (hour > 12 && hour < 18) {
+              mealType = 'lunch'
+              mealInfo = ' this afternoon? (e.g: chicken sandwich and cola)'
+            }
+            else if (hour > 17 && hour < 23) {
+              mealType = 'dinner'
+              mealInfo = ' this evening? (e.g: Kale, spinach, tomatoes, cheese, and dressing)'
+            }
+            return 'Great! Tell me what you ate' + mealInfo
+          }
+          case 'nutrition': {
+            return firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data").remove()
+            .then(function() {
+              return nutrition.getNutritionix(messageText, userId, date, timestamp)
+            })
+          }
+          case 'recipe': {
+            const {timestamp} = request.originalRequest
+            return utils.todaysSugarRecipe(timestamp)
+          }
+          case 'facts': {
+            return utils.randomSugarFacts()
+          }
+          case 'knowledge': {
+            return new fbTemplate.Button('What would you like to know?')
+            .addButton('Facts 🎲', 'random sugar facts')
+            .addButton('Recipes 📅', 'recipe')
+            .addButton('Processed? 🍭', 'Processed Sugar?')
+            .get()
+          }
+          case 'delete last item': {
+            return 'I have deleted last item....JUST KIDDIN'
+          }
+          case 'settings': {
+            console.log('DEBUG WEBVIEW SETTINGS:')
+            console.log('-------------------------------------------------------')
+            const wvMsg = {
+              uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + process.env.FACEBOOK_BEARER_TOKEN,
+              json: true,
+              method: 'POST',
+              body: {
+                'recipient':{
+                  'id': userId
+                },
+                'message':{
+                  'attachment':{
+                    'type':'template',
+                    "payload":{
+                      "template_type":"generic",
+                      "elements":[
+                         {
+                          "title":"Settings",
+                          "image_url":"https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/arrows.jpg",
+                          "subtitle":"Webview settings",
+                          "default_action": {
+                            "url": 'https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Settings.html',
+                            "type": "web_url",
+                            "messenger_extensions": true,
+                            "webview_height_ratio": "tall",
+                            "webview_share_button": "hide",
+                            "fallback_url": "https://www.inphood.com/"
+                          }
+                        }
+                      ]     
+                    }
+                  }
+                }
+              },
+              resolveWithFullResponse: true,
+              headers: {
+                'Content-Type': "application/json"
+              }
+            }
+            return requestPromise(wvMsg)
+          }
+          case 'share': {
+            return utils.sendShareButton()
+          }
+          case 'confused': {
+            return firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data").remove()
+            .then(function() {
+              return new fbTemplate.Button('Here\'s some help. Try these options to get started')
+              .addButton('Journal ✏️', 'journal')
+              .addButton('Report 💻', 'report')
+              .addButton('Settings ⚙️', 'settings')
+              .get();
+            })
+          }
+          default: {
+            return firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data").remove()
+            .then(function() {
+              return nutrition.getNutritionix(messageText, userId, date, timestamp)
+            })
+          }
+        }
+      })
+      .catch(error => {
+        console.log('Wit.ai Error: ', error)
+      });
+    }
+    else if (messageAttachments) {
+      const {url} = messageAttachments[0].payload
+      return image.processLabelImage(url, userId, date, timestamp)
+    }
+  })
+}

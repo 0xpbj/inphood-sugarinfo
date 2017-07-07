@@ -1,0 +1,17 @@
+{
+  "name": "webview",
+  "version": "1.0.0",
+  "description": "Using this process to integrate webview: https://developers.facebook.com/docs/messenger-platform/webview/extensions",
+  "main": "index.js",
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "mdbootstrap": "^4.3.2",
+    "mustache": "^2.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

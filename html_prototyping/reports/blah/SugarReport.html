@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Sugar Report</title>
+    <!-- Bootstrap -->
+    <link href="../../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="../../lib/bootstrap/js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript" src="../../lib/mdbootstrap/js/mdb.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+    <!-- Material Design Bootstrap -->
+    <link href="../../lib/mdbootstrap/css/mdb.min.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- Firebase -->
+    <script src="https://cdn.firebase.com/v0/firebase.js"></script>
+  </head>
+    <body>
+    <script>
+      (function(d, s, id) {
+         var js, fjs = d.getElementsByTagName(s)[0];
+         if (d.getElementById(id)) {
+           return;
+         }
+         js = d.createElement(s);
+         js.id = id;
+         js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
+         fjs.parentNode.insertBefore(js, fjs);
+       } (document, 'script', 'Messenger'));
+    </script>
+    <div style="padding-right: 10px; padding-left: 10px;">
+      <h3 class="text-center">Thu Jun 29 2017</h3>
+      <div style="height: 10px;">&nbsp</div>
+      <h4 class="text-left">Sugar Today (10% of maximum)</h4>
+      <div class="progress" style="height: 40px;">
+        <div class="progress-bar progress-bar-success" role="progressbar" style="width: 10%; height: 40px; line-height: 40px;" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
+          <h5 class="text-center" style="vertical-align: middle; display: inline-block;">10%</h5>
+        </div>
+      </div>
+      <div style="height: 10px;">&nbsp</div>
+      <h4 class="text-left">Sugar Journal</h4>
+      <ul class="list-group">
+        <li class="list-group-item justify-content-between">
+          <div class="media">
+            <div class="media-left">
+              <img src="" class="media-object" alt="Sample Image" width="64" height="64">
+            </div>
+            <div class="media-body">
+              <h5 class="media-heading">GT'S, SYNERGY, ORGANIC KOMBUCHA BLACK CHIA TEA, UPC: 722430230160</h5>
+              <small>(8 grams sugars)</small>
+            </div>
+            <div class="media-right">
+              <button id="delete_button" type="button" class="btn btn-danger btn-xs">X</button>
+            </div>
+          </div>
+        </li>
+        <li class="list-group-item justify-content-between">
+          <div class="media">
+            <div class="media-body">
+              <h5 class="media-heading">4oz pasta, 2tbsp olive oil, 3tbsp hemp seeds</h5>
+            </div>
+            <div class="media-right">
+              <img src="../assets/blank.png" class="media-object" alt="Sample Image" width="64" height="64">
+            </div>
+          </div>
+        </li>
+        <li class="list-group-item justify-content-between">
+        </li>
+        <li class="list-group-item active justify-content-between">
+          <div class="media">
+            <div class="media-left">
+              <h4 class="media-heading">Total</h4>
+            </div>
+            <div class="media-body text-right">
+              8 grams sugar
+            </div>
+          </div>
+        </li>
+      </ul>
+      <script>
+        var fbConfig = {
+          apiKey: 'AIzaSyBQTHsQA5GuDG7Ttk17o3LBQfXjn7MtUQ8',
+          authDomain: 'inphooddb-e0dfd.firebaseapp.com',
+          databaseURL: 'https://inphooddb-e0dfd.firebaseio.com',
+          projectId: 'inphooddb-e0dfd',
+          storageBucket: 'inphooddb-e0dfd.appspot.com',
+          messagingSenderId: '529180412076'
+          document.getElementById("delete_button").onclick = function() {
+            var firebaseRef = new Firebase(fbconfig.databaseURL + '/global/sugarinfoai/1547345815338571/sugarIntake/Thu Jun 29 2017/-Knpn94oxGFfa9kNGeMK')
+            firebaseRef.set(null)
+          }
+        }
+      </script>
+      </div>
+      <div style="height: 10px;">&nbsp</div>
+      <h4 class="text-left">Sugar History</h4>
+      <div>
+        <canvas id="sugarHistoryChart"/>
+          <script>
+            $(function () {
+              var data = {
+                labels: ["", "", "", "", "", "", "", "", "", "", "", "", "", ""],
+                datasets: [{
+                  label: "Sugar (grams)",
+                  fillColor: "rgba(151,187,205,0.2)",
+                  strokeColor: "rgba(151,187,205,1)",
+                  pointColor: "rgba(151,187,205,1)",
+                  pointStrokeColor: "#fff",
+                  pointHighlightFill: "#fff",
+                  pointHighlightStroke: "rgba(151,187,205,1)",
+                  data: [22, 2, 117, 88, 13, 40, 74, 79, 86, 66, 110, 100, 44, 8] }] };
+              var option = {responsive: true};
+              var ctx = document.getElementById("sugarHistoryChart").getContext("2d");
+              var myLineChart = new Chart(ctx).Line(data, option);
+            });
+        </script>
+      </div>
+    </div>
+  </body>
+</html> 

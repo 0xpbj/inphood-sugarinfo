@@ -1,0 +1,153 @@
+curl -X POST -H "Content-Type: application/json" -d '{
+  "greeting":[
+    {
+      "locale":"default",
+      "text":"Your own virtual sugar expert!"
+    }, {
+      "locale":"en_US",
+      "text":"Your own virtual sugar expert!"
+    }
+  ] 
+}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BAJaPLaqAsQe38FK2nToDDxB4PF7ddr28iHlgLEUWGd0JZCLOQxeJrSqED8o0DwE7U5zBrDblSGM2dha9k3STKk3iVOkfSBW2L5eeDe0ylyiCp1Vq50Ac4ZBdouD3p5rGtfVnjVh4YLtOsQDIgS7T1W10PCZBQZDZD"
+
+curl -X POST -H "Content-Type: application/json" -d '{
+  "get_started":{
+    "payload":"GET STARTED"
+  }
+}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BAJaPLaqAsQe38FK2nToDDxB4PF7ddr28iHlgLEUWGd0JZCLOQxeJrSqED8o0DwE7U5zBrDblSGM2dha9k3STKk3iVOkfSBW2L5eeDe0ylyiCp1Vq50Ac4ZBdouD3p5rGtfVnjVh4YLtOsQDIgS7T1W10PCZBQZDZD"
+
+curl -X POST -H "Content-Type: application/json" -d '{
+  "persistent_menu":[
+    {
+      "locale":"default",
+      "composer_input_disabled":false,
+      "call_to_actions":[
+        {
+          "title":"Journal ✏️",
+          "type":"postback",
+          "payload":"journal"
+        },
+        {
+          "title":"Report 💻",
+          "type":"postback",
+          "payload":"report"
+        },
+        {
+          "title":"Preferences ⚙️",
+          "type":"postback",
+          "payload":"preferences"
+        }
+      ]
+    }
+  ]
+}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BALxmOpJDbJijCMDKCZAjZArMwB6xD8RpZCgvoqi0sjpZA1N0pShcjyWYnqZCuE2AVxlYdWPwvIFLBZANzwWMW7RLSt9ZCQUEpWakZAzM6oxBSnpzsGHlgNGsKjf0idpWiTHBa20lMniI5fMjxYaQootyZA3tZBo2bq5AZDZD"
+
+
+curl -X DELETE -H "Content-Type: application/json" -d '{
+  "fields":[
+    "persistent_menu"
+  ]
+}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BALxmOpJDbJijCMDKCZAjZArMwB6xD8RpZCgvoqi0sjpZA1N0pShcjyWYnqZCuE2AVxlYdWPwvIFLBZANzwWMW7RLSt9ZCQUEpWakZAzM6oxBSnpzsGHlgNGsKjf0idpWiTHBa20lMniI5fMjxYaQootyZA3tZBo2bq5AZDZD"
+
+
+// Sending a message:
+curl -X POST -H "Content-Type: application/json" -d '{
+  "recipient":{
+    "id":"1547345815338571"
+  },
+  "message":{
+    "text":"hello, world!"
+  }
+}' "https://graph.facebook.com/v2.6/me/messages?access_token=EAAJhTtF5K30BABsLODz0w5Af5hvd1SN9TZCU0E9OapZCKuZAOMugO2bNDao8JDe8E3cPQrJGLWWfL0sMxsq4MSTcZBbgGEjqa68ggSZCmZAFhGsFPFkWGUlYwAZB2ZCOrPPgdxS612ck5Rv8SrHydJihKQGsPLQSc1yYtBkncIpbOgZDZD"
+
+
+// Sending a webview button:
+curl -X POST -H "Content-Type: application/json" -d '{
+  "recipient":{
+    "id":"1322516797796635"
+  },
+  "message":{
+    "text":"Daily tip: add healthy vegetable fats to your diet.",
+  }
+}' "https://graph.facebook.com/v2.6/me/messages?access_token=EAAJhTtF5K30BABsLODz0w5Af5hvd1SN9TZCU0E9OapZCKuZAOMugO2bNDao8JDe8E3cPQrJGLWWfL0sMxsq4MSTcZBbgGEjqa68ggSZCmZAFhGsFPFkWGUlYwAZB2ZCOrPPgdxS612ck5Rv8SrHydJihKQGsPLQSc1yYtBkncIpbOgZDZD"
+
+curl -X POST -H "Content-Type: application/json" -d '{
+  "recipient":{
+    "id":"1322516797796635"
+  },
+  "message":{
+    "attachment":{
+      "type":"template",
+         "payload":{
+            "template_type":"button",
+            "text":"Track your last meal",
+            "buttons":[
+            {
+              "type":"postback",
+              "title":"Describe Food ⌨️",
+              "payload":"food question"
+            },
+            {
+              "type":"postback",
+              "title":"Scan UPC Code 🔬",
+              "payload":"label"
+            }
+          ]
+        }
+      }
+    }
+}' "https://graph.facebook.com/v2.6/me/messages?access_token=EAAJhTtF5K30BABsLODz0w5Af5hvd1SN9TZCU0E9OapZCKuZAOMugO2bNDao8JDe8E3cPQrJGLWWfL0sMxsq4MSTcZBbgGEjqa68ggSZCmZAFhGsFPFkWGUlYwAZB2ZCOrPPgdxS612ck5Rv8SrHydJihKQGsPLQSc1yYtBkncIpbOgZDZD"
+
+
+
+// whitelisting a domain
+curl -X POST -H "Content-Type: application/json" -d '{
+  "whitelisted_domains":[
+    "https://www.inphood.com"
+  ]
+}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BABsLODz0w5Af5hvd1SN9TZCU0E9OapZCKuZAOMugO2bNDao8JDe8E3cPQrJGLWWfL0sMxsq4MSTcZBbgGEjqa68ggSZCmZAFhGsFPFkWGUlYwAZB2ZCOrPPgdxS612ck5Rv8SrHydJihKQGsPLQSc1yYtBkncIpbOgZDZD"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+curl -X POST -H "Content-Type: application/json" -d '{
+  "persistent_menu":[
+    {
+      "locale":"default",
+      "composer_input_disabled":false,
+      "call_to_actions":[
+        {
+          "title":"Favorite Meals 😍",
+          "type":"postback",
+          "payload":"my favorites"
+        },
+        {
+          "title":"Generate Report 💻",
+          "type":"postback",
+          "payload":"report"
+        },
+        {
+          "title":"Start Over ♻️",
+          "type":"postback",
+          "payload":"start over"
+        }
+      ]
+    }
+  ]
+}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BABsLODz0w5Af5hvd1SN9TZCU0E9OapZCKuZAOMugO2bNDao8JDe8E3cPQrJGLWWfL0sMxsq4MSTcZBbgGEjqa68ggSZCmZAFhGsFPFkWGUlYwAZB2ZCOrPPgdxS612ck5Rv8SrHydJihKQGsPLQSc1yYtBkncIpbOgZDZD"

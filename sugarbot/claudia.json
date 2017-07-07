@@ -1,0 +1,11 @@
+{
+  "lambda": {
+    "role": "sugarbot-executor",
+    "name": "sugarbot",
+    "region": "us-west-2"
+  },
+  "api": {
+    "id": "vaoqxwkwqa",
+    "module": "bot"
+  }
+}
