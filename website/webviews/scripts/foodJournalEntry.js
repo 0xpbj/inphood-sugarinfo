@@ -1,39 +1,206 @@
-// User's timezone:
+//
+// Globals:
+//
+////////////////////////////////////////////////////////////////////////////////
+
 var tz;
+var sugarIntakeRef;
+var sugarIntakeDict;
+var lastKey;
+
+//
+// Misc.::
+//
+////////////////////////////////////////////////////////////////////////////////
 
 // Styling for spinners/number input and switch
 //$('.form-control').bootstrapNumber({
 //  center:false
 //});
 
-function deleteClicked(what) {
-  logIt('deleteClicked: ' + what);
+// TODO: probably better to move this elsewhere and dynamically update when
+// needed (otherwise, each keypress results in all this being run.)
+//
+function updateTotalSugar(snapshot) {
+  let newSugarIntakeDict = snapshot.val();
+  let sugarTotal = 0;
+  
+  const keyArr = Object.keys(newSugarIntakeDict);
+  for (let key of keyArr) {
+//    logIt('     key: ' + key);
+//    logIt('     rmv: ' + newSugarIntakeDict[key].removed);
+    if (key === 'dailyTotal' ||
+        newSugarIntakeDict[key].removed) {
+      continue;
+    }
+
+    sugarTotal += newSugarIntakeDict[key].sugar;
+//    logIt('    ' + sugarTotal);
+  }
+
+//  logIt('new total = ' + sugarTotal);
+  let totalRef = sugarIntakeRef.child('dailyTotal');
+  totalRef.set(sugarTotal);
 }
 
-function delBtnHtml(targetId) {
+//
+// Action handlers:
+//
+// Notes: action handlers recieve an id which can be one of:
+//        'all' or '0' --> 'n' (n EI > 0)
+////////////////////////////////////////////////////////////////////////////////
+
+function handleDeleteClick() {
+  if (!sugarIntakeRef && !lastKey) {
+    console.log('Error accessingfirebase for sugarIntake deletion.');
+    return;
+  }
+
+  // 1. Update firebase with:
+  //    - a flag saying the item was deleted in Firebase
+  let foodRef = sugarIntakeRef.child(lastKey);
+  let foodRemovedFlagRef = foodRef.child('removed');
+  foodRemovedFlagRef.set(true);
+
+  // 2. Calculate the new total sugar for the day.
+  // 3. Update firebase with:
+  //    - the new daily sugar value
+  sugarIntakeRef.once('value', function(snapshot) {
+    updateTotalSugar(snapshot);
+  });
+}
+
+// TODO: refactor
+function handleOnInput(id) {
+  if (!sugarIntakeRef && !lastKey) {
+    console.log('Error accessingfirebase for sugarIntake deletion.');
+    return;
+  }
+
+  let inputField = document.getElementById(id);
+
+//  logIt('id: ' + id);
+//  logIt('inputField.value: ' + inputField.value);
+
+  let newValue = inputField.value;
+  if (inputField.value) {
+    if (id === 'all') {
+      // 1. Update firebase with:
+      //    - the new value the user entered
+      let foodRef = sugarIntakeRef.child(lastKey);
+      let foodRemovedFlagRef = foodRef.child('sugar');
+      foodRemovedFlagRef.set(parseInt(newValue));
+
+      // 2. Calculate the new total sugar for the day.
+      // 3. Update firebase with:
+      //    - the new daily sugar total
+      sugarIntakeRef.once('value', function(snapshot) {
+        updateTotalSugar(snapshot);
+      });
+    } else {
+      // TODO: check id EI (i.e. integer)
+      // 1. Update firebase with:
+      //    - the new value the user entered
+      let foodRef = sugarIntakeRef.child(lastKey);
+      let sugarArrayRef = foodRef.child('sugarArr');
+      let sugarChangedRef = sugarArrayRef.child(id);
+      sugarChangedRef.set(parseInt(newValue));
+
+      // 2. Calculate a new total sugar for the journaled item
+      //    and a new daily sugar total and update firebase
+      sugarIntakeRef.once('value', function(snapshot) {
+        let sugarIntake = snapshot.val()
+
+        let foodData = sugarIntake[lastKey]
+        let foodSugarTotal = 0;
+        for (let sugar of foodData.sugarArr) {
+          foodSugarTotal += parseInt(sugar);
+//          logIt('foodSugarTotal is ' + foodSugarTotal);
+        }
+
+//        logIt('Calculating total sugar:');
+        let sugarTotal = 0;
+        const keyArr = Object.keys(sugarIntake);
+        for (let key of keyArr) {
+//          logIt('     key: ' + key);
+//          logIt('     rmv: ' + sugarIntake[key].removed);
+//          logIt('herereree');
+          if (key === 'dailyTotal' ||
+              sugarIntake[key].removed) {
+            continue;
+          }
+
+          if (key === lastKey) {
+//            logIt('Calculating from AC:');
+            sugarTotal += foodSugarTotal;;
+          } else {
+//            logIt('Calculating from Firebase:');
+            sugarTotal += sugarIntake[key].sugar;
+          }
+        }
+
+//        logIt('new food total = ' + foodSugarTotal);
+        let subTotalRef = foodRef.child('sugar');
+        subTotalRef.set(foodSugarTotal);
+
+//        logIt('new total = ' + sugarTotal);
+        let totalRef = sugarIntakeRef.child('dailyTotal');
+        totalRef.set(sugarTotal);
+
+        // 3.Update the current page:
+        //
+        let sugarTotalField = document.getElementById('sugarTotal');
+        sugarTotalField.innerHTML = sugarTotal
+      });
+    }
+  }
+}
+
+//
+// Small HTML templates:
+//
+////////////////////////////////////////////////////////////////////////////////
+
+function delBtnHtml() {
   let html = ' \
     <button type="button" \
             class="btn btn-link pull-right" \
             style="color:red" \
-            onclick="deleteClicked(\'' + targetId + '\')">(remove)</button>';
+            onclick="handleDeleteClick()">(remove)</button>';
 
   return html
 }
 
-function delBtn(targetId) {
-  document.write(delBtnHtml(targetId))
+function imgHtml(imgPath) {
+  if (imgPath.includes('nix-apple-grey.png')) {
+    return '';
+  }
+
+  let html = ' \
+    <div class="col-xs-3"> \
+      <img src="' + imgPath + '" class="pull-right" alt="food image" width="64" height="64"> \
+    </div>';
+  
+  return html;
 }
 
-function singleItemHtml(foodName, sugarTotal, photo) {
-  let deleteBtn = delBtnHtml('all');
+//
+// Large HTML templates:
+//
+////////////////////////////////////////////////////////////////////////////////
 
-  console.log(deleteBtn);
+function singleItemHtml(foodName, sugarTotal, photo) {
+  let id = 'all';
+  let deleteBtn = delBtnHtml(id);
+  let img = imgHtml(photo);
+
+  let clnFoodName = foodName.replace('\n', '')
 
   let html = ' \
     <div class="row"> \
       <div class="col-xs-9" style="padding-left: 5px"> \
         <h4> \
-          ' + foodName + ' \
+          ' + clnFoodName + ' \
         </h4> \
       </div> \
       <div class="col-xs-3"> \
@@ -45,23 +212,105 @@ function singleItemHtml(foodName, sugarTotal, photo) {
     </div> \
     <div class="row"> \
       <div class="col-xs-3" style="padding-left: 5px; padding-right: 5px" > \
-        <input class="form-control text-right" type="number" value="' + sugarTotal + '" min="0" max="100"/> \
+        <input class="form-control text-right" \
+               id= "' + id + '" \
+               type="number" \
+               value="' + sugarTotal + '" \
+               oninput="handleOnInput(\'' + id + '\')" \
+               min="0" max="100"/> \
       </div> \
       <div class="col-xs-6" style="padding-left:5px"> \
         <label class="control-label">grams of sugars</label> \
       </div> \
-      <div class="col-xs-3"> \
-        <img src="' + photo + '" class="pull-right" alt="food image" width="64" height="64"> \
-      </div> \
+      ' + img + ' \
     </div>';
 
     return html;
 }
 
+function multiItemSubIngredient(ingredient, index) {
+  let img = imgHtml(ingredient.imageSrc);
 
-var sugarIntakeRef;
-var sugarIntakeDict;
-var lastKey;
+  html = ' \
+    <!-- spacer --> \
+    <div style="height:10px"></div> \
+    \
+    <!-- sub item ' + index + ' --> \
+    <div class="row"> \
+      <!-- empty column for indent: --> \
+      <div class="col-xs-1"></div> \
+      <div class="col-xs-8" style="padding-left: 0px"> \
+        <h4> \
+          ' + ingredient.foodName + ' \
+        </h4> \
+      </div> \
+      <div class="col-xs-3" style="padding-left: 0px"> \
+      <!--delete button placeholder--> \
+      </div> \
+    </div> \
+    <!-- light gray delimitting line row --> \
+    <div class="row"> \
+      <!-- empty column for indent: --> \
+      <div class="col-xs-1"></div> \
+      <div class="col-xs-11" style="height:10px; border-top: 1px solid lightgray"></div> \
+    </div> \
+    <div class="row"> \
+      <div class="col-xs-1"></div> \
+      <div class="col-xs-3" style="padding-left: 0px; padding-right: 5px" > \
+        <input class="form-control text-right" \
+               id= "' + index + '" \
+               type="number" \
+               value="' + ingredient.sugarTotal + '" \
+               oninput="handleOnInput(\'' + index + '\')" \
+               min="0" max="100"/> \
+      </div> \
+      <div class="col-xs-5" style="padding-left:5px"> \
+        <label class="control-label">sugars (g)</label> \
+      </div> \
+      ' + img + ' \
+    </div>';
+
+  return html;
+}
+
+function multiItemHtml(foodName, sugarTotal, subIngredients = []) {
+  let deleteBtnAll = delBtnHtml();
+
+  let html = ' \
+    <div class="row"> \
+      <div class="col-xs-9" style="padding-left: 5px"> \
+        <h4> \
+          ' + foodName + ' \
+        </h4> \
+      </div> \
+      <div class="col-xs-3"> \
+        ' + deleteBtnAll + ' \
+      </div> \
+    </div> \
+    <div class="row"> \
+      <div class="col-xs-12" style="height:10px; border-top: 1px solid black"></div> \
+    </div> \
+    <div class="row"> \
+      <div class="col-xs-9" style="padding-left: 5px"> \
+        <b><span id="sugarTotal">' + sugarTotal  + '</span> grams of sugars</b> \
+      </div> \
+    </div> \
+    <!-- spacer --> \
+    <div style="height:5px"></div>';
+
+  let subItemCount = 0;
+  for (let ingredient of subIngredients) {
+    html += multiItemSubIngredient(ingredient, subItemCount);
+    subItemCount++;
+  }
+
+  return html;
+}
+
+//
+// Initialization code:
+//
+////////////////////////////////////////////////////////////////////////////////
 
 function processValuesFromDb() {
   logIt('processValuesFromDb');
@@ -70,15 +319,45 @@ function processValuesFromDb() {
     logIt('  non null sugarIntakeDict and lastKey');
 
     const lastItem = sugarIntakeDict[lastKey];
+
     const foodName = lastItem.foodName;
     const sugarTotal = lastItem.sugar;
     const photo = lastItem.photo[0];
+
+    const sugarArr = lastItem.sugarArr;
+    const singleItemUseCase = ((sugarArr === null) ||
+                              (sugarArr === undefined) ||
+                              (sugarArr.length === 1));
+
+    let html = '';
+    if (singleItemUseCase) {
+      html = singleItemHtml(foodName, sugarTotal, photo);
+    } else {
+      let titleFoodName = foodName.replace(/\n$/g, '');
+      titleFoodName = titleFoodName.replace(/\n/g, ', ');
+
+      logIt('titleFoodName: ' + titleFoodName);
+
+      let photoArr = lastItem.photo;
+      
+      let subIngredients = [];
+      const foods = titleFoodName.split(', ');
+      logIt('foods.length = ' + foods.length);
+
+      for (let index = 0; index < foods.length; index++) {
+        let ingredient = {
+          foodName : foods[index],
+          sugarTotal : sugarArr[index],
+          imageSrc : photoArr[index]
+        }
+
+        subIngredients.push(ingredient);
+      }
+
+      html = multiItemHtml(titleFoodName, sugarTotal, subIngredients);
+    }
     
-    console.log('foodName: ' + foodName);
-    console.log('sugarTotal: ' + sugarTotal);
-    console.log('photo: ' + photo);
-    const html= singleItemHtml(foodName, sugarTotal, photo);
-    document.getElementById("elaborateMe").innerHTML=html;
+    document.getElementById("lastFoodItem").innerHTML=html;
   }
 }
 
@@ -140,43 +419,16 @@ function initPageValuesFromDb(userRef) {
         }
 
         logIt('lastKey not dailyTotal = ' + lastKey);
-//        const lastItem = sugarIntakeDict[lastKey];
-//        const foodName = lastItem.foodName;
-//        const photoArr = lastItem.photo;
-//        const sugarTotal = lastItem.sugar;
-//        const sugarArr = lastItem.sugarArr;
-//
-//        logIt('last food = ' + foodName);
         processValuesFromDb();
         spinner.stop();
         logIt('spinner off');
       } else {
-        // TODO: page error
         logIt('sugarIntakeDict is null');
+        // TODO: page error
+        spinner.stop();
+        logIt('spinner off');
         return;
       }
     });
   });
-
-//  let preferencesRef = userRef.child('preferences');
-//
-//  preferencesRef.once('value', function(snapshot) {
-//    let preferences = snapshot.val();
-//    document.getElementById('currentGoalSugar').setAttribute("value", preferences.currentGoalSugar);
-//    document.getElementById('currentGoalWeight').setAttribute("value", preferences.currentGoalWeight);
-//    document.getElementById('currentWeight').setAttribute("value", preferences.currentWeight);
-//
-//    if (preferences.nightlySummary === true) {
-//      let checkBoxObj = document.getElementById('nightlySummary');
-//      checkBoxObj.setAttribute("checked", "checked");
-//
-//      let evt = new Event('change');
-//      checkBoxObj.dispatchEvent(evt);
-//    }
-//  });
-//
-//  let profileTzRef = firebase.database().ref('global/sugarinfoai/' + psid + '/profile/timezone');
-//  profileTzRef.once('value', function(snapshot) {
-//    tz = snapshot.val();
-//  });
 }
