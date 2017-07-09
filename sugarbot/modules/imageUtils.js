@@ -62,7 +62,7 @@ exports.fdaProcess = function (userId, barcode, date, fulldate) {
           carbsArr: [carbsPerServing],
           fiberArr: [fiberPerServing],
         }
-        return fire.addSugarToFirebase(userId, data, fulldate, barcode, sugarData)
+        return fire.addSugarToFirebase(userId, date, fulldate, barcode, sugarData)
       }
       else if (error) {
         throw 'fda response was undefined'
@@ -116,7 +116,7 @@ exports.fdaProcess = function (userId, barcode, date, fulldate) {
         ingredientsSugarsCaps,
         photo: [''],
       }
-      return fire.addSugarToFirebase(userId, data, fulldate, barcode, sugarData)
+      return fire.addSugarToFirebase(userId, date, fulldate, barcode, sugarData)
     })
     .catch(ferror => {
       console.log('final fallback on firebase', ferror)
@@ -145,7 +145,7 @@ exports.fdaProcess = function (userId, barcode, date, fulldate) {
             ingredientsSugarsCaps: '',
             photo: []
           }
-          return fire.addSugarToFirebase(userId, data, fulldate, barcode, sugarData)
+          return fire.addSugarToFirebase(userId, date, fulldate, barcode, sugarData)
         }
         else {
           return tempRef.child('upc').remove()

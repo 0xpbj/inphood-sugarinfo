@@ -10,57 +10,52 @@ if (firebase.apps.length === 0) {
   firebase.initializeApp(constants.fbConfig)
 }
 
-function sugarResponse (userId, date, fulldate, weight, sugar, goalSugar, foodName) {
-  return firebase.database().ref('/global/sugarinfoai/' + userId +'/temp/data').remove()
-  .then(() => {
-    console.log('DEBUG WEBVIEW LAST ITEM:')
-    console.log('-------------------------------------------------------')
-    const wvMsg = {
-      uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + process.env.FACEBOOK_BEARER_TOKEN,
-      json: true,
-      method: 'POST',
-      body: {
-        'recipient':{
-          'id': userId
-        },
-        'message':{
-          'attachment':{
-            'type':'template',
-            "payload":{
-              "template_type":"generic",
-              "elements":[
-                 {
-                  "title": "Last Journal Item",
-                  "image_url": "https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/arrows.jpg",
-                  "subtitle": foodName,
-                  "default_action": {
-                    "url": "https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/FoodJournalEntry.html",
-                    "type": "web_url",
-                    "messenger_extensions": true,
-                    "webview_height_ratio": "compact",
-                    "webview_share_button": "hide",
-                    "fallback_url": "https://www.inphood.com/"
-                  },
-                  "buttons":[
-                    {
-                      "type": "postback",
-                      "title": "Delete From Journal",
-                      "payload": "delete last item"
-                    }
-                  ]
-                }
-              ]
-            }
+function sugarResponse (userId, foodName) {
+  const wvMsg = {
+    uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + process.env.FACEBOOK_BEARER_TOKEN,
+    json: true,
+    method: 'POST',
+    body: {
+      'recipient':{
+        'id': userId
+      },
+      'message':{
+        'attachment':{
+          'type':'template',
+          "payload":{
+            "template_type":"generic",
+            "elements":[
+               {
+                "title": "Last Journal Item",
+                "image_url": "https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/arrows.jpg",
+                "subtitle": foodName,
+                "default_action": {
+                  "url": "https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/FoodJournalEntry.html",
+                  "type": "web_url",
+                  "messenger_extensions": true,
+                  "webview_height_ratio": "compact",
+                  "webview_share_button": "hide",
+                  "fallback_url": "https://www.inphood.com/"
+                },
+                "buttons":[
+                  {
+                    "type": "postback",
+                    "title": "Delete From Journal",
+                    "payload": "delete last item"
+                  }
+                ]
+              }
+            ]
           }
         }
-      },
-      resolveWithFullResponse: true,
-      headers: {
-        'Content-Type': "application/json"
       }
+    },
+    resolveWithFullResponse: true,
+    headers: {
+      'Content-Type': "application/json"
     }
-    return requestPromise(wvMsg)
-  })
+  }
+  return requestPromise(wvMsg)
 }
 
 exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
@@ -77,7 +72,6 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
       data,
       timestamp: fulldate,
     })
-    const weight = snapshot.child('/preferences/currentWeight').val()
     const goalWeight = snapshot.child('/preferences/currentGoalWeight').val()
     const goalSugar = snapshot.child('/preferences/currentGoalSugar').val()
     let val = snapshot.child('/sugarIntake/' + date + '/dailyTotal/sugar').val()
@@ -86,9 +80,6 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
     if (!goalSugar)
       goalSugar = 36
     const newVal = parseInt(val) + parseInt(sugar)
-    // if (foodName === 'missing upc' || !cleanText) {
-    //   return sugarResponse (userId, date, fulldate, weight, newVal, goalSugar, foodName)
-    // }
     let cleanPath = subSlashes(cleanText)
     return tempRef.child('/myfoods/' + cleanPath).update({ 
       data
@@ -98,9 +89,9 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
         timestamp: Date.now(),
       })
       .then(() => {
-        return tempRef.child('/sugarIntake/' + date + '/dailyTotal/').update({ sugar: newVal })
-        .then(() => {
-          return sugarResponse (userId, date, fulldate, weight, newVal, goalSugar, foodName)
+        // return tempRef.child('/sugarIntake/' + date + '/dailyTotal/').update({ sugar: newVal })
+        // .then(() => {
+          return sugarResponse (userId, foodName)
           .then(() => {
             if (ingredientsSugarsCaps && sugar >= 3) {
               return [
@@ -143,7 +134,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
               ]
             }
           })
-        })
+        // })
       })
     })
   })
