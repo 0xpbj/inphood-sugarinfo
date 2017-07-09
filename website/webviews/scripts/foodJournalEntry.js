@@ -40,7 +40,7 @@ function updateTotalSugar(snapshot) {
 
 //  logIt('new total = ' + sugarTotal);
   let totalRef = sugarIntakeRef.child('dailyTotal');
-  totalRef.set(sugarTotal);
+  totalRef.set({sugar: sugarTotal});
 }
 
 //
@@ -145,7 +145,7 @@ function handleOnInput(id) {
 
 //        logIt('new total = ' + sugarTotal);
         let totalRef = sugarIntakeRef.child('dailyTotal');
-        totalRef.set(sugarTotal);
+        totalRef.set({sugar: sugarTotal});
 
         // 3.Update the current page:
         //

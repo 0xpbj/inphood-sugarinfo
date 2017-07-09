@@ -8,5 +8,5 @@
 //    </div>
 //
 function logIt(someText) {
-  document.getElementById('rtLog').innerHTML += someText + '<br>';
+//  document.getElementById('rtLog').innerHTML += someText + '<br>';
 }
