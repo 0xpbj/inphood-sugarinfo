@@ -1,4 +1,4 @@
-exports.testUsers = ['1547345815338571', '1322516797796635']  // AC, PBJ on sugarinfoAI (not sugarinfoAITest)
+exports.testUsers = ['1547345815338571', '1322516797796635', '1526909420717220']  // AC, PBJ on sugarinfoAI (and sugarinfoAITest)
 
 exports.featureTips = [
   "",

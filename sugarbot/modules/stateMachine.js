@@ -13,9 +13,6 @@ const requestPromise = require('request-promise')
 const sentiment = require('sentiment');
 
 const firebase = require('firebase')
-if (firebase.apps.length === 0) {
-  firebase.initializeApp(process.env.FIREBASE_CONFIG)
-}
 const isTestBot = false
 const {Wit} = require('node-wit')
 const witClient = new Wit({accessToken: process.env.WIT_TOKEN})
@@ -137,14 +134,37 @@ exports.bot = function(request, messageText, userId) {
               mealType = 'dinner'
               mealInfo = ' this evening? (e.g: Kale, spinach, tomatoes, cheese, and dressing)'
             }
-            const mealTip = 'Remember you can send me a picture of the UPC label for your convinience.'
-            return 'Great! Tell me what you ate' + mealInfo + '\n' + mealTip
+            return [
+              'Great! Tell me what you ate' + mealInfo,
+              new fbTemplate
+              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/upc.jpg')
+              .get(),
+              'Remember you can send me a picture of the UPC label 📷 or type the number manually ⌨️ for your convinience.'
+            ]
+          }
+          case 'food question':
+          case 'describe food': {
+            const timeUser = timeUtils.getUserTimeObj(Date.now(), timezone)
+            let mealInfo = '? (e.g: almonds and cranberries)'
+            let mealType = 'snack'
+            const {hour} = timeUser
+            if (hour > 4 && hour < 13) {
+              mealType = 'breakfast'
+              mealInfo = ' this morning? (e.g: I had two eggs, avocado, and toast)'
+            }
+            else if (hour > 12 && hour < 18) {
+              mealType = 'lunch'
+              mealInfo = ' this afternoon? (e.g: chicken sandwich and cola)'
+            }
+            else if (hour > 17 && hour < 23) {
+              mealType = 'dinner'
+              mealInfo = ' this evening? (e.g: Kale, spinach, tomatoes, cheese, and dressing)'
+            }
+            return 'Great! Tell me what you ate' + mealInfo
           }
           case 'describe breakfast':
           case 'describe lunch':
-          case 'describe dinner':
-          case 'food question':
-          case 'describe food': {
+          case 'describe dinner': {
             return 'Food description or UPC Label photo, the choice is yours'
           }
           case 'nutrition': {

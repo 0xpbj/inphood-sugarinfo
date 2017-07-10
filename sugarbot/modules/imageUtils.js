@@ -6,9 +6,6 @@ const fbTemplate = botBuilder.fbTemplate;
 const nutrition = require ('./nutritionix.js')
 
 const firebase = require('firebase')
-if (firebase.apps.length === 0) {
-  firebase.initializeApp(process.env.FIREBASE_CONFIG)
-}
 
 exports.fdaProcess = function (userId, barcode, date, fulldate) {
   console.log('FDA Process', userId, barcode)

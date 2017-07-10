@@ -5,9 +5,6 @@ const sugarUtils = require('./sugarUtils.js')
 const fire = require('./firebaseUtils.js')
 const names = require('./foodNames.js')
 const firebase = require('firebase')
-if (firebase.apps.length === 0) {
-  firebase.initializeApp(process.env.FIREBASE_CONFIG)
-}
 
 function cleanQuestion(messageText) {
   return messageText.replace('sugar', '')

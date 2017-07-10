@@ -1,8 +1,9 @@
-//const productionConfig = require('dotenv').config({path: '../.env-production'})
-//for (const key in productionConfig) {
-  //process.env[key] = process.env[key] || productionConfig[key]
-//}
-//console.log('PROCESSENV', process.env)
+// const config = require('dotenv').config({path: '../.env-test'})
+// for (const key in config) {
+//   process.env[key] = process.env[key] || config[key]
+// }
+// console.log('CONFIG', config)
+// console.log('PROCESSENV', process.env)
 const express = require('express')
 const app = express()
 const schedule = require('node-schedule')
@@ -11,7 +12,10 @@ const constants = require('../sugarbot/modules/constants.js')
 const timeUtils = require('../sugarbot/modules/timeUtils.js')
 
 const testMode = true
+// production token
 const accessToken = 'EAAJhTtF5K30BABsLODz0w5Af5hvd1SN9TZCU0E9OapZCKuZAOMugO2bNDao8JDe8E3cPQrJGLWWfL0sMxsq4MSTcZBbgGEjqa68ggSZCmZAFhGsFPFkWGUlYwAZB2ZCOrPPgdxS612ck5Rv8SrHydJihKQGsPLQSc1yYtBkncIpbOgZDZD'
+// test token
+// const accessToken = 'EAAJhTtF5K30BAObDIIHWxtZA0EtwbVX6wEciIZAHwrwBJrXVXFZCy69Pn07SoyzZAeZCEmswE0jUzamY7Nfy71cZB8O7BSZBpTZAgbDxoYEE5Og7nbkoQvMaCafrBkH151s4wl91zOCLbafkdJiWLIc6deW9jSZBYdjh2NE4JbDSZBAwZDZD'
 
 // Setting this up as standard firebase client:
 //   - https://firebase.google.com/docs/web/setup
@@ -383,6 +387,7 @@ function scheduleTracking() {
       if (testMode && !constants.testUsers.includes(userId)) {
         continue
       }
+      console.log(userId)
       const userSugarInfoAI = sugarInfoAI[userId]
       if ('sugarIntake' in userSugarInfoAI &&
           'profile' in userSugarInfoAI &&
