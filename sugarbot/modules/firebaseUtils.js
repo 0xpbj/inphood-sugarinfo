@@ -1,13 +1,12 @@
 const botBuilder = require('claudia-bot-builder');
 const fbTemplate = botBuilder.fbTemplate;
 const utils = require('./utils.js')
-const sugarUtils = require('../modules/sugarUtils.js')
+const sugarUtils = require('./sugarUtils.js')
 const requestPromise = require('request-promise')
 
-const constants = require('./constants.js')
 const firebase = require('firebase')
 if (firebase.apps.length === 0) {
-  firebase.initializeApp(constants.fbConfig)
+  firebase.initializeApp(process.env.FIREBASE_CONFIG)
 }
 
 function sugarResponse (userId, foodName) {
