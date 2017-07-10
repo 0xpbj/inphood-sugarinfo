@@ -172,7 +172,7 @@ function delBtnHtml() {
 }
 
 function imgHtml(imgPath) {
-  if (imgPath.includes('nix-apple-grey.png')) {
+  if (imgPath.includes('nix-apple-grey.png') || imgPath === '') {
     return '';
   }
 
@@ -190,6 +190,7 @@ function imgHtml(imgPath) {
 ////////////////////////////////////////////////////////////////////////////////
 
 function singleItemHtml(foodName, sugarTotal, photo) {
+  logIt('singleItemHtml');
   let id = 'all';
   let deleteBtn = delBtnHtml(id);
   let img = imgHtml(photo);
@@ -322,13 +323,13 @@ function processValuesFromDb() {
 
     const foodName = lastItem.foodName;
     const sugarTotal = lastItem.sugar;
-    const photo = lastItem.photo[0];
+    const photo = (lastItem.photo) ? lastItem.photo[0] : '';
 
     const sugarArr = lastItem.sugarArr;
     const singleItemUseCase = ((sugarArr === null) ||
                               (sugarArr === undefined) ||
                               (sugarArr.length === 1));
-
+    
     let html = '';
     if (singleItemUseCase) {
       html = singleItemHtml(foodName, sugarTotal, photo);
