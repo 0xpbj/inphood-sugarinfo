@@ -11,7 +11,7 @@ const requestPromise = require('request-promise')
 const constants = require('../sugarbot/modules/constants.js')
 const timeUtils = require('../sugarbot/modules/timeUtils.js')
 
-const testMode = true
+const testMode = false
 // production token
 const accessToken = 'EAAJhTtF5K30BABsLODz0w5Af5hvd1SN9TZCU0E9OapZCKuZAOMugO2bNDao8JDe8E3cPQrJGLWWfL0sMxsq4MSTcZBbgGEjqa68ggSZCmZAFhGsFPFkWGUlYwAZB2ZCOrPPgdxS612ck5Rv8SrHydJihKQGsPLQSc1yYtBkncIpbOgZDZD'
 // test token
