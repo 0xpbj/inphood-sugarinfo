@@ -2,10 +2,9 @@ const botBuilder = require('claudia-bot-builder');
 const fbTemplate = botBuilder.fbTemplate;
 const utils = require('./utils.js')
 const fire = require('./firebaseUtils.js')
-const constants = require('./constants.js')
 const firebase = require('firebase')
 if (firebase.apps.length === 0) {
-  firebase.initializeApp(constants.fbConfig)
+  firebase.initializeApp(process.env.FIREBASE_CONFIG)
 }
 
 exports.getWolfram = function(messageText, userId) {

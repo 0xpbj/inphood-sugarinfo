@@ -1,3 +1,9 @@
+// const config = require('dotenv').config({path: '../.env-test'})
+// for (const key in config) {
+//   process.env[key] = process.env[key] || config[key]
+// }
+// console.log('CONFIG', config)
+// console.log('PROCESSENV', process.env)
 const express = require('express')
 const app = express()
 const schedule = require('node-schedule')
@@ -6,6 +12,10 @@ const constants = require('../sugarbot/modules/constants.js')
 const timeUtils = require('../sugarbot/modules/timeUtils.js')
 
 const testMode = false
+// production token
+const accessToken = 'EAAJhTtF5K30BABsLODz0w5Af5hvd1SN9TZCU0E9OapZCKuZAOMugO2bNDao8JDe8E3cPQrJGLWWfL0sMxsq4MSTcZBbgGEjqa68ggSZCmZAFhGsFPFkWGUlYwAZB2ZCOrPPgdxS612ck5Rv8SrHydJihKQGsPLQSc1yYtBkncIpbOgZDZD'
+// test token
+// const accessToken = 'EAAJhTtF5K30BAObDIIHWxtZA0EtwbVX6wEciIZAHwrwBJrXVXFZCy69Pn07SoyzZAeZCEmswE0jUzamY7Nfy71cZB8O7BSZBpTZAgbDxoYEE5Og7nbkoQvMaCafrBkH151s4wl91zOCLbafkdJiWLIc6deW9jSZBYdjh2NE4JbDSZBAwZDZD'
 
 // Setting this up as standard firebase client:
 //   - https://firebase.google.com/docs/web/setup
@@ -15,6 +25,7 @@ const testMode = false
 var firebase = require('firebase')
 if (firebase.apps.length === 0) {
   console.log('InitializingApp on firebase with config')
+  //firebase.initializeApp(process.env.FIREBASE_CONFIG)
   firebase.initializeApp({
     apiKey: 'AIzaSyBQTHsQA5GuDG7Ttk17o3LBQfXjn7MtUQ8',
     authDomain: 'inphooddb-e0dfd.firebaseapp.com',
@@ -29,17 +40,13 @@ if (firebase.apps.length === 0) {
 //   res.send('Hello World!')
 // })
 
-function queue_notification(
-  dbNotQueue, currentTimeMs, timeHrs, userId, notificationType = 'reminder') {
-
+function queue_notification(dbNotQueue, currentTimeMs, timeHrs, userId, notificationType = 'reminder') {
   if (testMode && !constants.testUsers.includes(userId)) {
     return
   }
-
   const notificationTimeMs = testMode ?
     currentTimeMs + timeHrs * 60 * 1000 :
     currentTimeMs + timeHrs * 60 * 60 * 1000
-
   const dbNotQueueTime = dbNotQueue.child(notificationTimeMs)
   console.log('Adding ' + userId + ' to notification_queue at time ' + notificationTimeMs)
   const notification = {
@@ -54,7 +61,6 @@ function send_notification(userId) {
     return
   }
 
-  const accessToken = 'EAAJhTtF5K30BABsLODz0w5Af5hvd1SN9TZCU0E9OapZCKuZAOMugO2bNDao8JDe8E3cPQrJGLWWfL0sMxsq4MSTcZBbgGEjqa68ggSZCmZAFhGsFPFkWGUlYwAZB2ZCOrPPgdxS612ck5Rv8SrHydJihKQGsPLQSc1yYtBkncIpbOgZDZD'
   const url = 'https://graph.facebook.com/v2.6/me/messages?access_token=' + accessToken
   const message = {
     "attachment" : {
@@ -130,6 +136,126 @@ function queueReportJob(userId) {
   dbReportQueueRequest.set(reportRequest)
 }
 
+function setupNotification(mealType) {
+  switch(mealType) {
+    case 'breakfast': {
+      const breakfastTip = constants.generateTip(constants.breakfastAlerts)
+      return {
+        "attachment" : {
+          "type" : "template",
+          "payload":{
+            "template_type":"button",
+            "text":breakfastTip,
+            "buttons":[{
+              "type":"postback",
+              "title":"Let's do it! ⌨️",
+              "payload":"describe breakfast"
+            }]
+          }
+        }
+      }
+    }
+    case 'lunch': {
+      const lunchTip = constants.generateTip(constants.lunchAlerts)
+      return {
+        "attachment" : {
+          "type" : "template",
+          "payload":{
+            "template_type":"button",
+            "text":lunchTip,
+            "buttons":[{
+              "type":"postback",
+              "title":"Aaaalrighty then ⌨️",
+              "payload":"describe lunch"
+            }]
+          }
+        }
+      }
+    }
+    case 'dinner': {
+      const dinnerTip = constants.generateTip(constants.dinnerAlerts)
+      return {
+        "attachment" : {
+          "type" : "template",
+          "payload":{
+            "template_type":"button",
+            "text":dinnerTip,
+            "buttons":[{
+              "type":"postback",
+              "title":"Hurry up, I'm sleepy ⌨️",
+              "payload":"describe dinner"
+            }]
+          }
+        }
+      }
+    }
+    default: {
+      const defaultTip = constants.generateTip(constants.defaultAlerts)
+      return {
+        "attachment" : {
+          "type" : "template",
+          "payload":{
+            "template_type":"button",
+            "text":defaultTip,
+            "buttons":[{
+              "type":"postback",
+              "title":"Describe Food ⌨️",
+              "payload":"food question"
+            }]
+          }
+        }
+      }
+    }
+  }
+}
+
+function send_tracking_notification(userId, mealType) {
+  if (testMode && !constants.testUsers.includes(userId)) {
+    return
+  }
+  const message = setupNotification(mealType)
+  const url = 'https://graph.facebook.com/v2.6/me/messages?access_token=' + accessToken
+  const options = {
+    uri: url,
+    json: true,
+    method: 'POST',
+    body: {
+      'recipient' : {
+        'id' : userId
+      },
+      'message' : message
+    },
+    resolveWithFullResponse: true,
+  }
+  const textOptions = {
+    uri: url,
+    json: true,
+    method: 'POST',
+    body: {
+      'recipient' : {
+        'id' : userId
+      },
+      'message' : {
+        text: constants.generateTip(constants.reminderTips)
+      }
+    },
+    resolveWithFullResponse: true,
+  }
+  console.log('Notifying user ' + userId)
+  return requestPromise(textOptions)
+  .then(result => {
+    return requestPromise(options)
+    const body = result.body
+    console.log('Message sent.')
+    console.log('Recieved response:')
+    console.log(body)
+  })
+  .catch(error => {
+    console.log('Error sending message:')
+    console.log(error)
+  })
+}
+
 function dequeue_notifications() {
   // Assumes firebase has been signed into elsewhere (i.e. in the call to app.listen
   // by the time this code runs):
@@ -159,12 +285,22 @@ function dequeue_notifications() {
 
           if (notificationType === 'reminder') {
             send_notification(userId)
-          } else if (notificationType === 'report') {
+          } 
+          else if (notificationType === 'report') {
             queueReportJob(userId)
-          } else if (notificationType === 'noTrackingMessage') {
+          }
+          else if (notificationType === 'trackingBreakfast') {
+            send_tracking_notification(userId, 'breakfast')
+          }
+          else if (notificationType === 'trackingLunch') {
+            send_tracking_notification(userId, 'lunch')
+          }
+          else if (notificationType === 'trackingDinner') {
+            send_tracking_notification(userId, 'dinner')
+          }
+          else if (notificationType === 'noTrackingMessage') {
             // TODO:
           }
-
           // 2. Remove this entry from the notification_queue
           //
           const dbNotQueueTime = dbNotQueue.child(timeMs)
@@ -236,26 +372,101 @@ function scheduleReports() {
           }
         }
       }
-    })
+    }
+  )
 }
 
+function scheduleTracking() {
+  console.log('scheduleTracking')
+  const dbSugarInfo = firebase.database().ref('/global/sugarinfoai/')
+  const dbNotQueue = dbSugarInfo.child('notification_queue')
+  return dbSugarInfo.once('value', function(snapshot) {
+    const sugarInfoAI = snapshot.val()
+    for (let userId in sugarInfoAI) {
+      const currentTimeUTC = Date.now()
+      if (testMode && !constants.testUsers.includes(userId)) {
+        continue
+      }
+      console.log(userId)
+      const userSugarInfoAI = sugarInfoAI[userId]
+      if ('sugarIntake' in userSugarInfoAI &&
+          'profile' in userSugarInfoAI &&
+          'timezone' in userSugarInfoAI.profile) {
+        const timeZone = userSugarInfoAI.profile.timezone
+        const userTimeObj = timeUtils.getUserTimeObj(currentTimeUTC, timeZone)
+        const userDate = timeUtils.getUserDateString(currentTimeUTC, timeZone)
+        return firebase.database().ref('/global/sugarinfoai/' + userId)
+        .once('value')
+        .then(dataSnapshot => {
+          if (!dataSnapshot.child('/sugarIntake/' + userDate).exists()) {
+            console.log('User ' + userId + ' has not logged breakfast (' +
+                        userDate + '). Scheduling a breakfast notification.')
+            if (userTimeObj.hour === 10) {
+              return firebase.database().ref('/global/sugarinfoai/' + userId + '/trackingNotifications/' + userDate).update({
+                breakfast: Date.now()
+              })
+              .then(() => {
+                queue_notification(dbNotQueue, currentTimeUTC, 0, userId, 'trackingBreakfast')
+              })
+            }
+          }
+          else if (dataSnapshot.child('/sugarIntake/' + userDate).numChildren() < 2 
+                    && !dataSnapshot.child('/trackingNotifications/' + userDate + '/breakfast').exists()) {
+            console.log('User ' + userId + ' has not logged lunch (' +
+                        userDate + '). Scheduling a lunch notification.')
+            if (userTimeObj.hour === 15) {
+              return firebase.database().ref('/global/sugarinfoai/' + userId + '/trackingNotifications/' + userDate).update({
+                lunch: Date.now()
+              })
+              .then(() => {
+                queue_notification(dbNotQueue, currentTimeUTC, 0, userId, 'trackingLunch')
+              })
+            }
+          }
+          else if (dataSnapshot.child('/sugarIntake/' + userDate).numChildren() < 3
+                    && (!dataSnapshot.child('/trackingNotifications/' + userDate + '/lunch').exists()
+                    || !dataSnapshot.child('/trackingNotifications/' + userDate + '/breakfast').exists())) {
+            console.log('User ' + userId + ' has not logged dinner (' +
+                        userDate + '). Scheduling a dinner notification.')
+            if (userTimeObj.hour === 20) {
+              return firebase.database().ref('/global/sugarinfoai/' + userId + '/trackingNotifications/' + userDate).update({
+                dinner: Date.now()
+              })
+              .then(() => {
+                queue_notification(dbNotQueue, currentTimeUTC, 0, userId, 'trackingDinner')
+              })
+            }
+          }
+          else {
+            console.log('Nothing to say....')
+          }
+        })
+        .catch(error => {
+          console.log('Error: ', error)
+        })
+      }
+    }
+  })
+}
 
 app.listen(3000, function () {
   console.log('App listening on port 3000!')
-
-  // Start our cron like task here that sends notifications
-  const notificationJob = schedule.scheduleJob('0 * * * * *', dequeue_notifications)
-
-  // Start a separate cron like task here that schedules 'report' notifications
-  // automatically:
-  const reportJob = schedule.scheduleJob('45 * * * *', scheduleReports)
-
   // This code listens to the 'reminders' child of our user's firebase data. If
   // a reminder appears, it creates an entry for that user in our notification_queue
   // and removes the 'reminders' entry for the user.
   //
   return firebase.auth().signInAnonymously()
   .then(() => {
+    // Start our cron like task here that sends notifications
+    const notificationJob = schedule.scheduleJob('0 * * * * *', dequeue_notifications)
+
+    // Start a separate cron like task here that schedules 'report' notifications
+    // automatically:
+    const reportJob = schedule.scheduleJob('45 * * * *', scheduleReports)
+
+    // Start a separate cron like task here that schedules 'tracking' notifications
+    // automatically:
+    const trackingJob = schedule.scheduleJob('0 * * * *', scheduleTracking)
 
     const dbSugarInfo = firebase.database().ref('/global/sugarinfoai')
     const dbReminders = dbSugarInfo.child('reminders')

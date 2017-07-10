@@ -1,16 +1,12 @@
 const botBuilder = require('claudia-bot-builder');
 const fbTemplate = botBuilder.fbTemplate;
 const utils = require('./utils.js')
-const sugarUtils = require('../modules/sugarUtils.js')
+const sugarUtils = require('./sugarUtils.js')
 const requestPromise = require('request-promise')
 
-const constants = require('./constants.js')
 const firebase = require('firebase')
-if (firebase.apps.length === 0) {
-  firebase.initializeApp(constants.fbConfig)
-}
 
-function sugarResponse (userId, foodName) {
+function sugarResponse (userId, foodName, sugarPercentage) {
   const wvMsg = {
     uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + process.env.FACEBOOK_BEARER_TOKEN,
     json: true,
@@ -27,13 +23,13 @@ function sugarResponse (userId, foodName) {
             "elements":[
                {
                 "title": "Last Journal Item",
-                "image_url": "https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/arrows.jpg",
+                "image_url": "https://d1q0ddz2y0icfw.cloudfront.net/progressImages/" + sugarPercentage + ".png",
                 "subtitle": foodName,
                 "default_action": {
                   "url": "https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/FoodJournalEntry.html",
                   "type": "web_url",
                   "messenger_extensions": true,
-                  "webview_height_ratio": "compact",
+                  "webview_height_ratio": "tall",
                   "webview_share_button": "hide",
                   "fallback_url": "https://www.inphood.com/"
                 },
@@ -58,18 +54,50 @@ function sugarResponse (userId, foodName) {
   return requestPromise(wvMsg)
 }
 
+function subSlashes( str ) { 
+  if (str) {
+    return str.replace(/[\/\.$#\[\]]/g, '_');
+  }
+  return ''
+}
+
 exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
-  var tempRef = firebase.database().ref("/global/sugarinfoai/" + userId)
-  return tempRef.once("value")
+  var userRef = firebase.database().ref("/global/sugarinfoai/" + userId)
+  return userRef.once("value")
   .then(function(snapshot) {
     const {
-      psugar,
+      photo,
       sugar,
+      carbs,
+      fiber,
+      psugar,
+      nsugar,
+      sugarArr,
+      carbsArr,
+      fiberArr,
       foodName,
-      cleanText
+      cleanText,
+      sugarPerServingStr,
+      carbsPerServingStr,
+      fiberPerServingStr,
+      ingredientsSugarsCaps
     } = data
-    tempRef.child("/sugarIntake/" + date).push({
-      data,
+    userRef.child("/sugarIntake/" + date).push({
+      photo,
+      sugar,
+      carbs,
+      fiber,
+      psugar,
+      nsugar,
+      sugarArr,
+      carbsArr,
+      fiberArr,
+      foodName,
+      cleanText,
+      sugarPerServingStr,
+      carbsPerServingStr,
+      fiberPerServingStr,
+      ingredientsSugarsCaps,
       timestamp: fulldate,
     })
     const goalWeight = snapshot.child('/preferences/currentGoalWeight').val()
@@ -81,60 +109,71 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
       goalSugar = 36
     const newVal = parseInt(val) + parseInt(sugar)
     let cleanPath = subSlashes(cleanText)
-    return tempRef.child('/myfoods/' + cleanPath).update({ 
-      data
+    return userRef.child('/myfoods/' + cleanPath).update({ 
+      photo,
+      sugar,
+      carbs,
+      fiber,
+      psugar,
+      nsugar,
+      sugarArr,
+      carbsArr,
+      fiberArr,
+      foodName,
+      cleanText,
+      sugarPerServingStr,
+      carbsPerServingStr,
+      fiberPerServingStr,
+      ingredientsSugarsCaps
     })
     .then(() => {
-      return tempRef.child('/myfoods/' +  cleanPath + '/date').push({ 
+      return userRef.child('/myfoods/' +  cleanPath + '/date').push({ 
         timestamp: Date.now(),
       })
       .then(() => {
-        // return tempRef.child('/sugarIntake/' + date + '/dailyTotal/').update({ sugar: newVal })
-        // .then(() => {
-          return sugarResponse (userId, foodName)
+        return userRef.child('/sugarIntake/' + date + '/dailyTotal/').update({ sugar: newVal })
+        .then(() => {
+          const sugarPercentage = Math.ceil(sugar*100/goalSugar)
+          return sugarResponse (userId, foodName, sugarPercentage)
           .then(() => {
             if (ingredientsSugarsCaps && sugar >= 3) {
               return [
-                sugarPerServingStr,
                 'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
                 'This is what that much sugar looks like',
                 new fbTemplate
                 .Image(sugarUtils.getGifUrl(sugar))
                 .get(),
-                'Okay—you just ate about ' + Math.ceil(sugar*100/goalSugar) + '% (' + sugar + 'g). I have updated your journal',
+                // 'Okay—you just ate about ' + Math.ceil(sugar*100/goalSugar) + '% (' + sugar + 'g). I have updated your journal',
               ]
             }
             else if (Math.round(psugar) > 2) {
               return [
-                sugarPerServingStr,
                 'This is what that much sugar looks like',
                 new fbTemplate
                 .Image(sugarUtils.getGifUrl(Math.round(psugar)))
                 .get(),
-                'Okay—you just ate about ' + Math.ceil(sugar*100/goalSugar) + '% (' + sugar + 'g). I have updated your journal',
+                // 'Okay—you just ate about ' + Math.ceil(sugar*100/goalSugar) + '% (' + sugar + 'g). I have updated your journal',
               ]
             }
             else if (ingredientsSugarsCaps && sugar > 0) {
               return [
-                sugarPerServingStr,
                 'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
                 sugar + 'g of sugar found',
-                'Okay—you just ate about ' + Math.ceil(sugar*100/goalSugar) + '% (' + sugar + 'g). I have updated your journal',
+                // 'Okay—you just ate about ' + Math.ceil(sugar*100/goalSugar) + '% (' + sugar + 'g). I have updated your journal',
               ]
             }
-            else if (Math.round(psugar) > 0) {
-              return [
-                sugarPerServingStr,
-                'Okay—you just ate about ' + Math.ceil(sugar*100/goalSugar) + '% (' + sugar + 'g). I have updated your journal',
-              ]
-            }
+            // else if (Math.round(psugar) > 0) {
+            //   return [
+            //     // 'Okay—you just ate about ' + Math.ceil(sugar*100/goalSugar) + '% (' + sugar + 'g). I have updated your journal',
+            //   ]
+            // }
             else if (sugar === 0) {
               return [
                 'Congratulations! 🎉🎉 No sugars found!',
               ]
             }
           })
-        // })
+        })
       })
     })
   })

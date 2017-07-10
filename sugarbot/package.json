@@ -5,8 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "create": "claudia create --region us-west-2 --api-module bot --profile claudia",
-    "update": "claudia update --profile claudia --set-env-from-json ./.env-production",
-    "update-test": "claudia update --profile claudia --config claudia_test.json --set-env-from-json ./.env-test"
+    "update": "claudia update --profile claudia --set-env-from-json ../.env-production",
+    "update-test": "claudia update --profile claudia --config claudia_test.json --set-env-from-json ../.env-test"
   },
   "keywords": [],
   "author": "",
@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "aws-sdk": "^2.64.0",
-    "clarifai": "^2.1.8",
     "claudia-bot-builder": "^2.15.0",
     "fast-levenshtein": "^2.0.6",
     "firebase": "^4.1.2",

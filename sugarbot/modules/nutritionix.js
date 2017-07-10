@@ -4,11 +4,7 @@ const utils = require('./utils.js')
 const sugarUtils = require('./sugarUtils.js')
 const fire = require('./firebaseUtils.js')
 const names = require('./foodNames.js')
-const constants = require('./constants.js')
 const firebase = require('firebase')
-if (firebase.apps.length === 0) {
-  firebase.initializeApp(constants.fbConfig)
-}
 
 function cleanQuestion(messageText) {
   return messageText.replace('sugar', '')

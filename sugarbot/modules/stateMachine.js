@@ -4,7 +4,6 @@ const utils = require('./utils.js')
 const fire = require('./firebaseUtils.js')
 const image = require('./imageUtils.js')
 const nutrition = require ('./nutritionix.js')
-const constants = require('./constants.js')
 const timeUtils = require('./timeUtils.js')
 
 const botBuilder = require('claudia-bot-builder')
@@ -14,9 +13,6 @@ const requestPromise = require('request-promise')
 const sentiment = require('sentiment');
 
 const firebase = require('firebase')
-if (firebase.apps.length === 0) {
-  firebase.initializeApp(constants.fbConfig)
-}
 const isTestBot = false
 const {Wit} = require('node-wit')
 const witClient = new Wit({accessToken: process.env.WIT_TOKEN})
@@ -26,7 +22,7 @@ exports.bot = function(request, messageText, userId) {
   return tempRef.once("value")
   .then(function(snapshot) {
     const favorites = snapshot.child('/myfoods/').val()
-    const question = snapshot.child('/temp/data/question/flag').val()
+    // const question = snapshot.child('/temp/data/question/flag').val()
     const favFlag = snapshot.child('/temp/data/favorites/flag').val()
     const timezone = snapshot.child('/profile/timezone').val() ? snapshot.child('/profile/timezone').val() : -7
     const {timestamp} = request.originalRequest
@@ -38,9 +34,9 @@ exports.bot = function(request, messageText, userId) {
     else if (favFlag && messageText) {
       return fire.findMyFavorites(request.text, userId, date, timestamp)
     }
-    else if (question && messageText) {
-      return nutrition.getNutritionix(messageText, userId, date, timestamp)
-    }
+    // else if (question && messageText) {
+    //   return nutrition.getNutritionix(messageText, userId, date, timestamp)
+    // }
     else if (messageText) {
       console.log('Entering wit proccessing area for: ', messageText)
       return witClient.message(messageText, {})
@@ -65,7 +61,7 @@ exports.bot = function(request, messageText, userId) {
                     intro = 'Hi, I’m sugarinfoAI! I can help you understand how much sugar you are eating and help you bring it within recommended limits. Would you like that?'
                   }
                   return new fbTemplate.Button(intro)
-                  .addButton('Sure, let\'s go', 'food question')
+                  .addButton('Sure, let\'s go', 'start food question')
                   .addButton('Maybe later', 'say adios')
                   .get()
                 })
@@ -121,8 +117,33 @@ exports.bot = function(request, messageText, userId) {
               return utils.parseMyFavorites(favorites)
             })
           }
-          case 'describe food':
-          case 'food question': {
+          case 'start food question': {
+            const timeUser = timeUtils.getUserTimeObj(Date.now(), timezone)
+            let mealInfo = '? (e.g: almonds and cranberries)'
+            let mealType = 'snack'
+            const {hour} = timeUser
+            if (hour > 4 && hour < 13) {
+              mealType = 'breakfast'
+              mealInfo = ' this morning? (e.g: I had two eggs, avocado, and toast)'
+            }
+            else if (hour > 12 && hour < 18) {
+              mealType = 'lunch'
+              mealInfo = ' this afternoon? (e.g: chicken sandwich and cola)'
+            }
+            else if (hour > 17 && hour < 23) {
+              mealType = 'dinner'
+              mealInfo = ' this evening? (e.g: Kale, spinach, tomatoes, cheese, and dressing)'
+            }
+            return [
+              'Great! Tell me what you ate' + mealInfo,
+              new fbTemplate
+              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/upc.jpg')
+              .get(),
+              'Remember you can send me a picture of the UPC label 📷 or type the number manually ⌨️ for your convinience.'
+            ]
+          }
+          case 'food question':
+          case 'describe food': {
             const timeUser = timeUtils.getUserTimeObj(Date.now(), timezone)
             let mealInfo = '? (e.g: almonds and cranberries)'
             let mealType = 'snack'
@@ -140,6 +161,11 @@ exports.bot = function(request, messageText, userId) {
               mealInfo = ' this evening? (e.g: Kale, spinach, tomatoes, cheese, and dressing)'
             }
             return 'Great! Tell me what you ate' + mealInfo
+          }
+          case 'describe breakfast':
+          case 'describe lunch':
+          case 'describe dinner': {
+            return 'Food description or UPC Label photo, the choice is yours'
           }
           case 'nutrition': {
             return firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data").remove()

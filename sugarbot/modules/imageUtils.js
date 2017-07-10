@@ -3,14 +3,9 @@ const fire = require('./firebaseUtils.js')
 const utils = require('./utils.js')
 const sugarUtils = require('./sugarUtils.js')
 const fbTemplate = botBuilder.fbTemplate;
-const Clarifai = require ('clarifai')
 const nutrition = require ('./nutritionix.js')
 
-const constants = require('./constants.js')
 const firebase = require('firebase')
-if (firebase.apps.length === 0) {
-  firebase.initializeApp(constants.fbConfig)
-}
 
 exports.fdaProcess = function (userId, barcode, date, fulldate) {
   console.log('FDA Process', userId, barcode)
