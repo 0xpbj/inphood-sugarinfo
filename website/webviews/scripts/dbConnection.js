@@ -1,9 +1,7 @@
-// Test mode:
-var test = false;
-
 // Messenger user's page id:
 var psid;
 
+var spinner;
 
 (function(d, s, id) {
   logIt('messengerExtensions');
@@ -62,16 +60,15 @@ function initValuesFromDb(psid) {
   initPageValuesFromDb(userRef)
 }
 
-var spinner;
-//function testInit() {
-//  if (test) {
-//    logIt('SPOOFING extAsyncInit called (test is true)');
-//    logIt('-------------------------------');
-//    const AC = 1547345815338571;
-//    psid = AC;
-//    initAndAuthDb();
-//    initValuesFromDb(psid);
-//  }
-//}
+function testInit() {
+  if (test) {
+    logIt('SPOOFING extAsyncInit called (test is true)');
+    logIt('-------------------------------');
+    const AC = 1547345815338571;
+    psid = AC;
+    initAndAuthDb();
+    initValuesFromDb(psid);
+  }
+}
 
 //testInit();
