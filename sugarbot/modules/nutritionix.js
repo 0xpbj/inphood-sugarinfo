@@ -143,7 +143,7 @@ exports.getNutritionix = function(messageText, userId, date, fulldate) {
         photo: thumb,
         ingredientsSugarsCaps: null
       }
-      return fire.addSugarToFirebase(userId, data, fulldate, '', sugarData)
+      return fire.addSugarToFirebase(userId, date, fulldate, '', sugarData)
     })
   })
   .catch(error => {

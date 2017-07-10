@@ -15,7 +15,14 @@ const testMode = false
 var firebase = require('firebase')
 if (firebase.apps.length === 0) {
   console.log('InitializingApp on firebase with config')
-  firebase.initializeApp(constants.fbConfig)
+  firebase.initializeApp({
+    apiKey: 'AIzaSyBQTHsQA5GuDG7Ttk17o3LBQfXjn7MtUQ8',
+    authDomain: 'inphooddb-e0dfd.firebaseapp.com',
+    databaseURL: 'https://inphooddb-e0dfd.firebaseio.com',
+    projectId: 'inphooddb-e0dfd',
+    storageBucket: 'inphooddb-e0dfd.appspot.com',
+    messagingSenderId: '529180412076'
+  })
 }
 
 // app.get('/', function (req, res) {
@@ -49,46 +56,32 @@ function send_notification(userId) {
 
   const accessToken = 'EAAJhTtF5K30BABsLODz0w5Af5hvd1SN9TZCU0E9OapZCKuZAOMugO2bNDao8JDe8E3cPQrJGLWWfL0sMxsq4MSTcZBbgGEjqa68ggSZCmZAFhGsFPFkWGUlYwAZB2ZCOrPPgdxS612ck5Rv8SrHydJihKQGsPLQSc1yYtBkncIpbOgZDZD'
   const url = 'https://graph.facebook.com/v2.6/me/messages?access_token=' + accessToken
-  // const message = {
-  //     'text' : '⏰ Hi! You asked me to remind you to track a meal now.'
-  // }
   const message = {
-    "text":"⏰ Hi! You asked me to remind you to track a meal now.\nTap \'Journal\' to do that:",
-//     "quick_replies":[
-//       {
-//         "content_type":"text",
-//         "title":"Journal ✏️",
-//         "payload":"journal"
-//       },
-//       {
-//         "content_type":"text",
-//         "title":"Knowledge 📚",
-//         "payload":"sugar knowledge"
-//       },
-//       {
-//         "content_type":"text",
-//         "title":"My Preferences ⚙️",
-//         "payload":"preferences"
-//       }
-//     ]
-      "buttons":[
-      {
-        "type":"postback",
-        "title":"Journal ✏️",
-        "payload":"journal"
-      },
-      {
-        "type":"postback",
-        "title":"Report ‍💻",
-        "payload":"report"
-      },
-      {
-        "type":"postback",
-        "title":"Settings ⚙️",
-        "payload":"settings"
+    "attachment" : {
+      "type" : "template",
+         "payload":{
+           "template_type":"button",
+           "text":"⏰ Hi! You asked me to remind you to track a meal now.\nTap \'Journal\' to do that:",
+           "buttons":[
+             {
+               "type":"postback",
+               "title":"Journal ✏️",
+               "payload":"journal"
+             },
+             {
+               "type":"postback",
+               "title":"Report 💻",
+               "payload":"report"
+             },
+             {
+               "type":"postback",
+               "title":"Settings ⚙️",
+               "payload":"settings"
+             }
+           ]
+        }
       }
-    ]
-  }
+    }
 
   let options = {
     uri: url,
