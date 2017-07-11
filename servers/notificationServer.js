@@ -67,22 +67,17 @@ function send_notification(userId) {
       "type" : "template",
          "payload":{
            "template_type":"button",
-           "text":"⏰ Hi! You asked me to remind you to track a meal now.\nTap \'Journal\' to do that:",
+           "text":"⏰ Hi! You asked me to remind you to track a meal now.",
            "buttons":[
              {
                "type":"postback",
-               "title":"Journal ✏️",
+               "title":"Add to Journal ✏️",
                "payload":"journal"
              },
              {
                "type":"postback",
-               "title":"Report 💻",
-               "payload":"report"
-             },
-             {
-               "type":"postback",
-               "title":"Settings ⚙️",
-               "payload":"settings"
+               "title":"Favorite Meals 😍",
+               "payload":"my favorites"
              }
            ]
         }
