@@ -103,7 +103,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
     })
     const goalWeight = snapshot.child('/preferences/currentGoalWeight').val()
     let goalSugar = snapshot.child('/preferences/currentGoalSugar').val()
-    let val = snapshot.child('/sugarIntake/' + date + '/dailyTotal/sugar').val()
+    let val = snapshot.child('/sugarIntake/' + date + '/dailyTotal/').val()
     if (!val)
       val = {nsugar: 0, psugar: 0}
     if (!goalSugar)
