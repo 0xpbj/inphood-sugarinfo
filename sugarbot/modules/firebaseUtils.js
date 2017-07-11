@@ -2,8 +2,9 @@ const botBuilder = require('claudia-bot-builder');
 const fbTemplate = botBuilder.fbTemplate;
 const utils = require('./utils.js')
 const sugarUtils = require('./sugarUtils.js')
-const requestPromise = require('request-promise')
+const constants = require('./constants.js')
 
+const requestPromise = require('request-promise')
 const firebase = require('firebase')
 
 function sugarResponse (userId, foodName, sugarPercentage) {
@@ -23,14 +24,14 @@ function sugarResponse (userId, foodName, sugarPercentage) {
             "elements":[
                {
                 "title": "Last Journal Item",
-                "image_url": "https://d1q0ddz2y0icfw.cloudfront.net/progressImages/" + sugarPercentage + ".png",
+                "image_url": "https://d1q0ddz2y0icfw.cloudfront.net/progressBars/" + sugarPercentage + ".png",
                 "subtitle": foodName,
                 "default_action": {
                   "url": "https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/FoodJournalEntry.html",
                   "type": "web_url",
-                  "messenger_extensions": true,
-                  "webview_height_ratio": "tall",
-                  "webview_share_button": "hide",
+                  "messenger_extensions": "true",
+                  "webview_height_ratio": "compact",
+                  "webview_share_button": "true",
                   "fallback_url": "https://www.inphood.com/"
                 },
                 "buttons":[
@@ -101,7 +102,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
       timestamp: fulldate,
     })
     const goalWeight = snapshot.child('/preferences/currentGoalWeight').val()
-    const goalSugar = snapshot.child('/preferences/currentGoalSugar').val()
+    let goalSugar = snapshot.child('/preferences/currentGoalSugar').val()
     let val = snapshot.child('/sugarIntake/' + date + '/dailyTotal/sugar').val()
     if (!val)
       val = 0
@@ -133,26 +134,28 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
       .then(() => {
         return userRef.child('/sugarIntake/' + date + '/dailyTotal/').update({ sugar: newVal })
         .then(() => {
-          const sugarPercentage = Math.ceil(sugar*100/goalSugar)
+          const sugarPercentage = Math.ceil(psugar*100/goalSugar)
           return sugarResponse (userId, foodName, sugarPercentage)
           .then(() => {
             if (ingredientsSugarsCaps && sugar >= 3) {
               return [
                 'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
-                'This is what that much sugar looks like',
+                'Sugar Visualization: 🍪🍭🍩🍫',
                 new fbTemplate
                 .Image(sugarUtils.getGifUrl(sugar))
                 .get(),
+                constants.generateTip(constants.encouragingTips)
                 // 'Okay—you just ate about ' + Math.ceil(sugar*100/goalSugar) + '% (' + sugar + 'g). I have updated your journal',
               ]
             }
             else if (Math.round(psugar) > 2) {
               return [
-                'This is what that much sugar looks like',
+                'Sugar Visualization: 🍪🍭🍩🍫',
                 new fbTemplate
                 .Image(sugarUtils.getGifUrl(Math.round(psugar)))
                 .get(),
                 // 'Okay—you just ate about ' + Math.ceil(sugar*100/goalSugar) + '% (' + sugar + 'g). I have updated your journal',
+                constants.generateTip(constants.encouragingTips)
               ]
             }
             else if (ingredientsSugarsCaps && sugar > 0) {
@@ -162,14 +165,16 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
                 // 'Okay—you just ate about ' + Math.ceil(sugar*100/goalSugar) + '% (' + sugar + 'g). I have updated your journal',
               ]
             }
-            // else if (Math.round(psugar) > 0) {
-            //   return [
-            //     // 'Okay—you just ate about ' + Math.ceil(sugar*100/goalSugar) + '% (' + sugar + 'g). I have updated your journal',
-            //   ]
-            // }
+            else if (Math.round(psugar) > 0) {
+              return [
+                // 'Okay—you just ate about ' + Math.ceil(sugar*100/goalSugar) + '% (' + sugar + 'g). I have updated your journal',
+                constants.generateTip(constants.encouragingTips)
+              ]
+            }
             else if (sugar === 0) {
               return [
                 'Congratulations! 🎉🎉 No sugars found!',
+                constants.generateTip(constants.encouragingTips)
               ]
             }
           })

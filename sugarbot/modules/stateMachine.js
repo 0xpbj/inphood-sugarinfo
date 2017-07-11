@@ -105,7 +105,7 @@ exports.bot = function(request, messageText, userId) {
               "Please send me a photo of the UPC 📷 or type the number manually ⌨️"
             ]
           }
-          case 'favorites':
+          case 'favorite':
           case 'my favorites': {
             if (!favorites) {
               return 'Favorites are shown once you add meals to your journal'
@@ -187,8 +187,9 @@ exports.bot = function(request, messageText, userId) {
             .addButton('Processed? 🍭', 'Processed Sugar?')
             .get()
           }
+          case 'delete':
           case 'delete last item': {
-            return 'I have deleted last item....JUST KIDDIN'
+            return 'Feature in progress....'
           }
           case 'settings': {
             console.log('DEBUG WEBVIEW SETTINGS:')

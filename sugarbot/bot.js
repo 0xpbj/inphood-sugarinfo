@@ -24,8 +24,8 @@ module.exports = botBuilder(function (request, originalApiRequest) {
   if (request.type === 'facebook') {
     console.log('***************************', request)
     console.log('***************************', originalApiRequest)
-    // const userId = request.originalRequest.sender.id
-    const userId = '1322516797796635'
+    const userId = request.originalRequest.sender.id
+    // const userId = '1322516797796635'
     var messageText = request.text ? request.text.toLowerCase() : null
     if (bailArr.indexOf(messageText) > -1) {
       if (firebase.auth().currentUser) {

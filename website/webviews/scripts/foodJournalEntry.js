@@ -171,6 +171,16 @@ function delBtnHtml() {
   return html
 }
 
+function undoBtnHtml() {
+  let html = ' \
+    <button type="button" \
+            class="btn btn-link pull-right" \
+            style="color:red" \
+            onclick="handleUndoClick()">(remove)</button>';
+
+  return html
+}
+
 function imgHtml(imgPath) {
   if (imgPath.includes('nix-apple-grey.png') || imgPath === '') {
     return '';
@@ -274,7 +284,22 @@ function multiItemSubIngredient(ingredient, index) {
   return html;
 }
 
-function multiItemHtml(foodName, sugarTotal, subIngredients = []) {
+function deletedItem() {
+  let undoBtnAll = undoBtnHtml();
+  let html = ' \
+    <div class="row"> \
+      <div class="col-xs-9" style="padding-left: 5px"> \
+        <h4> DELETED ENTRY </h4> \
+      </div> \
+      <div class="col-xs-3"> \
+        ' + undoBtnAll + ' \
+      </div> \
+    </div> \
+    <!-- spacer --> \
+    <div style="height:5px"></div>';
+}
+
+function multiItemHtml(foodName, sugarTotal, subIngredients = [], sugarPerServingStr) {
   let deleteBtnAll = delBtnHtml();
 
   let html = ' \
@@ -293,7 +318,7 @@ function multiItemHtml(foodName, sugarTotal, subIngredients = []) {
     </div> \
     <div class="row"> \
       <div class="col-xs-9" style="padding-left: 5px"> \
-        <b><span id="sugarTotal">' + sugarTotal  + '</span> grams of sugars</b> \
+        ' + sugarPerServingStr  + ' \
       </div> \
     </div> \
     <!-- spacer --> \
@@ -321,26 +346,34 @@ function processValuesFromDb() {
 
     const lastItem = sugarIntakeDict[lastKey];
 
-    const foodName = lastItem.foodName;
-    const sugarTotal = lastItem.sugar;
-    const photo = (lastItem.photo) ? lastItem.photo[0] : '';
+    const {
+      foodName,
+      removed,
+      psugar,
+      sugarPerServingStr,
+      photo,
+      sugarArr
+    } = lastItem;
+    const sugarTotal = Math.round(psugar);
+    const sugarPerServingStr = sugarPerServingStr;
+    const iphoto = (photo) ? photo[0] : '';
 
-    const sugarArr = lastItem.sugarArr;
     const singleItemUseCase = ((sugarArr === null) ||
                               (sugarArr === undefined) ||
                               (sugarArr.length === 1));
     
     let html = '';
     if (singleItemUseCase) {
-      html = singleItemHtml(foodName, sugarTotal, photo);
-    } else {
+      html = singleItemHtml(foodName, sugarTotal, iphoto, sugarPerServingStr);
+    }
+    else if (removed !== null && removed === true) {
+      html = deletedItem()
+    }
+    else {
       let titleFoodName = foodName.replace(/\n$/g, '');
       titleFoodName = titleFoodName.replace(/\n/g, ', ');
-
       logIt('titleFoodName: ' + titleFoodName);
-
-      let photoArr = lastItem.photo;
-      
+      let photoArr = photo;
       let subIngredients = [];
       const foods = titleFoodName.split(', ');
       logIt('foods.length = ' + foods.length);
@@ -351,13 +384,10 @@ function processValuesFromDb() {
           sugarTotal : sugarArr[index],
           imageSrc : photoArr[index]
         }
-
         subIngredients.push(ingredient);
       }
-
-      html = multiItemHtml(titleFoodName, sugarTotal, subIngredients);
+      html = multiItemHtml(titleFoodName, sugarTotal, subIngredients, sugarPerServingStr);
     }
-    
     document.getElementById("lastFoodItem").innerHTML=html;
   }
 }
