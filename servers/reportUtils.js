@@ -147,6 +147,11 @@ exports.writeReportToS3 = function(date, userId, snapshot) {
         continue
       }
 
+      const itemConsumed = sugarConsumptionToday[key]
+      if (itemConsumed.hasOwnProperty('removed') && itemConsumed.removed) {
+        continue
+      }
+
       // Two use cases:
       // 1. Single item use case.
       //      - length of photo array and sugarArr will be 1
@@ -159,11 +164,11 @@ exports.writeReportToS3 = function(date, userId, snapshot) {
       //      --> display aggregate on first line with total sugar, no picture, time
       //        --> indented display each sub-component
       //
-      const foodName = (sugarConsumptionToday[key].hasOwnProperty('foodName')) ?
-        sugarConsumptionToday[key].foodName : ''
-      const photoArr = sugarConsumptionToday[key].photo
-      const sugarArr = sugarConsumptionToday[key].sugarArr
-      const totalProcessedSugar = sugarConsumptionToday[key].psugar
+      const foodName = (itemConsumed.hasOwnProperty('foodName')) ?
+        itemConsumed.foodName : ''
+      const photoArr = itemConsumed.photo
+      const sugarArr = itemConsumed.sugarArr
+      const totalProcessedSugar = itemConsumed.psugar
 
       const singleItemUseCase = ((sugarArr === null) ||
                                  (sugarArr === undefined) ||
