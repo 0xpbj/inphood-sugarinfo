@@ -720,7 +720,7 @@ const foodNames = [
   "whey protein powd",
   "white chees",
   "yellow chees",
-  "yogurt",
+  "plain yogurt",
   "yogurt",
   "greek yogurt"
 ]

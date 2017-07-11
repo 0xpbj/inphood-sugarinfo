@@ -68,6 +68,55 @@ exports.bot = function(request, messageText, userId) {
               })
             })
           }
+          case '1 hour':
+          case 'time1': {
+            const time = timestamp + (1*3600*1000)
+            return firebase.database().ref("/global/sugarinfoai/reminders/" + userId).update({
+              time1: time
+            })  
+            .then(() => {
+              return [
+                "Great I'll remind you in a hour! You can still add meals when you please.",
+                utils.otherOptions(false)
+              ]   
+            })  
+          }
+          case '3 hours':
+          case 'time3': {
+            const time = timestamp + (3*3600*1000)
+            return firebase.database().ref("/global/sugarinfoai/reminders/" + userId).update({
+              time3: time
+            })  
+            .then(() => {
+              return [
+                "Great I'll remind you in 3 hours! You can still add meals when you please.",
+                utils.otherOptions(false)
+              ]   
+            })  
+          }
+          case '5 hours':
+          case 'time5': {
+            const time = timestamp + (5*3600*1000)
+            return firebase.database().ref("/global/sugarinfoai/reminders/" + userId).update({
+              time5: time
+            })  
+            .then(() => {
+              return [
+                "Great I'll remind you in 5 hours! You can still add meals when you please.",
+                utils.otherOptions(false)
+              ]   
+            })  
+          }
+          case 'don\'t ask':
+          case 'notime': {
+            return tempRef.child('/preferences/nextReminder').remove()
+            .then(() => {
+              return [
+                "Ok I will not remind you! You can still add meals when you please.",
+                utils.otherOptions(false)
+              ]   
+            })
+          }
           case 'reset': 
           case 'say adios': {
             return firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data").remove()

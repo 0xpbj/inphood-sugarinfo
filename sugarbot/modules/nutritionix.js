@@ -105,7 +105,7 @@ exports.getNutritionix = function(messageText, userId, date, fulldate) {
         sugar += nf_sugars
         carbs += nf_total_carbohydrate
         fiber += nf_dietary_fiber
-        sugarArr.push(foodSugar)
+        sugarArr.push({nsugar, psugar})
         carbsArr.push(nf_total_carbohydrate)
         fiberArr.push(nf_dietary_fiber)
       }

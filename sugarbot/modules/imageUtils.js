@@ -53,7 +53,7 @@ exports.fdaProcess = function (userId, barcode, date, fulldate) {
           sugar: sugarPerServing,
           carbs: carbsPerServing,
           fiber: fiberPerServing,
-          sugarArr: [sugarPerServing],
+          sugarArr: [{nsugar: 0, psugar: sugarPerServing}],
           carbsArr: [carbsPerServing],
           fiberArr: [fiberPerServing],
         }
@@ -100,7 +100,7 @@ exports.fdaProcess = function (userId, barcode, date, fulldate) {
         fiber: nf_dietary_fiber,
         psugar: 'unknown',
         nsugar: 'unknown',
-        sugarArr: [nf_sugars],
+        sugarArr: [{nsugar: 0, psugar: nf_sugars}],
         carbsArr: [nf_total_carbohydrate],
         fiberArr: [nf_dietary_fiber],
         sugarPerServingStr,
@@ -120,7 +120,8 @@ exports.fdaProcess = function (userId, barcode, date, fulldate) {
       return missRef.once("value")
       .then(function(snapshot) {
         if (snapshot.exists()) {
-          let sugar = snapshot.child('sugar').val()
+          let psugar = snapshot.child('psugar').val()
+          let nsugar = snapshot.child('nsugar').val()
           let fiber = snapshot.child('fiber').val()
           let carbs = snapshot.child('carbs').val()
           let sugarData = {
@@ -129,7 +130,7 @@ exports.fdaProcess = function (userId, barcode, date, fulldate) {
             fiber,
             psugar: 'unknown',
             nsugar: 'unknown',
-            sugarArr: [sugar],
+            sugarArr: [{nsugar, psugar}],
             carbsArr: [carbs],
             fiberArr: [fiber],
             sugarPerServingStr: '',

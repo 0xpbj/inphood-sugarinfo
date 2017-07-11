@@ -138,16 +138,27 @@ curl -X POST -H "Content-Type: application/json" -d '{
           "payload":"my favorites"
         },
         {
-          "title":"Generate Report 💻",
+          "title":"Journal ✏️",
           "type":"postback",
-          "payload":"report"
+          "payload":"journal"
         },
         {
-          "title":"Start Over ♻️",
-          "type":"postback",
-          "payload":"start over"
+          "title":"More Options ➕",
+          "type":"nested",
+          "call_to_actions":[
+          {
+            "title":"Generate Report 💻",
+            "type":"postback",
+            "payload":"report"
+          },
+          {
+            "type":"web_url",
+            "title":"My Settings ⚙️",
+            "url":"https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Settings.html",
+            "webview_height_ratio":"tall"
+          }
         }
       ]
     }
   ]
-}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BABsLODz0w5Af5hvd1SN9TZCU0E9OapZCKuZAOMugO2bNDao8JDe8E3cPQrJGLWWfL0sMxsq4MSTcZBbgGEjqa68ggSZCmZAFhGsFPFkWGUlYwAZB2ZCOrPPgdxS612ck5Rv8SrHydJihKQGsPLQSc1yYtBkncIpbOgZDZD"
+}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BAObDIIHWxtZA0EtwbVX6wEciIZAHwrwBJrXVXFZCy69Pn07SoyzZAeZCEmswE0jUzamY7Nfy71cZB8O7BSZBpTZAgbDxoYEE5Og7nbkoQvMaCafrBkH151s4wl91zOCLbafkdJiWLIc6deW9jSZBYdjh2NE4JbDSZBAwZDZD"

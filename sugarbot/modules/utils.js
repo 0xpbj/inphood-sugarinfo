@@ -181,13 +181,11 @@ exports.sendShareButton = function() {
 }
 
 exports.sendReminder = function() {
-  return new fbTemplate.Button('We can also help remind you to track again later')
-  // .addButton('1 hour', 'time1')
-  .addButton('3 hours', 'time3')
-  .addButton('5 hours', 'time5')
-  .addButton('Tomorrow', 'timeTomorrow')
-  // .addButton("Don't ask", 'notime')
-  .get()
+  return new fbTemplate.Button('Let\'s setup a reminder for your next meal. What time works best?')
+    .addButton('3 hours', 'time3')
+    .addButton('5 hours', 'time5')
+    .addButton('Not Now', 'notime')
+    .get()
 }
 
 exports.trackMood = function() {
