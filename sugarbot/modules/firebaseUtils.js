@@ -137,12 +137,12 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
         return userRef.child('/sugarIntake/' + date + '/dailyTotal/').update({ nsugar: newNSugar, psugar: newPSugar })
         .then(() => {
           let sugarPercentage = Math.ceil(psugar*100/goalSugar)
-          if (ingredientsSugarsCaps) {
+          if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown') {
             sugarPercentage = Math.ceil(sugar*100/goalSugar)
           }
           return sugarResponse (userId, foodName, sugarPercentage)
           .then(() => {
-            if (ingredientsSugarsCaps && sugar >= 3) {
+            if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && sugar >= 3) {
               return [
                 'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
                 'Sugar Visualization: 🍪🍭🍩🍫',
@@ -163,7 +163,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
                 utils.sendReminder()
               ]
             }
-            else if (ingredientsSugarsCaps && sugar > 0) {
+            else if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && sugar > 0) {
               return [
                 'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
                 sugar + 'g of sugar found',
@@ -198,26 +198,10 @@ exports.findMyFavorites = function(favoriteMeal, userId, date, fulldate) {
   let objRef = firebase.database().ref('/global/sugarinfoai/' + userId + '/myfoods/' + favoriteMeal + '/')
   return objRef.once("value")
   .then(function(snapshot) {
-    let sugarPerServing = snapshot.child('sugar').val()
-    let sugarPerServingStr = snapshot.child('sugarPerServingStr').val()
-    let ingredientsSugarsCaps = snapshot.child('ingredientsSugarsCaps').val()
-    console.log('results', sugarPerServing, sugarPerServingStr, ingredientsSugarsCaps)
+    console.log('favorites snapshot', snapshot.val())
     return firebase.database().ref('/global/sugarinfoai/' + userId + '/temp/data/favorites').remove()
     .then(() => {
-      var tempRef = firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data/")
-      let sugar = parseInt(sugarPerServing)
-      if (!ingredientsSugarsCaps)
-        ingredientsSugarsCaps = ''
-      return tempRef.child('food').set({
-        sugar: sugarPerServing,
-        foodName: favoriteMeal,
-        sugarPerServingStr,
-        cleanText: favoriteMeal,
-        ingredientsSugarsCaps
-      })
-      .then(() => {
-        return exports.addSugarToFirebase(userId, date, fulldate)
-      })
+      return exports.addSugarToFirebase(userId, date, fulldate, '', snapshot.val())
     })
   })
   .catch(error => {
