@@ -1,3 +1,20 @@
+// Gasket function to handle old and new firebase organization for dailyTotal.
+//
+// Old:
+//   dailyTotal
+//     sugar <n>g
+//
+// New:
+//   dailyTotal
+//     nsugar: <n>g
+//     psugar: <p>g
+//
+function getDailyProcessedSugar(dailyTotalObj) {
+  return dailyTotalObj.hasOwnProperty('psugar') ?
+    dailyTotalObj.psugar : dailyTotalObj.sugar;
+}
+
+
 exports.writeReportToS3 = function(date, userId, snapshot) {
   const S3 = require('aws-sdk').S3
   const s3 = new S3({
@@ -80,7 +97,8 @@ exports.writeReportToS3 = function(date, userId, snapshot) {
     sugarConsumptionReport += '<p>You have not added any foods to your journal today.</p>'
   } else {
     const sugarConsumptionToday = snapshot.child('sugarIntake/' + date).val()
-    const totalSugarToday = sugarConsumptionToday['dailyTotal'].sugar
+    const totalProcessedSugarToday =
+      getDailyProcessedSugar(sugarConsumptionToday['dailyTotal']);
     let sugarGoal = snapshot.child('preferences').exists() &&
                       snapshot.child('preferences/currentGoalSugar').exists() ?
                       snapshot.child('preferences/currentGoalSugar').val() : undefined
@@ -90,10 +108,10 @@ exports.writeReportToS3 = function(date, userId, snapshot) {
       sugarGoal = 40
     }
 
-    const progBarColor = (totalSugarToday <= sugarGoal) ?
+    const progBarColor = (totalProcessedSugarToday <= sugarGoal) ?
       'progress-bar-success' : 'progress-bar-danger'
 
-    const progress = Math.round(100.0 * totalSugarToday / sugarGoal)
+    const progress = Math.round(100.0 * totalProcessedSugarToday / sugarGoal)
     percentSugarToday = progress
     const progBarAriaNow = progress.toString()
     const progBarWidth = progBarAriaNow + '%'
@@ -145,16 +163,16 @@ exports.writeReportToS3 = function(date, userId, snapshot) {
         sugarConsumptionToday[key].foodName : ''
       const photoArr = sugarConsumptionToday[key].photo
       const sugarArr = sugarConsumptionToday[key].sugarArr
-      const totalSugar = sugarConsumptionToday[key].sugar
+      const totalProcessedSugar = sugarConsumptionToday[key].psugar
 
       const singleItemUseCase = ((sugarArr === null) ||
                                  (sugarArr === undefined) ||
                                  (sugarArr.length === 1))
 
       if (singleItemUseCase) {
-        const measure = (totalSugar > 1) ? 'grams' : 'gram'
-        const sugarLine = (totalSugar !== null && totalSugar !== undefined) ?
-          '<small>(' + totalSugar + ' ' + measure + ' sugars)</small>' : ''
+        const measure = (totalProcessedSugar > 1) ? 'grams' : 'gram'
+        const sugarLine = (totalProcessedSugar !== null && totalProcessedSugar !== undefined) ?
+          '<small>(' + totalProcessedSugar + ' ' + measure + ' sugars)</small>' : ''
 
         const imgSrc = (photoArr) ? photoArr[0] : '../assets/blank.png'
         const imgHtml = '<img src="' + imgSrc + '" class="media-object" alt="Sample Image" width="64" height="64">'
@@ -172,9 +190,9 @@ exports.writeReportToS3 = function(date, userId, snapshot) {
             </div> \
           </li>'
       } else {  // Multi-item use case:
-        const measure = (totalSugar > 1) ? 'grams' : 'gram'
-        const sugarLine = (totalSugar !== null && totalSugar !== undefined) ?
-          '<small>(' + totalSugar + ' ' + measure + ' sugars)</small>' : ''
+        const measure = (totalProcessedSugar > 1) ? 'grams' : 'gram'
+        const sugarLine = (totalProcessedSugar !== null && totalProcessedSugar !== undefined) ?
+          '<small>(' + totalProcessedSugar + ' ' + measure + ' sugars)</small>' : ''
         // TODO: trim out the last '\n' in title food name, then replace
         //       remaining '\n' with ','
         let titleFoodName = foodName.replace(/\n$/g, '')
@@ -184,9 +202,10 @@ exports.writeReportToS3 = function(date, userId, snapshot) {
         // Indented lines
         let indentedConsumptionReport = ''
         for (let index = 0; index < foods.length; index++) {
-          const measure = (sugarArr[index] > 1) ? 'grams' : 'gram'
-          const indentedSugarLine = (sugarArr[index]) ?
-            '<small>(' + sugarArr[index] + ' ' + measure + ' sugars)</small>' : ''
+          const processedSugar = sugarArr[index].psugar;
+          const measure = (processedSugar > 1) ? 'grams' : 'gram';
+          const indentedSugarLine = (processedSugar) ?
+            '<small>(' + processedSugar + ' ' + measure + ' sugars)</small>' : ''
           const imgSrc = (photoArr[index]) ? photoArr[index] : '../assets/blank.png'
           const indentedImgHtml = '<img src="' + imgSrc + '" class="media-object" alt="Sample Image" width="64" height="64">'
 
@@ -233,7 +252,7 @@ exports.writeReportToS3 = function(date, userId, snapshot) {
             <h4 class="media-heading">Total</h4> \
           </div> \
           <div class="media-body text-right"> \
-            ' + totalSugarToday + ' grams sugar \
+            ' + totalProcessedSugarToday + ' grams sugar \
           </div> \
         </div> \
       </li>'
@@ -252,7 +271,8 @@ exports.writeReportToS3 = function(date, userId, snapshot) {
     let dataDaySugar = []
     for (let day in sugarConsumptionHistory) {
       const dateMs = Date.parse(day)
-      const sugarG = sugarConsumptionHistory[day].dailyTotal.sugar
+      const dailyTotal = sugarConsumptionHistory[day].dailyTotal
+      const sugarG = getDailyProcessedSugar(dailyTotal);
       dataDaySugar.push({dateMs: dateMs, sugarG: sugarG, dayString: day})
     }
 
