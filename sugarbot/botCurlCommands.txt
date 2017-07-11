@@ -112,17 +112,11 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+curl -X DELETE -H "Content-Type: application/json" -d '{
+  "fields":[
+    "persistent_menu"
+  ]
+}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BAJBNqUODpgt5aaDt8ZBOlewGQLKIASZAjjSipZCZBunyyQ0ZBZCc3YG3SfweKOGZB5k6kDADBlWfKO5VhZB4xJ07yMI8UzbMrYrhIBf1giFi4FMI6REaVwFNPmTOVdY9fbP4UMgfUPkSbcldRIDqZAHaAEuhiKZCgVFwZDZD"
 
 
 
@@ -138,27 +132,28 @@ curl -X POST -H "Content-Type: application/json" -d '{
           "payload":"my favorites"
         },
         {
-          "title":"Journal ✏️",
+          "title":"Add to Journal ✏️",
           "type":"postback",
           "payload":"journal"
         },
         {
-          "title":"More Options ➕",
+          "title":"Other Options ➕",
           "type":"nested",
           "call_to_actions":[
-          {
-            "title":"Generate Report 💻",
-            "type":"postback",
-            "payload":"report"
-          },
-          {
-            "type":"web_url",
-            "title":"My Settings ⚙️",
-            "url":"https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Settings.html",
-            "webview_height_ratio":"tall"
-          }
+            {
+              "title":"My Report 💻",
+              "type":"postback",
+              "payload":"report"
+            },
+            {
+              "type":"web_url",
+              "title":"My Settings ⚙️",
+              "url":"https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Settings.html",
+              "webview_height_ratio":"tall"
+            }
+          ]
         }
       ]
     }
   ]
-}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BAObDIIHWxtZA0EtwbVX6wEciIZAHwrwBJrXVXFZCy69Pn07SoyzZAeZCEmswE0jUzamY7Nfy71cZB8O7BSZBpTZAgbDxoYEE5Og7nbkoQvMaCafrBkH151s4wl91zOCLbafkdJiWLIc6deW9jSZBYdjh2NE4JbDSZBAwZDZD"
+}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BAJBNqUODpgt5aaDt8ZBOlewGQLKIASZAjjSipZCZBunyyQ0ZBZCc3YG3SfweKOGZB5k6kDADBlWfKO5VhZB4xJ07yMI8UzbMrYrhIBf1giFi4FMI6REaVwFNPmTOVdY9fbP4UMgfUPkSbcldRIDqZAHaAEuhiKZCgVFwZDZD"
