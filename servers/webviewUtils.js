@@ -23,7 +23,7 @@ exports.getReportWebView = function(userId, firstName, date, link) {
                   "type": "web_url",
                   "messenger_extensions": true,
                   "webview_height_ratio": "tall",
-                  "fallback_url": "https://www.inphood.com/"
+                  "fallback_url": link
                 },
                 "buttons":[
                   {
