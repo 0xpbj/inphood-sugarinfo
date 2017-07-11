@@ -109,7 +109,8 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
     if (!goalSugar)
       goalSugar = 36
     console.log('###########################\nDATA BEING ADDED TO JOURNAL', data)
-    const newVal = parseInt(val) + parseInt(sugar)
+    const newNSugar = parseInt(val.nsugar) + parseInt(nsugar)
+    const newPSugar = parseInt(val.psugar) + parseInt(psugar)
     let cleanPath = subSlashes(cleanText)
     return userRef.child('/myfoods/' + cleanPath).update({ 
       photo,
@@ -133,7 +134,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
         timestamp: Date.now(),
       })
       .then(() => {
-        return userRef.child('/sugarIntake/' + date + '/dailyTotal/').update({ sugar: newVal })
+        return userRef.child('/sugarIntake/' + date + '/dailyTotal/').update({ nsugar: newNSugar, psugar: newPSugar })
         .then(() => {
           let sugarPercentage = Math.ceil(psugar*100/goalSugar)
           if (ingredientsSugarsCaps) {
