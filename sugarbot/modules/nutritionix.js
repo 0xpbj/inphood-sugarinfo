@@ -64,6 +64,8 @@ exports.getNutritionix = function(messageText, userId, date, fulldate) {
       let carbsArr = []
       let fiberArr = []
       for (let food of foods) {
+        let nxsugar = 0
+        let pxsugar = 0
         const {
           upc, 
           nf_sugars, 
@@ -88,11 +90,13 @@ exports.getNutritionix = function(messageText, userId, date, fulldate) {
         else if (upc || nix_brand_name || nix_brand_id || nf_ingredient_statement || names.getNatural(food_name) == -1) {
           console.log('Processed', food_name)
           psugar += foodSugar
+          pxsugar += foodSugar
           processedSugars += '    - ' + foodSugar + 'g sugars in ' + serving_qty + ' ' + serving_unit + ' of ' + food_name + '\n'
           foodName += food_name + '\n'
         }
         else if (foodSugar) {
           nsugar += foodSugar
+          nxsugar += foodSugar
           naturalSugars +=  '    - ' + foodSugar + 'g natural sugars in ' + serving_qty + ' ' + serving_unit + ' of ' + food_name + '\n'
           foodName += food_name + '\n'
         }
@@ -105,7 +109,7 @@ exports.getNutritionix = function(messageText, userId, date, fulldate) {
         sugar += nf_sugars
         carbs += nf_total_carbohydrate
         fiber += nf_dietary_fiber
-        sugarArr.push({nsugar, psugar})
+        sugarArr.push({nsugar: nxsugar, psugar: pxsugar})
         carbsArr.push(nf_total_carbohydrate)
         fiberArr.push(nf_dietary_fiber)
       }
@@ -137,7 +141,7 @@ exports.getNutritionix = function(messageText, userId, date, fulldate) {
         carbsPerServingStr,
         fiberPerServingStr,
         photo: thumb,
-        ingredientsSugarsCaps: null
+        ingredientsSugarsCaps: 'unknown'
       }
       return fire.addSugarToFirebase(userId, date, fulldate, '', sugarData)
     })

@@ -7,7 +7,7 @@ const constants = require('./constants.js')
 const requestPromise = require('request-promise')
 const firebase = require('firebase')
 
-function sugarResponse (userId, foodName, sugarPercentage) {
+exports.sugarResponse = function(userId, foodName, sugarPercentage) {
   const wvMsg = {
     uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + process.env.FACEBOOK_BEARER_TOKEN,
     json: true,
@@ -23,7 +23,7 @@ function sugarResponse (userId, foodName, sugarPercentage) {
             "template_type":"generic",
             "elements":[
                {
-                "title": "Last Journal Item",
+                "title": "Added Journal Item:",
                 "image_url": "https://d1q0ddz2y0icfw.cloudfront.net/progressBars/" + sugarPercentage + ".png",
                 "subtitle": foodName,
                 "default_action": {
@@ -33,14 +33,7 @@ function sugarResponse (userId, foodName, sugarPercentage) {
                   "webview_height_ratio": "tall",
                   "webview_share_button": "show",
                   "fallback_url": "https://www.inphood.com/"
-                },
-                "buttons":[
-                  {
-                    "type": "postback",
-                    "title": "Delete From Journal",
-                    "payload": "delete last item"
-                  }
-                ]
+                }
               }
             ]
           }
@@ -55,7 +48,7 @@ function sugarResponse (userId, foodName, sugarPercentage) {
   return requestPromise(wvMsg)
 }
 
-function subSlashes( str ) { 
+function subSlashes( str ) {
   if (str) {
     return str.replace(/[\/\.$#\[\]]/g, '_');
   }
@@ -90,6 +83,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
       fiber,
       psugar,
       nsugar,
+      removed: true,
       sugarArr,
       carbsArr,
       fiberArr,
@@ -112,7 +106,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
     const newNSugar = parseInt(val.nsugar) + parseInt(nsugar)
     const newPSugar = parseInt(val.psugar) + parseInt(psugar)
     let cleanPath = subSlashes(cleanText)
-    return userRef.child('/myfoods/' + cleanPath).update({ 
+    return userRef.child('/myfoods/' + cleanPath).update({
       photo,
       sugar,
       carbs,
@@ -130,27 +124,31 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
       ingredientsSugarsCaps
     })
     .then(() => {
-      return userRef.child('/myfoods/' +  cleanPath + '/date').push({ 
+      return userRef.child('/myfoods/' +  cleanPath + '/date').push({
         timestamp: Date.now(),
       })
       .then(() => {
         return userRef.child('/sugarIntake/' + date + '/dailyTotal/').update({ nsugar: newNSugar, psugar: newPSugar })
         .then(() => {
-          let sugarPercentage = Math.ceil(psugar*100/goalSugar)
-          if (ingredientsSugarsCaps) {
-            sugarPercentage = Math.ceil(sugar*100/goalSugar)
-          }
-          return sugarResponse (userId, foodName, sugarPercentage)
-          .then(() => {
-            if (ingredientsSugarsCaps && sugar >= 3) {
+          let sugarPercentage = Math.ceil(sugar*100/goalSugar)
+          // if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown') {
+          //   sugarPercentage = Math.ceil(sugar*100/goalSugar)
+          // }
+          // return sugarResponse (userId, foodName, sugarPercentage)
+          // .then(() => {
+            if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && sugar >= 3) {
               return [
                 'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
                 'Sugar Visualization: 🍪🍭🍩🍫',
                 new fbTemplate
                 .Image(sugarUtils.getGifUrl(sugar))
                 .get(),
-                constants.generateTip(constants.encouragingTips),
-                utils.sendReminder()
+                new fbTemplate.Button("Would you like to add the item to your journal?")
+                .addButton('Yes  ✅', 'add last item')
+                .addButton('No  ❌', 'delete last item')
+                .get()
+                // constants.generateTip(constants.encouragingTips),
+                // utils.sendReminder()
               ]
             }
             else if (Math.round(psugar) > 2) {
@@ -159,32 +157,44 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
                 new fbTemplate
                 .Image(sugarUtils.getGifUrl(Math.round(psugar)))
                 .get(),
-                constants.generateTip(constants.encouragingTips),
-                utils.sendReminder()
+                new fbTemplate.Button("Would you like to add the item to your journal?")
+                .addButton('Yes  ✅', 'add last item')
+                .get()
+                // constants.generateTip(constants.encouragingTips),
+                // utils.sendReminder()
               ]
             }
-            else if (ingredientsSugarsCaps && sugar > 0) {
+            else if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && sugar > 0) {
               return [
                 'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
                 sugar + 'g of sugar found',
-                constants.generateTip(constants.encouragingTips),
-                utils.sendReminder()
+                new fbTemplate.Button("Would you like to add the item to your journal?")
+                .addButton('Yes  ✅', 'add last item')
+                .get()
+                // constants.generateTip(constants.encouragingTips),
+                // utils.sendReminder()
               ]
             }
             else if (Math.round(psugar) > 0) {
               return [
-                constants.generateTip(constants.encouragingTips),
-                utils.sendReminder()
+                new fbTemplate.Button("Would you like to add the item to your journal?")
+                .addButton('Yes  ✅', 'add last item')
+                .get()
+                // constants.generateTip(constants.encouragingTips),
+                // utils.sendReminder()
               ]
             }
             else if (sugar === 0) {
               return [
                 'Congratulations! 🎉🎉 No sugars found!',
-                constants.generateTip(constants.encouragingTips),
-                utils.sendReminder()
+                new fbTemplate.Button("Would you like to add the item to your journal?")
+                .addButton('Yes  ✅', 'add last item')
+                .get()
+                // constants.generateTip(constants.encouragingTips),
+                // utils.sendReminder()
               ]
             }
-          })
+          // })
         })
       })
     })
@@ -198,26 +208,10 @@ exports.findMyFavorites = function(favoriteMeal, userId, date, fulldate) {
   let objRef = firebase.database().ref('/global/sugarinfoai/' + userId + '/myfoods/' + favoriteMeal + '/')
   return objRef.once("value")
   .then(function(snapshot) {
-    let sugarPerServing = snapshot.child('sugar').val()
-    let sugarPerServingStr = snapshot.child('sugarPerServingStr').val()
-    let ingredientsSugarsCaps = snapshot.child('ingredientsSugarsCaps').val()
-    console.log('results', sugarPerServing, sugarPerServingStr, ingredientsSugarsCaps)
+    console.log('favorites snapshot', snapshot.val())
     return firebase.database().ref('/global/sugarinfoai/' + userId + '/temp/data/favorites').remove()
     .then(() => {
-      var tempRef = firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data/")
-      let sugar = parseInt(sugarPerServing)
-      if (!ingredientsSugarsCaps)
-        ingredientsSugarsCaps = ''
-      return tempRef.child('food').set({
-        sugar: sugarPerServing,
-        foodName: favoriteMeal,
-        sugarPerServingStr,
-        cleanText: favoriteMeal,
-        ingredientsSugarsCaps
-      })
-      .then(() => {
-        return exports.addSugarToFirebase(userId, date, fulldate)
-      })
+      return exports.addSugarToFirebase(userId, date, fulldate, '', snapshot.val())
     })
   })
   .catch(error => {

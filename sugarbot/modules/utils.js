@@ -4,6 +4,32 @@ const sugarUtils = require('./sugarUtils.js')
 const botBuilder = require('claudia-bot-builder');
 const fbTemplate = botBuilder.fbTemplate;
 
+// Duplicated out of webview FoodJournalEntry:
+// TODO: unify
+// TODO: probably better to move this elsewhere and dynamically update when
+// needed (otherwise, each keypress results in all this being run.)
+//
+exports.updateTotalSugar = function(snapshot, dailyTotalRef) {
+  let newSugarIntakeDict = snapshot.val();
+  let nSugarTotal = 0;
+  let pSugarTotal = 0;
+
+  const keyArr = Object.keys(newSugarIntakeDict);
+  for (let key of keyArr) {
+
+    const intakeEntry = newSugarIntakeDict[key]
+    if (key === 'dailyTotal' ||
+        intakeEntry.removed) {
+      continue;
+    }
+
+    nSugarTotal += intakeEntry.hasOwnProperty('nsugar') ? intakeEntry.nsugar : 0
+    pSugarTotal += intakeEntry.hasOwnProperty('psugar') ? intakeEntry.psugar : intakeEntry.sugar
+  }
+
+  dailyTotalRef.set({nsugar: nSugarTotal, psugar: pSugarTotal});
+}
+
 exports.boundsChecker = function(input, weight) {
   let num = input
   if (typeof(input) === "string") {
@@ -181,10 +207,10 @@ exports.sendShareButton = function() {
 }
 
 exports.sendReminder = function() {
-  return new fbTemplate.Button('Let\'s setup a reminder for your next meal. What time works best?')
+  return new fbTemplate.Button('What time works best?')
+    .addButton('1 hours', 'time1')
     .addButton('3 hours', 'time3')
     .addButton('5 hours', 'time5')
-    .addButton('Not Now', 'notime')
     .get()
 }
 

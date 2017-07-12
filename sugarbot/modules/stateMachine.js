@@ -5,6 +5,7 @@ const fire = require('./firebaseUtils.js')
 const image = require('./imageUtils.js')
 const nutrition = require ('./nutritionix.js')
 const timeUtils = require('./timeUtils.js')
+const constants = require('./constants.js')
 
 const botBuilder = require('claudia-bot-builder')
 const fbTemplate = botBuilder.fbTemplate
@@ -73,39 +74,39 @@ exports.bot = function(request, messageText, userId) {
             const time = timestamp + (1*3600*1000)
             return firebase.database().ref("/global/sugarinfoai/reminders/" + userId).update({
               time1: time
-            })  
+            })
             .then(() => {
               return [
                 "Great I'll remind you in a hour! You can still add meals when you please.",
                 utils.otherOptions(false)
-              ]   
-            })  
+              ]
+            })
           }
           case '3 hours':
           case 'time3': {
             const time = timestamp + (3*3600*1000)
             return firebase.database().ref("/global/sugarinfoai/reminders/" + userId).update({
               time3: time
-            })  
+            })
             .then(() => {
               return [
                 "Great I'll remind you in 3 hours! You can still add meals when you please.",
                 utils.otherOptions(false)
-              ]   
-            })  
+              ]
+            })
           }
           case '5 hours':
           case 'time5': {
             const time = timestamp + (5*3600*1000)
             return firebase.database().ref("/global/sugarinfoai/reminders/" + userId).update({
               time5: time
-            })  
+            })
             .then(() => {
               return [
                 "Great I'll remind you in 5 hours! You can still add meals when you please.",
                 utils.otherOptions(false)
-              ]   
-            })  
+              ]
+            })
           }
           case 'don\'t ask':
           case 'notime': {
@@ -114,10 +115,10 @@ exports.bot = function(request, messageText, userId) {
               return [
                 "Ok I will not remind you! You can still add meals when you please.",
                 utils.otherOptions(false)
-              ]   
+              ]
             })
           }
-          case 'reset': 
+          case 'reset':
           case 'say adios': {
             return firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data").remove()
             .then(() => {
@@ -185,10 +186,10 @@ exports.bot = function(request, messageText, userId) {
             }
             return [
               'Great! Tell me what you ate' + mealInfo,
-              new fbTemplate
-              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/upc.jpg')
-              .get(),
-              'Remember you can send me a picture of the UPC label 📷 or type the number manually ⌨️ for your convinience.'
+              // new fbTemplate
+              // .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/upc.jpg')
+              // .get(),
+              // 'Remember you can send me a picture of the UPC label 📷 or type the number manually ⌨️ for your convinience.'
             ]
           }
           case 'food question':
@@ -236,6 +237,100 @@ exports.bot = function(request, messageText, userId) {
             .addButton('Processed? 🍭', 'Processed Sugar?')
             .get()
           }
+          case 'add last item': {
+            // #OhNoItsJake! This code is a dup of js in FoodJournalEntry.js for
+            //               webviews. I don't know of a good way to share it
+            //               here so I'm duplicating it for now. (It does an un
+            //               -remove instead of a remove though.)
+            //
+            // 1. Get user's TZ to get today's date in their region.
+            //    - this is done for us here in: 'date'
+
+            // 2. Get their current sugarIntake dict for today's date.
+            //
+            const currSugarIntakeRef = firebase.database().ref(
+              "/global/sugarinfoai/" + userId + "/sugarIntake/" + date);
+            console.log('Trying to access ' + currSugarIntakeRef.toString());
+            return currSugarIntakeRef.once("value")
+            .then(function(currSugarIntakeSnapshot) {
+              let currSugarIntake = currSugarIntakeSnapshot.val();
+              if (!currSugarIntake) {
+                console.log('Error accessing sugarIntake for unremove / undelete of item.');
+                return;
+              }
+
+              // 3. Get the most recent item logged by the user today.
+              //    Note:  sugarIntakeDict is a dict of uniqueified time based keys followed by
+              //         one user defined key: 'dailyTotal'. We should be able to iterate
+              //         through this dictionary and choose the 2nd last element to
+              //         consistently find the last item a user ate. The last element will be
+              //         'dailyTotal'.
+              //
+              const keyArr = Object.keys(currSugarIntake);
+              const dictLength = keyArr.length;
+              if (dictLength < 2) {
+                console.log('Unexpected state machine error. Found underpopulated intake dictionary.');
+                return;
+              }
+              const lastKey = keyArr[dictLength - 2]
+              if (lastKey === 'dailyTotal') {
+                console.log('Unexpected state machine error. Retrieved daily total from intake dictionary as last intake key.');
+                return;
+              }
+
+              // 4. Set the removed key to true on the most recent item and messages
+              //    the user that we've deleted their entry.
+              //
+              const lastFoodRef = currSugarIntakeRef.child(lastKey);
+              const lastFoodRemovedRef = lastFoodRef.child('removed');
+              lastFoodRemovedRef.set(false);
+
+              // This next promise is purposely concurrent to the return etc. below (i.e.
+              // don't keep the user waiting for this).
+              return currSugarIntakeRef.once("value")
+              .then(function(updatedSugarIntakeSnapshot) {
+                let updatedSugarIntake = updatedSugarIntakeSnapshot.val();
+                if (updatedSugarIntake) {
+                  const dailyTotalRef = firebase.database().ref(
+                    "/global/sugarinfoai/" + userId + "/sugarIntake/dailyTotal");
+                  utils.updateTotalSugar(updatedSugarIntakeSnapshot, dailyTotalRef);
+                  return dailyTotalRef.once("value")
+                  .then(function(dailyTotalSnapShot) {
+                    const dailyTotalDict = dailyTotalSnapShot.val();
+                    if (dailyTotalDict) {
+                      const psugar = dailyTotalDict.psugar;
+                      return firebase.database().ref("/global/sugarinfoai/" + userId + "/preferences/currentGoalSugar").once("value")
+                      .then(function(psnapshot) {
+                        let goalSugar = psnapshot.val()
+                        if (!goalSugar)
+                          goalSugar = 36
+                        let sugarPercentage = Math.ceil(psugar*100/goalSugar)
+                        const cleanFoodName = currSugarIntake[lastKey].cleanText;
+                        return fire.sugarResponse (userId, cleanFoodName, sugarPercentage)
+                        .then(() => {
+                          return [
+                            // 'Okay, we\'ve added ' + cleanFoodName + ' from your food journal.',
+                            constants.generateTip(constants.encouragingTips),
+                            new fbTemplate.Button("Would you like to setup a reminder to track your next meal?")
+                            .addButton('Sure ✅', 'set a reminder')
+                            .addButton('Not now  ❌', 'notime')
+                            .get()
+                            // utils.sendReminder()
+                          ];
+                        })
+                      })
+                    }
+                  });
+                }
+              });
+            })
+            .catch(error => {
+              console.log('AC Error', error)
+            });
+          }
+          case 'set a reminder': {
+            return utils.sendReminder()
+          }
           case 'delete':
           case 'delete last item': {
             return 'Feature in progress....'
@@ -270,7 +365,7 @@ exports.bot = function(request, messageText, userId) {
                             "fallback_url": "https://www.inphood.com/"
                           }
                         }
-                      ]     
+                      ]
                     }
                   }
                 }
