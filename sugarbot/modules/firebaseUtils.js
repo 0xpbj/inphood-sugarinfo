@@ -145,7 +145,6 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
                 .get(),
                 new fbTemplate.Button("Would you like to add the item to your journal?")
                 .addButton('Yes  ✅', 'add last item')
-                .addButton('No  ❌', 'delete last item')
                 .get()
                 // constants.generateTip(constants.encouragingTips),
                 // utils.sendReminder()
