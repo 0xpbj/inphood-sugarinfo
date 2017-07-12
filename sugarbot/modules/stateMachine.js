@@ -5,6 +5,7 @@ const fire = require('./firebaseUtils.js')
 const image = require('./imageUtils.js')
 const nutrition = require ('./nutritionix.js')
 const timeUtils = require('./timeUtils.js')
+const constants = require('./constants.js')
 
 const botBuilder = require('claudia-bot-builder')
 const fbTemplate = botBuilder.fbTemplate
@@ -235,6 +236,12 @@ exports.bot = function(request, messageText, userId) {
             .addButton('Recipes 📅', 'recipe')
             .addButton('Processed? 🍭', 'Processed Sugar?')
             .get()
+          }
+          case 'add last item': {
+
+            // this should happen after you process the change
+            // constants.generateTip(constants.encouragingTips),
+            // utils.sendReminder()
           }
           case 'delete':
           case 'delete last item': {

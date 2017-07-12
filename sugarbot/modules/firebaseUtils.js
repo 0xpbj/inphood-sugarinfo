@@ -90,6 +90,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
       fiber,
       psugar,
       nsugar,
+      removed: true,
       sugarArr,
       carbsArr,
       fiberArr,
@@ -149,8 +150,12 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
                 new fbTemplate
                 .Image(sugarUtils.getGifUrl(sugar))
                 .get(),
-                constants.generateTip(constants.encouragingTips),
-                utils.sendReminder()
+                new fbTemplate.Button("Would you like to add the item to your journal?")
+                .addButton('Yes  ✅', 'add last item')
+                .addButton('No  ❌', 'delete last item')
+                .get()
+                // constants.generateTip(constants.encouragingTips),
+                // utils.sendReminder()
               ]
             }
             else if (Math.round(psugar) > 2) {
@@ -159,29 +164,45 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
                 new fbTemplate
                 .Image(sugarUtils.getGifUrl(Math.round(psugar)))
                 .get(),
-                constants.generateTip(constants.encouragingTips),
-                utils.sendReminder()
+                new fbTemplate.Button("Would you like to add the item to your journal?")
+                .addButton('Yes  ✅', 'add last item')
+                .addButton('No  ❌', 'delete last item')
+                .get()
+                // constants.generateTip(constants.encouragingTips),
+                // utils.sendReminder()
               ]
             }
             else if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && sugar > 0) {
               return [
                 'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
                 sugar + 'g of sugar found',
-                constants.generateTip(constants.encouragingTips),
-                utils.sendReminder()
+                new fbTemplate.Button("Would you like to add the item to your journal?")
+                .addButton('Yes  ✅', 'add last item')
+                .addButton('No  ❌', 'delete last item')
+                .get()
+                // constants.generateTip(constants.encouragingTips),
+                // utils.sendReminder()
               ]
             }
             else if (Math.round(psugar) > 0) {
               return [
-                constants.generateTip(constants.encouragingTips),
-                utils.sendReminder()
+                new fbTemplate.Button("Would you like to add the item to your journal?")
+                .addButton('Yes  ✅', 'add last item')
+                .addButton('No  ❌', 'delete last item')
+                .get()
+                // constants.generateTip(constants.encouragingTips),
+                // utils.sendReminder()
               ]
             }
             else if (sugar === 0) {
               return [
                 'Congratulations! 🎉🎉 No sugars found!',
-                constants.generateTip(constants.encouragingTips),
-                utils.sendReminder()
+                new fbTemplate.Button("Would you like to add the item to your journal?")
+                .addButton('Yes  ✅', 'add last item')
+                .addButton('No  ❌', 'delete last item')
+                .get()
+                // constants.generateTip(constants.encouragingTips),
+                // utils.sendReminder()
               ]
             }
           })
