@@ -287,22 +287,32 @@ exports.bot = function(request, messageText, userId) {
 
               // This next promise is purposely concurrent to the return etc. below (i.e.
               // don't keep the user waiting for this).
-              return currSugarIntakeRef.once("value")
+              currSugarIntakeRef.once("value")
               .then(function(updatedSugarIntakeSnapshot) {
                 let updatedSugarIntake = updatedSugarIntakeSnapshot.val();
                 if (updatedSugarIntake) {
                   utils.updateTotalSugar(updatedSugarIntake);
+
+                  const dailyTotalRef = firebase.database().ref(
+                    "/global/sugarinfoai/" + userId + "/sugarIntake/dailyTotal");
+                  dailyTotalRef.once("value")
+                  .then(function(dailyTotalSnapShot) {
+                    const dailyTotalDict = dailyTotalSnapShot.val();
+                    if (dailyTotalDict) {
+                      const psugar = dailyTotalDict.psugar;
+                      // TODO:  PBJ something here
+
+
+                      const cleanFoodName = currSugarIntake[lastKey].cleanText;
+                      return [
+                        'Okay, we\'ve added ' + cleanFoodName + ' from your food journal.',
+                        constants.generateTip(constants.encouragingTips),
+                        utils.sendReminder()
+                      ];
+                    }
+                  });
                 }
               });
-
-              const cleanFoodName = currSugarIntake[lastKey].cleanText;
-
-              // this should happen after you process the change
-              return [
-                'Okay, we\'ve added ' + cleanFoodName + ' from your food journal.',
-                constants.generateTip(constants.encouragingTips),
-                utils.sendReminder()
-              ];
             });
 
           }
