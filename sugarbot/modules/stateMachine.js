@@ -299,8 +299,8 @@ exports.bot = function(request, messageText, userId) {
                     const dailyTotalDict = dailyTotalSnapShot.val();
                     if (dailyTotalDict) {
                       const psugar = dailyTotalDict.psugar;
-                      return firebase.database().ref("/global/sugarinfoai/" + userId + "'/preferences/currentGoalSugar").once("value")
-                      .then(psnaphsot => {
+                      return firebase.database().ref("/global/sugarinfoai/" + userId + "/preferences/currentGoalSugar").once("value")
+                      .then(function(psnapshot) {
                         let goalSugar = psnapshot.val()
                         if (!goalSugar)
                           goalSugar = 36

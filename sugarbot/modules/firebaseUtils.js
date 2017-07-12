@@ -7,7 +7,7 @@ const constants = require('./constants.js')
 const requestPromise = require('request-promise')
 const firebase = require('firebase')
 
-function sugarResponse (userId, foodName, sugarPercentage) {
+exports.sugarResponse = function(userId, foodName, sugarPercentage) {
   const wvMsg = {
     uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + process.env.FACEBOOK_BEARER_TOKEN,
     json: true,
