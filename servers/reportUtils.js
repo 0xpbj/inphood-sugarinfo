@@ -73,7 +73,8 @@ exports.writeReportToS3 = function(date, userId, snapshot) {
   const title = 'Sugar Info - ' + date
   const hasData = snapshot.exists() &&
                   snapshot.child('sugarIntake').exists() &&
-                  snapshot.child('sugarIntake/' + date).exists()
+                  snapshot.child('sugarIntake/' + date).exists() &&
+                  snapshot.child('sugarIntake/' + date + '/dailyTotal').exists()
 
   const progBarHeight = '40px'
 
@@ -277,6 +278,10 @@ exports.writeReportToS3 = function(date, userId, snapshot) {
     for (let day in sugarConsumptionHistory) {
       const dateMs = Date.parse(day)
       const dailyTotal = sugarConsumptionHistory[day].dailyTotal
+      if (!dailyTotal) {
+        console.log('dailyTotal is missing for ' + day + ' for user ' + userId)
+        continue
+      }
       const sugarG = getDailyProcessedSugar(dailyTotal);
       dataDaySugar.push({dateMs: dateMs, sugarG: sugarG, dayString: day})
     }
