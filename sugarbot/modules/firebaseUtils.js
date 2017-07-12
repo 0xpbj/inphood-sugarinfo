@@ -141,8 +141,8 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
           // if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown') {
           //   sugarPercentage = Math.ceil(sugar*100/goalSugar)
           // }
-          return sugarResponse (userId, foodName, sugarPercentage)
-          .then(() => {
+          // return sugarResponse (userId, foodName, sugarPercentage)
+          // .then(() => {
             if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && sugar >= 3) {
               return [
                 'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
@@ -201,7 +201,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
                 // utils.sendReminder()
               ]
             }
-          })
+          // })
         })
       })
     })

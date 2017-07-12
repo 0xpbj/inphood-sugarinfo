@@ -287,34 +287,42 @@ exports.bot = function(request, messageText, userId) {
 
               // This next promise is purposely concurrent to the return etc. below (i.e.
               // don't keep the user waiting for this).
-              currSugarIntakeRef.once("value")
+              return currSugarIntakeRef.once("value")
               .then(function(updatedSugarIntakeSnapshot) {
                 let updatedSugarIntake = updatedSugarIntakeSnapshot.val();
                 if (updatedSugarIntake) {
-                  utils.updateTotalSugar(updatedSugarIntake);
-
+                  utils.updateTotalSugar(updatedSugarIntakeSnapshot);
                   const dailyTotalRef = firebase.database().ref(
                     "/global/sugarinfoai/" + userId + "/sugarIntake/dailyTotal");
-                  dailyTotalRef.once("value")
+                  return dailyTotalRef.once("value")
                   .then(function(dailyTotalSnapShot) {
                     const dailyTotalDict = dailyTotalSnapShot.val();
                     if (dailyTotalDict) {
                       const psugar = dailyTotalDict.psugar;
-                      // TODO:  PBJ something here
-
-
-                      const cleanFoodName = currSugarIntake[lastKey].cleanText;
-                      return [
-                        'Okay, we\'ve added ' + cleanFoodName + ' from your food journal.',
-                        constants.generateTip(constants.encouragingTips),
-                        utils.sendReminder()
-                      ];
+                      return firebase.database().ref("/global/sugarinfoai/" + userId + "'/preferences/currentGoalSugar").once("value")
+                      .then(psnaphsot => {
+                        let goalSugar = psnapshot.val()
+                        if (!goalSugar)
+                          goalSugar = 36
+                        let sugarPercentage = Math.ceil(psugar*100/goalSugar)
+                        const cleanFoodName = currSugarIntake[lastKey].cleanText;
+                        return fire.sugarResponse (userId, cleanFoodName, sugarPercentage)
+                        .then(() => {
+                          return [
+                            'Okay, we\'ve added ' + cleanFoodName + ' from your food journal.',
+                            constants.generateTip(constants.encouragingTips),
+                            utils.sendReminder()
+                          ];
+                        })
+                      })
                     }
                   });
                 }
               });
+            })
+            .catch(error => {
+              console.log('AC Error', error)
             });
-
           }
           case 'delete':
           case 'delete last item': {
