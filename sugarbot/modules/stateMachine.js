@@ -291,9 +291,9 @@ exports.bot = function(request, messageText, userId) {
               .then(function(updatedSugarIntakeSnapshot) {
                 let updatedSugarIntake = updatedSugarIntakeSnapshot.val();
                 if (updatedSugarIntake) {
-                  utils.updateTotalSugar(updatedSugarIntakeSnapshot);
                   const dailyTotalRef = firebase.database().ref(
                     "/global/sugarinfoai/" + userId + "/sugarIntake/dailyTotal");
+                  utils.updateTotalSugar(updatedSugarIntakeSnapshot, dailyTotalRef);
                   return dailyTotalRef.once("value")
                   .then(function(dailyTotalSnapShot) {
                     const dailyTotalDict = dailyTotalSnapShot.val();

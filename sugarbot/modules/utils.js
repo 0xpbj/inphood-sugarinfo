@@ -9,7 +9,7 @@ const fbTemplate = botBuilder.fbTemplate;
 // TODO: probably better to move this elsewhere and dynamically update when
 // needed (otherwise, each keypress results in all this being run.)
 //
-exports.updateTotalSugar = function(snapshot) {
+exports.updateTotalSugar = function(snapshot, dailyTotalRef) {
   let newSugarIntakeDict = snapshot.val();
   let nSugarTotal = 0;
   let pSugarTotal = 0;
@@ -27,8 +27,7 @@ exports.updateTotalSugar = function(snapshot) {
     pSugarTotal += intakeEntry.hasOwnProperty('psugar') ? intakeEntry.psugar : intakeEntry.sugar
   }
 
-  let totalRef = sugarIntakeRef.child('dailyTotal');
-  totalRef.set({nsugar: nSugarTotal, psugar: pSugarTotal});
+  dailyTotalRef.set({nsugar: nSugarTotal, psugar: pSugarTotal});
 }
 
 exports.boundsChecker = function(input, weight) {
