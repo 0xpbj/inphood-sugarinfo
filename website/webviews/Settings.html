@@ -43,7 +43,7 @@ var psid = null;
 var tz = null;
 
 function logIt(someText) {
-  //document.getElementById('rtLog').innerHTML += someText + '<br>';
+//  document.getElementById('rtLog').innerHTML += someText + '<br>';
 }
 
 function updateDbValue(key) {
@@ -88,7 +88,7 @@ function updateDbValue(key) {
           <h4>Goals</h4>
           <div style="border: 1px solid #000000; border-radius: 10px; padding: 10px 10px 0px">
             <div class="form-group">
-              <div class="row">
+              <div class="row" style="font-size:16px">
                 <div class="col-xs-5" onclick="updateDbValue('currentGoalSugar')">
                   <input id="currentGoalSugar" class="form-control" type="number" value="36" min="0" max="100"/> 
                 </div>
@@ -99,7 +99,7 @@ function updateDbValue(key) {
             </div>
 
             <div class="form-group">
-              <div class="row">
+              <div class="row" style="font-size:16px">
                 <div class="col-xs-5" onclick="updateDbValue('currentGoalWeight')">
                   <input id="currentGoalWeight" class="form-control" type="number" value="150" min="50" max="1000"/>
                 </div>
@@ -114,7 +114,7 @@ function updateDbValue(key) {
           <h4>My Data</h4>
           <div style="border: 1px solid #000000; border-radius: 10px; padding: 10px 10px 0px">
             <div class="form-group">
-              <div class="row">
+              <div class="row" style="font-size:16px">
                 <div class="col-xs-5" onclick="updateDbValue('currentWeight')">
                   <input id="currentWeight" class="form-control" type="number" value="150" min="50" max="1000"/>
                 </div>
@@ -162,6 +162,7 @@ function updateDbValue(key) {
 
       // Function to insert Facebook Messenger Extensions
       (function(d, s, id){
+        logIt('Facebook extensions init');
         var js, fjs = d.getElementsByTagName(s)[0];
         if (d.getElementById(id)) {return;}
         js = d.createElement(s); js.id = id;
@@ -229,6 +230,17 @@ function updateDbValue(key) {
           tz = snapshot.val();
         });
       }
+
+//      function testInit() {
+//        logIt('SPOOFING extAsyncInit called (test is true)');
+//        logIt('-------------------------------');
+//        const AC = 1547345815338571;
+//        const PBJ = 1322516797796635;
+//        psid = PBJ;
+//        initAndAuthDb();
+//        initValuesFromDb(psid);
+//      }
+//      testInit();
     </script>
 
   </body>
