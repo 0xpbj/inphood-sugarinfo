@@ -24,7 +24,7 @@ function updateTotalSugar(snapshot) {
   let newSugarIntakeDict = snapshot.val();
   let nSugarTotal = 0;
   let pSugarTotal = 0;
-  
+
   const keyArr = Object.keys(newSugarIntakeDict);
   for (let key of keyArr) {
 
@@ -44,6 +44,25 @@ function updateTotalSugar(snapshot) {
 
 function getRemovedHtml(foodName) {
   return '<p style="color: red; padding-left:5px">We deleted ❌&nbsp;&nbsp;<u>' + foodName + '</u> from your food journal 📒&nbsp;.</p>';
+}
+
+function getWrappedRemovedHtml(foodName) {
+  let html = ' \
+    <div class="row"> \
+      <div class="col-xs-9" style="padding-left: 5px"> \
+        <h4> \
+          ' + foodName+ ' \
+        </h4> \
+      </div> \
+    </div> \
+    <div class="row"> \
+      <div class="col-xs-12" style="height:10px; border-top: 1px solid black"></div> \
+    </div> \
+    <div class="row"> \
+      ' + getRemovedHtml(foodName) + ' \
+    </div>';
+
+  return html;
 }
 
 //
@@ -70,11 +89,11 @@ function handleDeleteClick() {
   //    - the new daily sugar value
   sugarIntakeRef.once('value', function(snapshot) {
     updateTotalSugar(snapshot);
-    
+
     // 4. Show the user that the item was deleted.
     let newSugarIntakeDict = snapshot.val();
     let foodName = newSugarIntakeDict[lastKey].foodName;
-    document.getElementById("lastFoodItem").innerHTML = getRemovedHtml(foodName);
+    document.getElementById("lastFoodItem").innerHTML = getWrappedRemovedHtml(foodName);
   });
 
 }
@@ -94,8 +113,8 @@ function handleOnInput(id) {
   let newPSugarValue = inputField.value;
   if (inputField.value) {
 
-    // Handle the singleItemHtml use case
     if (id === 'all') {
+      // Handle the singleItemHtml use case
       let lastFoodRef = sugarIntakeRef.child(lastKey);
       lastFoodRef.once('value', function(snapshot) {
         // 1. Update the firebase values for the food item's total and processed
@@ -118,59 +137,46 @@ function handleOnInput(id) {
         });
       });
     } else {
-      // TODO: check id EI (i.e. integer)
-      // 1. Update firebase with:
-      //    - the new value the user entered
-      let foodRef = sugarIntakeRef.child(lastKey);
-      let sugarArrayRef = foodRef.child('sugarArr');
+      // Handle the multiItemHtml use case
+
+      // 1. Update the sub-ingredients processed sugar
+      //    * assume new psugar / nsugar format
+      //
+      let lastFoodRef = sugarIntakeRef.child(lastKey);
+      let sugarArrayRef = lastFoodRef.child('sugarArr');
       let sugarChangedRef = sugarArrayRef.child(id);
-      sugarChangedRef.set(parseInt(newPSugarValue));
+      let pSugarChangedRef = sugarChangedRef.child('psugar');
+      pSugarChangedRef.set(parseFloat(newPSugarValue));
 
-      // 2. Calculate a new total sugar for the journaled item
-      //    and a new daily sugar total and update firebase
-      sugarIntakeRef.once('value', function(snapshot) {
-        let sugarIntake = snapshot.val()
-
-        let foodData = sugarIntake[lastKey]
-        let foodSugarTotal = 0;
-        for (let sugar of foodData.sugarArr) {
-          foodSugarTotal += parseInt(sugar);
-//          logIt('foodSugarTotal is ' + foodSugarTotal);
+      // 2. Update the main entry's psugar/nsugar numbers:
+      //    * can probably factor this into code above that does same thing
+      //      for single entry use case
+      //
+      lastFoodRef.once('value', function(snapshot) {
+        let nutritionData = snapshot.val();
+        let totalPSugar = 0;
+        for (let sugarNode of nutritionData.sugarArr) {
+          totalPSugar += sugarNode.psugar;
         }
+        let pSugarRef = lastFoodRef.child('psugar');
+        pSugarRef.set(parseFloat(totalPSugar));
 
-//        logIt('Calculating total sugar:');
-        let sugarTotal = 0;
-        const keyArr = Object.keys(sugarIntake);
-        for (let key of keyArr) {
-//          logIt('     key: ' + key);
-//          logIt('     rmv: ' + sugarIntake[key].removed);
-//          logIt('herereree');
-          if (key === 'dailyTotal' ||
-              sugarIntake[key].removed) {
-            continue;
-          }
+        const totalSugar = parseFloat(totalPSugar) + nutritionData.nsugar;
+        let totalSugarRef = lastFoodRef.child('sugar');
+        totalSugarRef.set(totalSugar);
 
-          if (key === lastKey) {
-//            logIt('Calculating from AC:');
-            sugarTotal += foodSugarTotal;;
-          } else {
-//            logIt('Calculating from Firebase:');
-            sugarTotal += sugarIntake[key].sugar;
-          }
-        }
-
-//        logIt('new food total = ' + foodSugarTotal);
-        let subTotalRef = foodRef.child('sugar');
-        subTotalRef.set(foodSugarTotal);
-
-//        logIt('new total = ' + sugarTotal);
-        let totalRef = sugarIntakeRef.child('dailyTotal');
-        totalRef.set({sugar: sugarTotal});
-
-        // 3.Update the current page:
+        // 3. Update the daily total sugar values:
         //
+        sugarIntakeRef.once('value', function(snapshot) {
+          updateTotalSugar(snapshot);
+        });
+
+        // 4. Simultaneously, update the html sugar values for this main entry:
+        //
+        let sugarAddedField = document.getElementById('sugarAdded');
+        sugarAddedField.innerHTML = parseFloat(newPSugarValue);
         let sugarTotalField = document.getElementById('sugarTotal');
-        sugarTotalField.innerHTML = sugarTotal
+        sugarTotalField.innerHTML = parseFloat(totalSugar);
       });
     }
   }
@@ -210,7 +216,7 @@ function imgHtml(imgPath) {
     <div class="col-xs-3"> \
       <img src="' + imgPath + '" class="pull-right" alt="food image" width="64" height="64"> \
     </div>';
-  
+
   return html;
 }
 
@@ -230,11 +236,11 @@ function singleItemHtml(foodName, nsugar, psugar, removed, photo) {
   let sugarRow;
   if (removed) {
     sugarRow = getRemovedHtml(clnFoodName);
-  } else if (nsugar > 0) {
+  } else if (nsugar > 0 && psugar === 0) {
     // Naturally occuring sugars only
     sugarRow = ' \
       <div class="col-xs-9" style="padding-left:5px"> \
-        <label class="control-label">' + nsugar +  ' grams naturally occuring sugars</label> \
+        <label class="control-label" style="font-size:16px">' + nsugar +  ' grams naturally occuring sugars</label> \
       </div> \
       ' + img + '';
   } else {
@@ -244,14 +250,15 @@ function singleItemHtml(foodName, nsugar, psugar, removed, photo) {
         <input class="form-control text-right" \
                id= "' + id + '" \
                type="number" \
+               style="font-size: 16px;" \
                value="' + psugar  + '" \
                oninput="handleOnInput(\'' + id + '\')" \
                min="0" max="500"/> \
       </div> \
-      <div class="col-xs-6" style="padding-left:5px"> \
+      <div class="col-xs-6" style="padding-left:5px; font-size:16px"> \
         <label class="control-label">grams of sugars</label> \
       </div> \
-      ' + img + ''; 
+      ' + img + '';
   }
 
   let html = ' \
@@ -278,6 +285,50 @@ function singleItemHtml(foodName, nsugar, psugar, removed, photo) {
 function multiItemSubIngredient(ingredient, index) {
   let img = imgHtml(ingredient.imageSrc);
 
+  // Handle legacy firebase format and new format:
+  //
+  // New format:
+  //    sugarArrItem {nsugar: n, psugar: m}
+  // Old format:
+  //    sugarArrItem: n
+  //
+  let nsugar = 0;
+  let psugar = 0;
+  if (ingredient.sugarArrItem.hasOwnProperty('nsugar')) {
+    nsugar = ingredient.sugarArrItem.nsugar;
+    psugar = ingredient.sugarArrItem.psugar;
+  } else {
+    psugar = ingredient.sugarArrItem
+  }
+
+  let sugarRow;
+  if (nsugar > 0 && psugar === 0) {
+    sugarRow = ' \
+      <div class="col-xs-1"></div> \
+      <div class="col-xs-8" style="padding-left: 0px" > \
+        <label class="control-label" style="font-size:16px"> \
+          ' + nsugar + ' naturally occuring sugars (g) \
+        </label> \
+      </div> \
+      ' + img + '';
+  } else {
+    sugarRow = ' \
+      <div class="col-xs-1"></div> \
+      <div class="col-xs-3" style="padding-left: 0px; padding-right: 5px" > \
+        <input class="form-control text-right" \
+               id= "' + index + '" \
+               type="number" \
+               style="font-size: 16px;" \
+               value="' + psugar + '" \
+               oninput="handleOnInput(\'' + index + '\')" \
+               min="0" max="100"/> \
+      </div> \
+      <div class="col-xs-5" style="padding-left:5px; font-size:16px"> \
+        <label class="control-label">sugars (g)</label> \
+      </div> \
+      ' + img + '';
+  }
+
   html = ' \
     <!-- spacer --> \
     <div style="height:10px"></div> \
@@ -302,77 +353,54 @@ function multiItemSubIngredient(ingredient, index) {
       <div class="col-xs-11" style="height:10px; border-top: 1px solid lightgray"></div> \
     </div> \
     <div class="row"> \
-      <div class="col-xs-1"></div> \
-      <div class="col-xs-3" style="padding-left: 0px; padding-right: 5px" > \
-        <input class="form-control text-right" \
-               id= "' + index + '" \
-               type="number" \
-               value="' + ingredient.sugarTotal + '" \
-               oninput="handleOnInput(\'' + index + '\')" \
-               min="0" max="100"/> \
-      </div> \
-      <div class="col-xs-5" style="padding-left:5px"> \
-        <label class="control-label">sugars (g)</label> \
-      </div> \
-      ' + img + ' \
+      ' + sugarRow + ' \
     </div>';
 
   return html;
 }
 
-function deletedItem() {
-  let undoBtnAll = undoBtnHtml();
-  let html = ' \
-    <div class="row"> \
-      <div class="col-xs-9" style="padding-left: 5px"> \
-        <h4> DELETED ENTRY </h4> \
-      </div> \
-      <div class="col-xs-3"> \
-        ' + undoBtnAll + ' \
-      </div> \
-    </div> \
-    <!-- spacer --> \
-    <div style="height:5px"></div>';
-}
+function multiItemHtml(foodName, nSugar, pSugar, removed, subIngredients = []) {
+  logIt('multiItemHtml');
+  logIt('-------------------------');
+  if (removed) {
+    logIt('  in removed');
+    return getWrappedRemovedHtml(foodName);
+  } else {
+    let deleteBtnAll = delBtnHtml();
+    let sugarTotal = nSugar + pSugar;
 
-function multiItemHtml(foodName, sugarTotal, subIngredients = []) {
-  let deleteBtnAll = delBtnHtml();
-
-  // TODO:
-  let sugarAdded = 0;
-  let sugarNatural = 0;
-
-  let html = ' \
-    <div class="row"> \
-      <div class="col-xs-9" style="padding-left: 5px"> \
-        <h4> \
-          ' + foodName + ' \
-        </h4> \
+    let html = ' \
+      <div class="row"> \
+        <div class="col-xs-9" style="padding-left: 5px"> \
+          <h4> \
+            ' + foodName + ' \
+          </h4> \
+        </div> \
+        <div class="col-xs-3"> \
+          ' + deleteBtnAll + ' \
+        </div> \
       </div> \
-      <div class="col-xs-3"> \
-        ' + deleteBtnAll + ' \
+      <div class="row"> \
+        <div class="col-xs-12" style="height:10px; border-top: 1px solid black"></div> \
       </div> \
-    </div> \
-    <div class="row"> \
-      <div class="col-xs-12" style="height:10px; border-top: 1px solid black"></div> \
-    </div> \
-    <div class="row"> \
-      <div class="col-xs-9" style="padding-left: 5px"> \
-        <p><span id="sugarTotal">' + sugarTotal + '</span> Total sugars.</p> \
-        <p><span id="sugarAdded">' + sugarAdded + '</span> Added sugars*.</p> \
-        <p><span id="sugarNatural">' + sugarNatural + '</span> Natural sugars.</p> \
+      <div class="row"> \
+        <div class="col-xs-9" style="padding-left: 5px; font-size:16px"> \
+          <p><b><span id="sugarAdded">' + pSugar+ '</span> estimated added sugars.</b></p> \
+          <p><span id="sugarNatural">' + nSugar + '</span> naturally occuring sugars.</p> \
+          <p><span id="sugarTotal">' + sugarTotal + '</span> total sugars.</p> \
+        </div> \
       </div> \
-    </div> \
-    <!-- spacer --> \
-    <div style="height:5px"></div>';
+      <!-- spacer --> \
+      <div style="height:5px"></div>';
 
-  let subItemCount = 0;
-  for (let ingredient of subIngredients) {
-    html += multiItemSubIngredient(ingredient, subItemCount);
-    subItemCount++;
+    let subItemCount = 0;
+    for (let ingredient of subIngredients) {
+      html += multiItemSubIngredient(ingredient, subItemCount);
+      subItemCount++;
+    }
+
+    return html;
   }
-
-  return html;
 }
 
 //
@@ -383,7 +411,7 @@ function multiItemHtml(foodName, sugarTotal, subIngredients = []) {
 function processValuesFromDb(sugarIntakeDict) {
   logIt('processValuesFromDb');
   logIt('-------------------------------');
-  
+
   if (sugarIntakeDict && lastKey) {
     logIt('  processing lastKey of sugarIntakeDict');
 
@@ -405,15 +433,13 @@ function processValuesFromDb(sugarIntakeDict) {
     const singleItemUseCase = ((sugarArr === null) ||
                               (sugarArr === undefined) ||
                               (sugarArr.length === 1));
-    
+
     let html = '';
     if (singleItemUseCase) {
       html = singleItemHtml(foodName, nsugar, psugar, removed, iphoto);
-    }
-    else if (removed !== null && removed === true) {
-      html = deletedItem()
-    }
-    else {
+    } else {
+      // TODO: can probably replace with 'cleanName' from firebase (all over the
+      // place)
       let titleFoodName = foodName.replace(/\n$/g, '');
       titleFoodName = titleFoodName.replace(/\n/g, ', ');
       logIt('titleFoodName: ' + titleFoodName);
@@ -425,12 +451,12 @@ function processValuesFromDb(sugarIntakeDict) {
       for (let index = 0; index < foods.length; index++) {
         let ingredient = {
           foodName : foods[index],
-          sugarTotal : sugarArr[index],
+          sugarArrItem: sugarArr[index],
           imageSrc : photoArr[index]
         }
         subIngredients.push(ingredient);
       }
-      html = multiItemHtml(titleFoodName, sugarTotal, subIngredients);
+      html = multiItemHtml(titleFoodName, nsugar, psugar, removed, subIngredients);
     }
     document.getElementById("lastFoodItem").innerHTML=html;
   }
@@ -480,8 +506,8 @@ function initPageValuesFromDb(userRef) {
         //         consistently find the last item a user ate. The last element will be
         //         'dailyTotal'.
         //
-        const keyArr = Object.keys(sugarIntakeDict)
-        const dictLength = keyArr.length
+        const keyArr = Object.keys(sugarIntakeDict);
+        const dictLength = keyArr.length;
         if (dictLength < 2) {
           console.log('Unexpected error. Found underpopulated intake dictionary.');
           return;
@@ -490,6 +516,7 @@ function initPageValuesFromDb(userRef) {
         lastKey = keyArr[dictLength - 2]
         if (lastKey === 'dailyTotal') {
           console.log('Unexpected error. Retrieved daily total from intake dictionary as last intake key.');
+          return;
         }
 
         logIt('lastKey not dailyTotal = ' + lastKey);
