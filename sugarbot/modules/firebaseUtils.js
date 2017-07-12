@@ -55,7 +55,7 @@ function sugarResponse (userId, foodName, sugarPercentage) {
   return requestPromise(wvMsg)
 }
 
-function subSlashes( str ) { 
+function subSlashes( str ) {
   if (str) {
     return str.replace(/[\/\.$#\[\]]/g, '_');
   }
@@ -113,7 +113,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
     const newNSugar = parseInt(val.nsugar) + parseInt(nsugar)
     const newPSugar = parseInt(val.psugar) + parseInt(psugar)
     let cleanPath = subSlashes(cleanText)
-    return userRef.child('/myfoods/' + cleanPath).update({ 
+    return userRef.child('/myfoods/' + cleanPath).update({
       photo,
       sugar,
       carbs,
@@ -131,7 +131,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
       ingredientsSugarsCaps
     })
     .then(() => {
-      return userRef.child('/myfoods/' +  cleanPath + '/date').push({ 
+      return userRef.child('/myfoods/' +  cleanPath + '/date').push({
         timestamp: Date.now(),
       })
       .then(() => {
@@ -166,7 +166,6 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
                 .get(),
                 new fbTemplate.Button("Would you like to add the item to your journal?")
                 .addButton('Yes  ✅', 'add last item')
-                .addButton('No  ❌', 'delete last item')
                 .get()
                 // constants.generateTip(constants.encouragingTips),
                 // utils.sendReminder()
@@ -178,7 +177,6 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
                 sugar + 'g of sugar found',
                 new fbTemplate.Button("Would you like to add the item to your journal?")
                 .addButton('Yes  ✅', 'add last item')
-                .addButton('No  ❌', 'delete last item')
                 .get()
                 // constants.generateTip(constants.encouragingTips),
                 // utils.sendReminder()
@@ -188,7 +186,6 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
               return [
                 new fbTemplate.Button("Would you like to add the item to your journal?")
                 .addButton('Yes  ✅', 'add last item')
-                .addButton('No  ❌', 'delete last item')
                 .get()
                 // constants.generateTip(constants.encouragingTips),
                 // utils.sendReminder()
@@ -199,7 +196,6 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
                 'Congratulations! 🎉🎉 No sugars found!',
                 new fbTemplate.Button("Would you like to add the item to your journal?")
                 .addButton('Yes  ✅', 'add last item')
-                .addButton('No  ❌', 'delete last item')
                 .get()
                 // constants.generateTip(constants.encouragingTips),
                 // utils.sendReminder()

@@ -4,6 +4,33 @@ const sugarUtils = require('./sugarUtils.js')
 const botBuilder = require('claudia-bot-builder');
 const fbTemplate = botBuilder.fbTemplate;
 
+// Duplicated out of webview FoodJournalEntry:
+// TODO: unify
+// TODO: probably better to move this elsewhere and dynamically update when
+// needed (otherwise, each keypress results in all this being run.)
+//
+exports.updateTotalSugar = function(snapshot) {
+  let newSugarIntakeDict = snapshot.val();
+  let nSugarTotal = 0;
+  let pSugarTotal = 0;
+
+  const keyArr = Object.keys(newSugarIntakeDict);
+  for (let key of keyArr) {
+
+    const intakeEntry = newSugarIntakeDict[key]
+    if (key === 'dailyTotal' ||
+        intakeEntry.removed) {
+      continue;
+    }
+
+    nSugarTotal += intakeEntry.hasOwnProperty('nsugar') ? intakeEntry.nsugar : 0
+    pSugarTotal += intakeEntry.hasOwnProperty('psugar') ? intakeEntry.psugar : intakeEntry.sugar
+  }
+
+  let totalRef = sugarIntakeRef.child('dailyTotal');
+  totalRef.set({nsugar: nSugarTotal, psugar: pSugarTotal});
+}
+
 exports.boundsChecker = function(input, weight) {
   let num = input
   if (typeof(input) === "string") {

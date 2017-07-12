@@ -238,16 +238,10 @@ exports.bot = function(request, messageText, userId) {
             .get()
           }
           case 'add last item': {
-
-            // this should happen after you process the change
-            // constants.generateTip(constants.encouragingTips),
-            // utils.sendReminder()
-          }
-          case 'delete':
-          case 'delete last item': {
             // #OhNoItsJake! This code is a dup of js in FoodJournalEntry.js for
             //               webviews. I don't know of a good way to share it
-            //               here so I'm duplicating it for now.
+            //               here so I'm duplicating it for now. (It does an un
+            //               -remove instead of a remove though.)
             //
             // 1. Get user's TZ to get today's date in their region.
             //    - this is done for us here in: 'date'
@@ -261,7 +255,7 @@ exports.bot = function(request, messageText, userId) {
             .then(function(currSugarIntakeSnapshot) {
               let currSugarIntake = currSugarIntakeSnapshot.val();
               if (!currSugarIntake) {
-                console.log('Error accessing sugarIntake for deletion of item.');
+                console.log('Error accessing sugarIntake for unremove / undelete of item.');
                 return;
               }
 
@@ -289,13 +283,31 @@ exports.bot = function(request, messageText, userId) {
               //
               const lastFoodRef = currSugarIntakeRef.child(lastKey);
               const lastFoodRemovedRef = lastFoodRef.child('removed');
-              lastFoodRemovedRef.set(true);
+              lastFoodRemovedRef.set(false);
+
+              // This next promise is purposely concurrent to the return etc. below (i.e.
+              // don't keep the user waiting for this).
+              return currSugarIntakeRef.once("value")
+              .then(function(updatedSugarIntakeSnapshot) {
+                let updatedSugarIntake = updatedSugarIntakeSnapshot.val();
+                if (updatedSugarIntake) {
+                  utils.updateTotalSugar(updatedSugarIntake);
+                }
+              });
 
               const cleanFoodName = currSugarIntake[lastKey].cleanText;
 
-              return 'Okay, we\'ve removed ' + cleanFoodName + ' from your food journal.';
+              // this should happen after you process the change
+              return [
+                'Okay, we\'ve added ' + cleanFoodName + ' from your food journal.',
+                constants.generateTip(constants.encouragingTips),
+                utils.sendReminder()
+              ];
             });
 
+          }
+          case 'delete':
+          case 'delete last item': {
             return 'Feature in progress....'
           }
           case 'settings': {
