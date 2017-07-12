@@ -23,7 +23,7 @@ exports.sugarResponse = function(userId, foodName, sugarPercentage) {
             "template_type":"generic",
             "elements":[
                {
-                "title": "Last Journal Item",
+                "title": "Added Journal Item:",
                 "image_url": "https://d1q0ddz2y0icfw.cloudfront.net/progressBars/" + sugarPercentage + ".png",
                 "subtitle": foodName,
                 "default_action": {
@@ -33,14 +33,7 @@ exports.sugarResponse = function(userId, foodName, sugarPercentage) {
                   "webview_height_ratio": "tall",
                   "webview_share_button": "show",
                   "fallback_url": "https://www.inphood.com/"
-                },
-                "buttons":[
-                  {
-                    "type": "postback",
-                    "title": "Delete From Journal",
-                    "payload": "delete last item"
-                  }
-                ]
+                }
               }
             ]
           }
