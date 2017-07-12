@@ -174,7 +174,7 @@ function handleOnInput(id) {
         // 4. Simultaneously, update the html sugar values for this main entry:
         //
         let sugarAddedField = document.getElementById('sugarAdded');
-        sugarAddedField.innerHTML = parseFloat(newPSugarValue);
+        sugarAddedField.innerHTML = parseFloat(totalPSugar);
         let sugarTotalField = document.getElementById('sugarTotal');
         sugarTotalField.innerHTML = parseFloat(totalSugar);
       });
