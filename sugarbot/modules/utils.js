@@ -207,10 +207,10 @@ exports.sendShareButton = function() {
 }
 
 exports.sendReminder = function() {
-  return new fbTemplate.Button('Let\'s setup a reminder for your next meal. What time works best?')
+  return new fbTemplate.Button('What time works best?')
+    .addButton('1 hours', 'time1')
     .addButton('3 hours', 'time3')
     .addButton('5 hours', 'time5')
-    .addButton('Not Now', 'notime')
     .get()
 }
 

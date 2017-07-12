@@ -23,7 +23,7 @@ exports.sugarResponse = function(userId, foodName, sugarPercentage) {
             "template_type":"generic",
             "elements":[
                {
-                "title": "Last Journal Item",
+                "title": "Added Journal Item:",
                 "image_url": "https://d1q0ddz2y0icfw.cloudfront.net/progressBars/" + sugarPercentage + ".png",
                 "subtitle": foodName,
                 "default_action": {
@@ -33,14 +33,7 @@ exports.sugarResponse = function(userId, foodName, sugarPercentage) {
                   "webview_height_ratio": "tall",
                   "webview_share_button": "show",
                   "fallback_url": "https://www.inphood.com/"
-                },
-                "buttons":[
-                  {
-                    "type": "postback",
-                    "title": "Delete From Journal",
-                    "payload": "delete last item"
-                  }
-                ]
+                }
               }
             ]
           }
@@ -152,7 +145,6 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
                 .get(),
                 new fbTemplate.Button("Would you like to add the item to your journal?")
                 .addButton('Yes  ✅', 'add last item')
-                .addButton('No  ❌', 'delete last item')
                 .get()
                 // constants.generateTip(constants.encouragingTips),
                 // utils.sendReminder()

@@ -309,9 +309,13 @@ exports.bot = function(request, messageText, userId) {
                         return fire.sugarResponse (userId, cleanFoodName, sugarPercentage)
                         .then(() => {
                           return [
-                            'Okay, we\'ve added ' + cleanFoodName + ' from your food journal.',
+                            // 'Okay, we\'ve added ' + cleanFoodName + ' from your food journal.',
                             constants.generateTip(constants.encouragingTips),
-                            utils.sendReminder()
+                            new fbTemplate.Button("Would you like to setup a reminder to track your next meal?")
+                            .addButton('Sure ✅', 'set a reminder')
+                            .addButton('Not now  ❌', 'notime')
+                            .get()
+                            // utils.sendReminder()
                           ];
                         })
                       })
@@ -323,6 +327,9 @@ exports.bot = function(request, messageText, userId) {
             .catch(error => {
               console.log('AC Error', error)
             });
+          }
+          case 'set a reminder': {
+            return utils.sendReminder()
           }
           case 'delete':
           case 'delete last item': {
