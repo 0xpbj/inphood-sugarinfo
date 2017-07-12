@@ -136,10 +136,10 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
       .then(() => {
         return userRef.child('/sugarIntake/' + date + '/dailyTotal/').update({ nsugar: newNSugar, psugar: newPSugar })
         .then(() => {
-          let sugarPercentage = Math.ceil(psugar*100/goalSugar)
-          if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown') {
-            sugarPercentage = Math.ceil(sugar*100/goalSugar)
-          }
+          let sugarPercentage = Math.ceil(sugar*100/goalSugar)
+          // if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown') {
+          //   sugarPercentage = Math.ceil(sugar*100/goalSugar)
+          // }
           return sugarResponse (userId, foodName, sugarPercentage)
           .then(() => {
             if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && sugar >= 3) {

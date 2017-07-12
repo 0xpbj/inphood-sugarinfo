@@ -149,7 +149,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
               "type":"web_url",
               "title":"My Settings ⚙️",
               "url":"https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Settings.html",
-              "webview_height_ratio":"tall"
+              "webview_height_ratio":"compact"
             }
           ]
         }

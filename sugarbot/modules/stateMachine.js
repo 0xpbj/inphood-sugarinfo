@@ -185,10 +185,10 @@ exports.bot = function(request, messageText, userId) {
             }
             return [
               'Great! Tell me what you ate' + mealInfo,
-              new fbTemplate
-              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/upc.jpg')
-              .get(),
-              'Remember you can send me a picture of the UPC label 📷 or type the number manually ⌨️ for your convinience.'
+              // new fbTemplate
+              // .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/upc.jpg')
+              // .get(),
+              // 'Remember you can send me a picture of the UPC label 📷 or type the number manually ⌨️ for your convinience.'
             ]
           }
           case 'food question':
