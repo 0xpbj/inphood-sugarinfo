@@ -155,17 +155,13 @@ exports.otherOptions = function(option) {
     return [
       "Welcome back! I'm here to help you understand sugar 🤓",
       new fbTemplate.Button("Here are your options")
-        .addButton('Journal ✏️', 'journal')
-        .addButton('Report 💻', 'report')
-        .addButton('Settings ⚙️', 'settings')
+        .addButton('Add to Journal ✏️', 'journal')
         .get()
     ]
   }
   else {
     return new fbTemplate.Button('What would you like to do next?')
-      .addButton('Journal ✏️', 'journal')
-      .addButton('Report 💻', 'report')
-      .addButton('Settings ⚙️', 'settings')
+      .addButton('Add to Journal ✏️', 'journal')
       .get();
   }
 }
