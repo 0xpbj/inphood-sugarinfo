@@ -3,6 +3,7 @@ var psid;
 
 var spinner;
 
+// Function to insert Facebook Messenger Extensions
 (function(d, s, id) {
   logIt('messengerExtensions');
   logIt('-------------------------------');
@@ -65,6 +66,7 @@ function testInit() {
     logIt('SPOOFING extAsyncInit called (test is true)');
     logIt('-------------------------------');
     const AC = 1547345815338571;
+    const PBJ = 1322516797796635;
     psid = AC;
     initAndAuthDb();
     initValuesFromDb(psid);
