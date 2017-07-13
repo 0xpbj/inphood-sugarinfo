@@ -96,18 +96,19 @@ function handleSwitchChange(id) {
 function getEditableField(id, description, initialValue, min=0, max=100) {
   let html = ' \
     <div class="form-group"> \
-      <div class="row" style="font-size:16px"> \
+      <div class="row""> \
         <div class="col-xs-5"> \
           <input id="' + id + '"  \
-                 class="form-control text-right"  \
-                 type="number"  \
-                 value="' + initialValue + '"  \
+                 class="form-control text-right" \
+                 style="font-size:16px" \
+                 type="number" \
+                 value="' + initialValue + '" \
                  oninput="handleOnInput(\'' + id + '\')" \
-                 min="' + min + '"  \
-                 max="' + max + '"/>  \
+                 min="' + min + '" \
+                 max="' + max + '"/> \
         </div> \
         <div class="col-xs-7"> \
-          <label class="control-label">' + description + '</label> \
+          <label class="control-label" style="font-size:16px">' + description + '</label> \
         </div> \
       </div> \
     </div>';
