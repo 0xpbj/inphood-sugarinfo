@@ -33,7 +33,16 @@ exports.sugarResponse = function(userId, foodName, sugarPercentage) {
                   "webview_height_ratio": "tall",
                   "webview_share_button": "show",
                   "fallback_url": "https://www.inphood.com/"
-                }
+                },
+                "buttons":[
+                  {
+                    "url": "https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/FoodJournalEntry.html",
+                    "type":"web_url",
+                    "title":"View Item",
+                    "messenger_extensions": true,
+                    "webview_height_ratio": "tall"
+                  }
+                ]
               }
             ]
           }

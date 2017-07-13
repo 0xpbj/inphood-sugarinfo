@@ -150,6 +150,11 @@ curl -X POST -H "Content-Type: application/json" -d '{
           "type":"nested",
           "call_to_actions":[
             {
+              "title":"Need Help 🚑",
+              "type":"postback",
+              "payload":"tell me more"
+            },
+            {
               "title":"My Report 💻",
               "type":"postback",
               "payload":"report"

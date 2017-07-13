@@ -61,12 +61,53 @@ exports.bot = function(request, messageText, userId) {
                     intro = 'Hi, I’m sugarinfoAI! I can help you understand how much sugar you are eating and help you bring it within recommended limits. Would you like that?'
                   }
                   return new fbTemplate.Button(intro)
-                  .addButton('Sure, let\'s go', 'start food question')
-                  .addButton('Maybe later', 'say adios')
+                  .addButton('Tell me more', 'tell me more')
+                  .addButton('Let\'s track', 'start food question')
                   .get()
                 })
               })
             })
+          }
+          case 'report animation': {
+            return new fbTemplate
+            .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/report.gif')
+            .get()
+          }
+          case 'label animation': {
+            return new fbTemplate
+            .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/ingredient.gif')
+            .get()
+          }
+          case 'track animation': {
+            return new fbTemplate
+            .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/track.gif')
+            .get()
+          }
+          case 'favorite animation': {
+            return 'in progress'
+          }
+          case 'learn more':
+          case 'need help':
+          case 'help':
+          case 'confused':
+          case 'tell me more': {
+            return [
+              'Ok, here are a few helpful animations for you 📚',
+              new fbTemplate.List()
+                .addBubble('Track Meals', 'Learn how to track meals with our chatbot')
+                  .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/measure.jpg')
+                  .addButton('Learn More', 'track animation')
+                .addBubble('Ingredient Label', 'Find hidden processed sugars')
+                  .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/sugar.jpg')
+                  .addButton('Learn More', 'label animation')
+                .addBubble('My Favorites', 'Quick add favorite meals')
+                  .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/favorite.jpg')
+                  .addButton('Learn More', 'favorite animation')
+                .addBubble('Daily Reports', 'Check your daily progress')
+                  .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/arrows.jpg')
+                  .addButton('Learn More', 'report animation')
+                .get()
+            ]
           }
           case '1 hour':
           case 'time1': {
@@ -311,7 +352,7 @@ exports.bot = function(request, messageText, userId) {
                             // 'Okay, we\'ve added ' + cleanFoodName + ' from your food journal.',
                             constants.generateTip(constants.encouragingTips),
                             new fbTemplate.Button("Would you like to setup a reminder to track your next meal?")
-                            .addButton('Sure ✅', 'set a reminder')
+                            .addButton('Alright ✅', 'set a reminder')
                             .addButton('Not now  ❌', 'notime')
                             .get()
                             // utils.sendReminder()
@@ -378,16 +419,6 @@ exports.bot = function(request, messageText, userId) {
           }
           case 'share': {
             return utils.sendShareButton()
-          }
-          case 'confused': {
-            return firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data").remove()
-            .then(function() {
-              return new fbTemplate.Button('Here\'s some help. Try these options to get started')
-              .addButton('Journal ✏️', 'journal')
-              .addButton('Report 💻', 'report')
-              .addButton('Settings ⚙️', 'settings')
-              .get();
-            })
           }
           default: {
             return firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data").remove()

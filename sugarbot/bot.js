@@ -17,7 +17,7 @@ if (firebase.apps.length === 0) {
   })
 }
 
-const bailArr = ['main menu', 'refresh', 'reset', 'start', 'hey', 'menu', '?', 'help', 'hi', 'hello', 'back', 'cancel', 'clear', 'exit', 'start over']
+const bailArr = ['main menu', 'refresh', 'reset', 'start', 'hey', 'menu', '?', 'hi', 'hello', 'back', 'cancel', 'clear', 'exit', 'start over']
 
 module.exports = botBuilder(function (request, originalApiRequest) {
   // return 'hello world'
