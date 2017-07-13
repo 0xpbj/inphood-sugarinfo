@@ -41,63 +41,12 @@
     <!-- debug o/p -->
     <script id="rtLog"></script>
 
+    <div class="container" id="mySettings"></div>
+
     <!-- order is important in this script tags.-->
     <script src="scripts/debug.js"></script>
     <script src="scripts/timeUtils.js"></script>
     <script src="scripts/settings.js"></script>
     <script src="scripts/dbConnection.js"></script>
-
-    <div class="container">
-      <form>
-        <fieldset>
-
-          <div style="height:20px"></div>
-          <h4>Goals</h4>
-          <div style="border: 1px solid #000000; border-radius: 10px; padding: 10px 10px 0px">
-
-            <div class="form-group" id="goalSugar"></div>
-            <div class="form-group" id="goalWeight"></div>
-
-          </div>
-
-          <div style="height:20px"></div>
-          <h4>My Data</h4>
-          <div style="border: 1px solid #000000; border-radius: 10px; padding: 10px 10px 0px">
-            <div class="form-group" id="weight"></div>
-          </div>
-
-          <div style="height:20px"></div>
-          <h4>Notifications</h4>
-          <div style="border: 1px solid #000000; border-radius: 10px; padding: 10px">
-            <div class="form-group" id="summary"></div>
-          </div>
-
-        </fieldset>
-      </form>
-    </div>
-
-    <script>
-      let html = getEditableField('currentGoalSugar', 'Daily Sugar Limit (grams)', 36)
-      document.getElementById('goalSugar').innerHTML = html
-
-      html = getEditableField('currentGoalWeight', 'Body Weight (pounds)', 150, 30, 700);
-      document.getElementById('goalWeight').innerHTML = html
-
-      html = getEditableField('currentWeight', 'Current Body Weight (pounds)', 150, 30, 700);
-      document.getElementById('weight').innerHTML = html
-
-      html = getSwitch('nightlySummary', 'Nightly Journal', 1);
-      document.getElementById('summary').innerHTML = html
-
-      // Styling for spinners/number input and switch
-//      $('.form-control').bootstrapNumber({
-//        upClass:'success',
-//        downClass:'danger',
-//        center:false
-//      });
-      $("#nightlySummary").bootstrapSwitch({
-        size: 'md'
-      });
-    </script>
   </body>
 </html>

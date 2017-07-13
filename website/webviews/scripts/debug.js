@@ -1,5 +1,6 @@
 // Test mode:
-var test = false;
+var showLog = true;
+var simulatedInit = true;
 
 // TODO: add some js in here that autoruns and inserts an element at the bottom
 // of the dom where all this stuff is to get written too. At the moment you have
@@ -11,7 +12,7 @@ var test = false;
 //    </div>
 //
 function logIt(someText) {
-  if (test) {
+  if (showLog) {
     let ele = document.getElementById('rtLog')
 
     if (ele.tagName === 'SCRIPT') {

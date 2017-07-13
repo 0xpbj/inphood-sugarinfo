@@ -62,8 +62,8 @@ function initValuesFromDb(psid) {
 }
 
 function testInit() {
-  if (test) {
-    logIt('SPOOFING extAsyncInit called (test is true)');
+  if (simulatedInit) {
+    logIt('SPOOFING extAsyncInit called (simulatedInit is true)');
     logIt('-------------------------------');
     const AC = 1547345815338571;
     const PBJ = 1322516797796635;
@@ -73,4 +73,6 @@ function testInit() {
   }
 }
 
-//testInit();
+if (simulatedInit) {
+  testInit();
+}
