@@ -103,11 +103,20 @@ curl -X POST -H "Content-Type: application/json" -d '{
 // whitelisting a domain
 curl -X POST -H "Content-Type: application/json" -d '{
   "whitelisted_domains":[
-    "https://www.inphood.com"
+    "https://www.inphood.com",
+    "https://s3-us-west-1.amazonaws.com/www.inphood.com/",
+    "https://d1q0ddz2y0icfw.cloudfront.net"
   ]
-}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BABsLODz0w5Af5hvd1SN9TZCU0E9OapZCKuZAOMugO2bNDao8JDe8E3cPQrJGLWWfL0sMxsq4MSTcZBbgGEjqa68ggSZCmZAFhGsFPFkWGUlYwAZB2ZCOrPPgdxS612ck5Rv8SrHydJihKQGsPLQSc1yYtBkncIpbOgZDZD"
+}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BAJBNqUODpgt5aaDt8ZBOlewGQLKIASZAjjSipZCZBunyyQ0ZBZCc3YG3SfweKOGZB5k6kDADBlWfKO5VhZB4xJ07yMI8UzbMrYrhIBf1giFi4FMI6REaVwFNPmTOVdY9fbP4UMgfUPkSbcldRIDqZAHaAEuhiKZCgVFwZDZD"
 
 
+curl -X POST -H "Content-Type: application/json" -d '{
+  "home_url" : {
+     "url": "https://s3-us-west-1.amazonaws.com/www.inphood.com/",
+     "webview_height_ratio": "tall",
+     "in_test":true
+  }
+}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BAJBNqUODpgt5aaDt8ZBOlewGQLKIASZAjjSipZCZBunyyQ0ZBZCc3YG3SfweKOGZB5k6kDADBlWfKO5VhZB4xJ07yMI8UzbMrYrhIBf1giFi4FMI6REaVwFNPmTOVdY9fbP4UMgfUPkSbcldRIDqZAHaAEuhiKZCgVFwZDZD"
 
 
 
@@ -149,7 +158,8 @@ curl -X POST -H "Content-Type: application/json" -d '{
               "type":"web_url",
               "title":"My Settings ⚙️",
               "url":"https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Settings.html",
-              "webview_height_ratio":"compact"
+              "webview_height_ratio":"tall",
+              "messenger_extensions": true
             }
           ]
         }

@@ -23,7 +23,6 @@ exports.bot = function(request, messageText, userId) {
   return tempRef.once("value")
   .then(function(snapshot) {
     const favorites = snapshot.child('/myfoods/').val()
-    // const question = snapshot.child('/temp/data/question/flag').val()
     const favFlag = snapshot.child('/temp/data/favorites/flag').val()
     const timezone = snapshot.child('/profile/timezone').val() ? snapshot.child('/profile/timezone').val() : -7
     const {timestamp} = request.originalRequest
