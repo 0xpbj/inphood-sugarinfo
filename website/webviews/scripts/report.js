@@ -309,6 +309,25 @@ function populateGraph(snapshot) {
   }
 }
 
+function weirdFbAnonFunction(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0]; 
+  if (d.getElementById(id)) {return;} 
+  js = d.createElement(s); js.id = id; 
+  js.src = "//connect.facebook.net/en_US/sdk.js"; 
+  fjs.parentNode.insertBefore(js, fjs); 
+}
+
+function makeShareButtonWork() {
+  logIt('Trying to get dom node for shareBtn:')
+  logIt('  ' + document.getElementById("shareBtn"))
+  document.getElementById("shareBtn").onclick = function() { 
+    FB.ui({ 
+      method: "share", 
+      href: "https://www.inphood.com/reports/1322516797796635/267733510.html", 
+    }, function(response){}); 
+  } 
+}
+
 function initPageValuesFromDb(userRef) {
   logIt('initPageValuesFromDb');
   logIt('-------------------------------');
@@ -334,6 +353,8 @@ function initPageValuesFromDb(userRef) {
       target.innerHTML = myReportHtml
       
       populateGraph(userSnapshot)
+      weirdFbAnonFunction(document, "script", "facebook-jssdk") 
+      makeShareButtonWork()
     } else {
       spinner.stop();
       logIt('spinner off');
