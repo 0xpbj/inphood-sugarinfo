@@ -351,6 +351,48 @@ exports.bot = function(request, messageText, userId) {
           case 'share': {
             return utils.sendShareButton()
           }
+          case 'debug_new_wv': {
+            console.log('DEBUG NEW WEBVIEW:')
+            console.log('-------------------------------------------------------')
+            const wvMsg = {
+              uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + process.env.FACEBOOK_BEARER_TOKEN,
+              json: true,
+              method: 'POST',
+              body: {
+                'recipient':{
+                  'id': userId
+                },
+                'message':{
+                  'attachment':{
+                    'type':'template',
+                    "payload":{
+                      "template_type":"generic",
+                      "elements":[
+                         {
+                          "title":"New WV",
+                          "image_url":"https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/arrows.jpg",
+                          "subtitle":"Webview",
+                          "default_action": {
+                            "url": 'https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Report.html',
+                            "type": "web_url",
+                            "messenger_extensions": true,
+                            "webview_height_ratio": "tall",
+                            "webview_share_button": "hide",
+                            "fallback_url": "https://www.inphood.com/"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              resolveWithFullResponse: true,
+              headers: {
+                'Content-Type': "application/json"
+              }
+            }
+            return requestPromise(wvMsg)
+          }
           default: {
             return nutrition.getNutritionix(messageText, userId, date, timestamp)
           }
