@@ -13,39 +13,6 @@ var spinner;
 //        'all' or '0' --> 'n' (n EI > 0)
 ////////////////////////////////////////////////////////////////////////////////
 
-function updateDbValue(key) {
-  logIt('updateDbValue');
-  logIt('----------------------------------------');
-  if (psid === null) {
-    return
-  }
-
-  let ele = document.getElementById(key);
-  logIt('ele type = ' + ele.getAttribute("type"));
-  let value = null;
-  if (ele.getAttribute("type") === "number" ||
-      ele.getAttribute("type") === "text") {
-    value = ele.value;
-  } else if (ele.getAttribute("type") === "checkbox") {
-    value = ele.checked;
-  }
-
-  logIt('  ' + key + '(key), ' + value + '(value)');
-
-  if (value !== null) {
-    let preferencesRef = firebase.database().ref('global/sugarinfoai/' + psid + '/preferences');
-
-    logIt('  writing value');
-    let keyRef = preferencesRef.child(key);
-    keyRef.set(value);
-
-    if (key === 'currentWeight') {
-      // Also need to write to the current date formatted string (TODO)
-      //logIt('tz: ' + tz);
-    }
-  }
-}
-
 function handleOnInput(id) {
   logIt('handleOnInput id=' + id)
   logIt('----------------------------------------');
@@ -214,8 +181,8 @@ function initPageValuesFromDb(userRef) {
                   preferences.nightlySummary)
 
     // Now that the html is installed, style the switch.
-    $("#nightlySummary").bootstrapSwitch({
-      size: 'md'
-    });
+//    $("#nightlySummary").bootstrapSwitch({
+//      size: 'md'
+//    });
   });
 }
