@@ -117,7 +117,6 @@ exports.fdaProcess = function (userId, barcode, date, fulldate) {
     })
     .catch(ferror => {
       console.log('final fallback on firebase', ferror)
-      var tempRef = firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data/")
       var missRef = firebase.database().ref("/global/sugarinfoai/missing/" + barcode)
       return missRef.once("value")
       .then(function(snapshot) {
@@ -146,21 +145,13 @@ exports.fdaProcess = function (userId, barcode, date, fulldate) {
           return fire.addSugarToFirebase(userId, date, fulldate, barcode, sugarData)
         }
         else {
-          return tempRef.child('upc').remove()
-          .then(() => {
-            return firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data/missing/").update({
-              barcode: barcode
-            })
-            .then(() => {
-              return [
-                "Looks like you got me...I have no idea what you're eating",
-                new fbTemplate.Button("Would you like to manually enter the sugar amount? We can store it for future use 🙂")
-                .addButton('Yes  ✅', 'manual sugar track with upc')
-                .addButton('No  ❌', 'other options')
-                .get()
-              ]
-            })
-          })
+          return [
+            "Looks like you got me...I have no idea what you're eating",
+            new fbTemplate.Button("Would you like to manually enter the sugar amount? We can store it for future use 🙂")
+            .addButton('Yes  ✅', 'manual sugar track with upc')
+            .addButton('No  ❌', 'other options')
+            .get()
+          ]
         }
       })
       .catch((error) => {
@@ -181,7 +172,6 @@ exports.processLabelImage = function(url, userId, date, timestamp) {
     resolveWithFullResponse: true,
     headers: {Authorization: "Bearer " + process.env.FACEBOOK_BEARER_TOKEN}
   }
-  var tempRef = firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data/")
   const request = require('request-promise')
   return request(fbOptions)
   .then(result => {
@@ -202,13 +192,10 @@ exports.processLabelImage = function(url, userId, date, timestamp) {
       return exports.fdaProcess(userId, response, date, timestamp)
     })
     .catch(() => {
-      return tempRef.child('upc').remove()
-      .then(() => {
-        return new fbTemplate.Button("I couldn't read that barcode. Would you like to try another picture or manually enter the barcode?")
-        .addButton('Yes  ✅', 'analyze upc')
-        .addButton('No  ❌', 'other options')
-        .get()
-      })
+      return new fbTemplate.Button("I couldn't read that barcode. Would you like to try another picture or manually enter the barcode?")
+      .addButton('Yes  ✅', 'analyze upc')
+      .addButton('No  ❌', 'other options')
+      .get()
     })
   })
   .catch(err => {

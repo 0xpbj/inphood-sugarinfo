@@ -230,33 +230,40 @@ exports.trackAlertness = function() {
   .get();
 }
 
-exports.parseMyFavorites = function(favorites) {
+exports.parseMyFavorites = function(favorites, more) {
   let favArr = []
-  let myFavs = new fbTemplate.Button('Here are your most commonly added meals')
+  console.log('Favorites', favorites)
+  if (more && favorites.length < 4)
+    return 'No more favorites to display.'
+  let myFavs = new fbTemplate.List()
+  myFavs.addBubble('My Favorites Meals', 'Here are your most commonly added meals')
+  .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/favorite.jpg')
   for (let object in favorites) {
     let length = Object.keys(favorites[object].date).length
     favArr.push({length, object})
   }
-  // console.log('Pre sorted', favArr)
-  // console.log('\n\n\n\n\n')
   favArr.sort(function(a, b) {
-    // console.log('A', a)
-    // console.log('B', b)
     return (a.length > b.length)
   })
-  // console.log('\n\n\n\n\n')
   var revArr = favArr.reverse()
-  // console.log('Post sorted', revArr)
   let i = 0
   for (let it of revArr) {
-    if (i === 3)
+    if (!more && i === 3)
+      break
+    else if (more && i === 6)
       break
     i++
-    console.log(it.object)
+    if (more && i < 4) {
+      continue
+    }
     let name = it.object.cleanText ? it.object.cleanText : it.object
-    myFavs
-    .addButton(name.toLowerCase(), it.object)
+    myFavs.addBubble('Meal #' + i, name.toLowerCase())
+    .addButton('Add Meal', it.object)
   }
-  // myFavs.addButton('Cancel', 'back')
-  return myFavs.get()
+  if (more || favorites.length < 4) {
+    return myFavs.get()
+  }
+  else {
+    return myFavs.addListButton('View More', 'more favorites').get()
+  }
 }

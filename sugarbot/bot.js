@@ -29,18 +29,17 @@ module.exports = botBuilder(function (request, originalApiRequest) {
     var messageText = request.text ? request.text.toLowerCase() : null
     if (bailArr.indexOf(messageText) > -1) {
       if (firebase.auth().currentUser) {
-        firebase.database().ref("/global/sugarinfoai/" + userId).child('/temp/data/').remove()
+        return utils.otherOptions(true)
       }
       else {
-        firebase.auth().signInAnonymously()
+        return firebase.auth().signInAnonymously()
         .then(() => {
-          firebase.database().ref("/global/sugarinfoai/" + userId).child('/temp/data/').remove()
+          return utils.otherOptions(true)
         })
         .catch(error => {
           console.log('Login Error', error)
         })
       }
-      return utils.otherOptions(true)
     }
     else {
       if (firebase.auth().currentUser) {

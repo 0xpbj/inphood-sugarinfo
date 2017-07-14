@@ -44,114 +44,104 @@ exports.getNutritionix = function(messageText, userId, date, fulldate) {
   return request(nutOptions)
   .then(result => {
     let {foods} = result.body
-    var tempRef = firebase.database().ref("/global/sugarinfoai/" + userId)
-    return tempRef.child('/temp/data/question').once('value')
-    .then((snapshot) => {
-      let mealType = snapshot.child('mealType').val()
-      if (!mealType)
-        mealType = 'snack'
-      let psugar = 0
-      let nsugar = 0
-      let processedSugars = ''
-      let foodName = ''
-      let naturalSugars = ''
-      let zeroSugar = ''
-      let thumb = []
-      let sugar = 0
-      let carbs = 0
-      let fiber = 0
-      let sugarArr = []
-      let carbsArr = []
-      let fiberArr = []
-      for (let food of foods) {
-        let nxsugar = 0
-        let pxsugar = 0
-        const {
-          upc, 
-          nf_sugars, 
-          nf_total_carbohydrate,
-          nf_dietary_fiber,
-          nix_brand_name, 
-          nix_brand_id, 
-          nf_ingredient_statement, 
-          food_name, 
-          serving_qty, 
-          serving_unit, 
-          meal_type, 
-          photo
-        } = food
-        let foodSugar = nf_sugars ? Math.round(nf_sugars) : 0
-        console.log('*************************')
-        console.log(food)
-        if (foodSugar === 0) {
-          zeroSugar += '    - 0g sugar in ' + serving_qty + ' ' + serving_unit + ' of ' + food_name +'\n'
-          foodName += food_name + '\n'
-        }
-        else if (upc || nix_brand_name || nix_brand_id || nf_ingredient_statement || names.getNatural(food_name) == -1) {
-          console.log('Processed', food_name)
-          psugar += foodSugar
-          pxsugar += foodSugar
-          processedSugars += '    - ' + foodSugar + 'g sugars in ' + serving_qty + ' ' + serving_unit + ' of ' + food_name + '\n'
-          foodName += food_name + '\n'
-        }
-        else if (foodSugar) {
-          nsugar += foodSugar
-          nxsugar += foodSugar
-          naturalSugars +=  '    - ' + foodSugar + 'g natural sugars in ' + serving_qty + ' ' + serving_unit + ' of ' + food_name + '\n'
-          foodName += food_name + '\n'
-        }
-        if (photo.thumb !== '') {
-          thumb.push(photo.thumb)
-        }
-        else {
-          thumb.push('')
-        }
-        sugar += nf_sugars
-        carbs += nf_total_carbohydrate
-        fiber += nf_dietary_fiber
-        sugarArr.push({nsugar: nxsugar, psugar: pxsugar})
-        carbsArr.push(nf_total_carbohydrate)
-        fiberArr.push(nf_dietary_fiber)
+    let psugar = 0
+    let nsugar = 0
+    let processedSugars = ''
+    let foodName = ''
+    let naturalSugars = ''
+    let zeroSugar = ''
+    let thumb = []
+    let sugar = 0
+    let carbs = 0
+    let fiber = 0
+    let sugarArr = []
+    let carbsArr = []
+    let fiberArr = []
+    for (let food of foods) {
+      let nxsugar = 0
+      let pxsugar = 0
+      const {
+        upc, 
+        nf_sugars, 
+        nf_total_carbohydrate,
+        nf_dietary_fiber,
+        nix_brand_name, 
+        nix_brand_id, 
+        nf_ingredient_statement, 
+        food_name, 
+        serving_qty, 
+        serving_unit, 
+        meal_type, 
+        photo
+      } = food
+      let foodSugar = nf_sugars ? Math.round(nf_sugars) : 0
+      console.log('*************************')
+      console.log(food)
+      if (foodSugar === 0) {
+        zeroSugar += '    - 0g sugar in ' + serving_qty + ' ' + serving_unit + ' of ' + food_name +'\n'
+        foodName += food_name + '\n'
       }
-      let sugarPerServingStr = 'That has about ' + psugar + 'g of sugars. Here\'s a breakdown of your meal: \n'
-      if (processedSugars !== '') {
-        sugarPerServingStr += processedSugars
+      else if (upc || nix_brand_name || nix_brand_id || nf_ingredient_statement || names.getNatural(food_name) == -1) {
+        console.log('Processed', food_name)
+        psugar += foodSugar
+        pxsugar += foodSugar
+        processedSugars += '    - ' + foodSugar + 'g sugars in ' + serving_qty + ' ' + serving_unit + ' of ' + food_name + '\n'
+        foodName += food_name + '\n'
       }
-      if (naturalSugars !== '') {
-        sugarPerServingStr += '\n\n*NOTE* These sugars are not counted against your daily allotment.\n'
-        sugarPerServingStr += '  ' + nsugar + 'g of natural sugars\n' + naturalSugars
+      else if (foodSugar) {
+        nsugar += foodSugar
+        nxsugar += foodSugar
+        naturalSugars +=  '    - ' + foodSugar + 'g natural sugars in ' + serving_qty + ' ' + serving_unit + ' of ' + food_name + '\n'
+        foodName += food_name + '\n'
       }
-      if (zeroSugar !== '') {
-        sugarPerServingStr += zeroSugar
+      if (photo.thumb !== '') {
+        thumb.push(photo.thumb)
       }
-      let carbsPerServingStr = 'That has about ' + carbs + 'g of carbs.'
-      let fiberPerServingStr = 'That has about ' + fiber + 'g of fiber.'
-      let sugarData = {
-        sugar,
-        carbs,
-        fiber,
-        psugar,
-        nsugar,
-        sugarArr,
-        carbsArr,
-        fiberArr,
-        foodName,
-        cleanText,
-        sugarPerServingStr,
-        carbsPerServingStr,
-        fiberPerServingStr,
-        photo: thumb,
-        ingredientsSugarsCaps: 'unknown'
+      else {
+        thumb.push('')
       }
-      return fire.addSugarToFirebase(userId, date, fulldate, '', sugarData)
-    })
+      sugar += nf_sugars
+      carbs += nf_total_carbohydrate
+      fiber += nf_dietary_fiber
+      sugarArr.push({nsugar: nxsugar, psugar: pxsugar})
+      carbsArr.push(nf_total_carbohydrate)
+      fiberArr.push(nf_dietary_fiber)
+    }
+    let sugarPerServingStr = 'That has about ' + psugar + 'g of sugars. Here\'s a breakdown of your meal: \n'
+    if (processedSugars !== '') {
+      sugarPerServingStr += processedSugars
+    }
+    if (naturalSugars !== '') {
+      sugarPerServingStr += '\n\n*NOTE* These sugars are not counted against your daily allotment.\n'
+      sugarPerServingStr += '  ' + nsugar + 'g of natural sugars\n' + naturalSugars
+    }
+    if (zeroSugar !== '') {
+      sugarPerServingStr += zeroSugar
+    }
+    let carbsPerServingStr = 'That has about ' + carbs + 'g of carbs.'
+    let fiberPerServingStr = 'That has about ' + fiber + 'g of fiber.'
+    let sugarData = {
+      sugar,
+      carbs,
+      fiber,
+      psugar,
+      nsugar,
+      sugarArr,
+      carbsArr,
+      fiberArr,
+      foodName,
+      cleanText,
+      sugarPerServingStr,
+      carbsPerServingStr,
+      fiberPerServingStr,
+      photo: thumb,
+      ingredientsSugarsCaps: 'unknown'
+    }
+    return fire.addSugarToFirebase(userId, date, fulldate, '', sugarData)
   })
   .catch(error => {
-    return firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data/question").remove()
-    .then(function() {
-      return [
-        "We couldn\'t match any of your foods",
-      ]
-    })
+    return [
+      "We couldn\'t match any of your foods",
+    ]
   })
 }

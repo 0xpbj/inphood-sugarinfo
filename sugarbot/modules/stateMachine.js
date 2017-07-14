@@ -23,7 +23,6 @@ exports.bot = function(request, messageText, userId) {
   return tempRef.once("value")
   .then(function(snapshot) {
     const favorites = snapshot.child('/myfoods/').val()
-    const favFlag = snapshot.child('/temp/data/favorites/flag').val()
     const timezone = snapshot.child('/profile/timezone').val() ? snapshot.child('/profile/timezone').val() : -7
     const {timestamp} = request.originalRequest
     const date = timeUtils.getUserDateString(timestamp, timezone)
@@ -31,12 +30,6 @@ exports.bot = function(request, messageText, userId) {
     if (messageText && !isNaN(messageText)) {
       return image.fdaProcess(userId, messageText, date, timestamp)
     }
-    else if (favFlag && messageText) {
-      return fire.findMyFavorites(request.text, userId, date, timestamp)
-    }
-    // else if (question && messageText) {
-    //   return nutrition.getNutritionix(messageText, userId, date, timestamp)
-    // }
     else if (messageText) {
       console.log('Entering wit proccessing area for: ', messageText)
       return witClient.message(messageText, {})
@@ -49,22 +42,19 @@ exports.bot = function(request, messageText, userId) {
           case 'start': {
             return fire.trackUserProfile(userId)
             .then(() => {
-              return firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data").remove()
-              .then(() => {
-                return firebase.database().ref("/global/sugarinfoai/" + userId + "/profile/").once("value")
-                .then(function(snapshot) {
-                  let intro = ''
-                  if (snapshot.child('first_name').exists()) {
-                    intro = 'Hi ' + snapshot.child('first_name').val() + ', I’m sugarinfoAI! I can help you understand how much sugar you are eating and help you bring it within recommended limits. Would you like that?'
-                  }
-                  else {
-                    intro = 'Hi, I’m sugarinfoAI! I can help you understand how much sugar you are eating and help you bring it within recommended limits. Would you like that?'
-                  }
-                  return new fbTemplate.Button(intro)
-                  .addButton('Tell me more', 'tell me more')
-                  .addButton('Let\'s track', 'start food question')
-                  .get()
-                })
+              return firebase.database().ref("/global/sugarinfoai/" + userId + "/profile/").once("value")
+              .then(function(snapshot) {
+                let intro = ''
+                if (snapshot.child('first_name').exists()) {
+                  intro = 'Hi ' + snapshot.child('first_name').val() + ', I’m sugarinfoAI! I can help you understand how much sugar you are eating and help you bring it within recommended limits. Would you like that?'
+                }
+                else {
+                  intro = 'Hi, I’m sugarinfoAI! I can help you understand how much sugar you are eating and help you bring it within recommended limits. Would you like that?'
+                }
+                return new fbTemplate.Button(intro)
+                .addButton('Tell me more', 'tell me more')
+                .addButton('Let\'s track', 'start food question')
+                .get()
               })
             })
           }
@@ -160,10 +150,7 @@ exports.bot = function(request, messageText, userId) {
           }
           case 'reset':
           case 'say adios': {
-            return firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data").remove()
-            .then(() => {
-              return 'No problem! If you have any questions later just type: help'
-            })
+            return 'No problem! If you have any questions later just type: help'
           }
           case 'journal': {
             return new fbTemplate.Button('I\'m all ears! How would you like to enter your meal?')
@@ -200,12 +187,10 @@ exports.bot = function(request, messageText, userId) {
             if (!favorites) {
               return 'Favorites are shown once you add meals to your journal'
             }
-            return tempRef.child('/temp/data/favorites').update({
-              flag: true
-            })
-            .then(() => {
-              return utils.parseMyFavorites(favorites)
-            })
+            return utils.parseMyFavorites(favorites, false)
+          }
+          case 'more favorites': {
+            return utils.parseMyFavorites(favorites, true)
           }
           case 'start food question': {
             const timeUser = timeUtils.getUserTimeObj(Date.now(), timezone)
@@ -258,10 +243,7 @@ exports.bot = function(request, messageText, userId) {
             return 'Food description or UPC Label photo, the choice is yours'
           }
           case 'nutrition': {
-            return firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data").remove()
-            .then(function() {
-              return nutrition.getNutritionix(messageText, userId, date, timestamp)
-            })
+            return fire.findMyFavorites(messageText, userId, date, timestamp)
           }
           case 'recipe': {
             const {timestamp} = request.originalRequest
@@ -288,85 +270,7 @@ exports.bot = function(request, messageText, userId) {
 
             // 2. Get their current sugarIntake dict for today's date.
             //
-            const currSugarIntakeRef = firebase.database().ref(
-              "/global/sugarinfoai/" + userId + "/sugarIntake/" + date);
-            console.log('Trying to access ' + currSugarIntakeRef.toString());
-            return currSugarIntakeRef.once("value")
-            .then(function(currSugarIntakeSnapshot) {
-              let currSugarIntake = currSugarIntakeSnapshot.val();
-              if (!currSugarIntake) {
-                console.log('Error accessing sugarIntake for unremove / undelete of item.');
-                return;
-              }
-
-              // 3. Get the most recent item logged by the user today.
-              //    Note:  sugarIntakeDict is a dict of uniqueified time based keys followed by
-              //         one user defined key: 'dailyTotal'. We should be able to iterate
-              //         through this dictionary and choose the 2nd last element to
-              //         consistently find the last item a user ate. The last element will be
-              //         'dailyTotal'.
-              //
-              const keyArr = Object.keys(currSugarIntake);
-              const dictLength = keyArr.length;
-              if (dictLength < 2) {
-                console.log('Unexpected state machine error. Found underpopulated intake dictionary.');
-                return;
-              }
-              const lastKey = keyArr[dictLength - 2]
-              if (lastKey === 'dailyTotal') {
-                console.log('Unexpected state machine error. Retrieved daily total from intake dictionary as last intake key.');
-                return;
-              }
-
-              // 4. Set the removed key to true on the most recent item and messages
-              //    the user that we've deleted their entry.
-              //
-              const lastFoodRef = currSugarIntakeRef.child(lastKey);
-              const lastFoodRemovedRef = lastFoodRef.child('removed');
-              lastFoodRemovedRef.set(false);
-
-              // This next promise is purposely concurrent to the return etc. below (i.e.
-              // don't keep the user waiting for this).
-              return currSugarIntakeRef.once("value")
-              .then(function(updatedSugarIntakeSnapshot) {
-                let updatedSugarIntake = updatedSugarIntakeSnapshot.val();
-                if (updatedSugarIntake) {
-                  const dailyTotalRef = firebase.database().ref(
-                    "/global/sugarinfoai/" + userId + "/sugarIntake/" + date + "/dailyTotal");
-                  utils.updateTotalSugar(updatedSugarIntakeSnapshot, dailyTotalRef);
-                  return dailyTotalRef.once("value")
-                  .then(function(dailyTotalSnapShot) {
-                    const dailyTotalDict = dailyTotalSnapShot.val();
-                    if (dailyTotalDict) {
-                      const psugar = dailyTotalDict.psugar;
-                      return firebase.database().ref("/global/sugarinfoai/" + userId + "/preferences/currentGoalSugar").once("value")
-                      .then(function(psnapshot) {
-                        let goalSugar = psnapshot.val()
-                        if (!goalSugar)
-                          goalSugar = 36
-                        let sugarPercentage = Math.ceil(psugar*100/goalSugar)
-                        const cleanFoodName = currSugarIntake[lastKey].cleanText;
-                        return fire.sugarResponse (userId, cleanFoodName, sugarPercentage)
-                        .then(() => {
-                          return [
-                            // 'Okay, we\'ve added ' + cleanFoodName + ' from your food journal.',
-                            constants.generateTip(constants.encouragingTips),
-                            new fbTemplate.Button("Would you like to setup a reminder to track your next meal?")
-                            .addButton('Alright ✅', 'set a reminder')
-                            .addButton('Not now  ❌', 'notime')
-                            .get()
-                            // utils.sendReminder()
-                          ];
-                        })
-                      })
-                    }
-                  });
-                }
-              });
-            })
-            .catch(error => {
-              console.log('AC Error', error)
-            });
+            return fire.addLastItem()
           }
           case 'set a reminder': {
             return utils.sendReminder()
@@ -421,10 +325,7 @@ exports.bot = function(request, messageText, userId) {
             return utils.sendShareButton()
           }
           default: {
-            return firebase.database().ref("/global/sugarinfoai/" + userId + "/temp/data").remove()
-            .then(function() {
-              return nutrition.getNutritionix(messageText, userId, date, timestamp)
-            })
+            return nutrition.getNutritionix(messageText, userId, date, timestamp)
           }
         }
       })

@@ -3,6 +3,7 @@ const fbTemplate = botBuilder.fbTemplate;
 const utils = require('./utils.js')
 const sugarUtils = require('./sugarUtils.js')
 const constants = require('./constants.js')
+const nutrition = require ('./nutritionix.js')
 
 const requestPromise = require('request-promise')
 const firebase = require('firebase')
@@ -64,7 +65,87 @@ function subSlashes( str ) {
   return ''
 }
 
-exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
+exports.addLastItem = function(userId, date) {
+  const currSugarIntakeRef = firebase.database().ref(
+    "/global/sugarinfoai/" + userId + "/sugarIntake/" + date);
+  console.log('Trying to access ' + currSugarIntakeRef.toString());
+  return currSugarIntakeRef.once("value")
+  .then(function(currSugarIntakeSnapshot) {
+    let currSugarIntake = currSugarIntakeSnapshot.val();
+    if (!currSugarIntake) {
+      console.log('Error accessing sugarIntake for unremove / undelete of item.');
+      return;
+    }
+
+    // 3. Get the most recent item logged by the user today.
+    //    Note:  sugarIntakeDict is a dict of uniqueified time based keys followed by
+    //         one user defined key: 'dailyTotal'. We should be able to iterate
+    //         through this dictionary and choose the 2nd last element to
+    //         consistently find the last item a user ate. The last element will be
+    //         'dailyTotal'.
+    //
+    const keyArr = Object.keys(currSugarIntake);
+    const dictLength = keyArr.length;
+    if (dictLength < 2) {
+      console.log('Unexpected state machine error. Found underpopulated intake dictionary.');
+      return;
+    }
+    const lastKey = keyArr[dictLength - 2]
+    if (lastKey === 'dailyTotal') {
+      console.log('Unexpected state machine error. Retrieved daily total from intake dictionary as last intake key.');
+      return;
+    }
+
+    // 4. Set the removed key to true on the most recent item and messages
+    //    the user that we've deleted their entry.
+    //
+    const lastFoodRef = currSugarIntakeRef.child(lastKey);
+    const lastFoodRemovedRef = lastFoodRef.child('removed');
+    lastFoodRemovedRef.set(false);
+
+    // This next promise is purposely concurrent to the return etc. below (i.e.
+    // don't keep the user waiting for this).
+    return currSugarIntakeRef.once("value")
+    .then(function(updatedSugarIntakeSnapshot) {
+      let updatedSugarIntake = updatedSugarIntakeSnapshot.val();
+      if (updatedSugarIntake) {
+        const dailyTotalRef = firebase.database().ref(
+          "/global/sugarinfoai/" + userId + "/sugarIntake/" + date + "/dailyTotal");
+        utils.updateTotalSugar(updatedSugarIntakeSnapshot, dailyTotalRef);
+        return dailyTotalRef.once("value")
+        .then(function(dailyTotalSnapShot) {
+          const dailyTotalDict = dailyTotalSnapShot.val();
+          if (dailyTotalDict) {
+            const psugar = dailyTotalDict.psugar;
+            return firebase.database().ref("/global/sugarinfoai/" + userId + "/preferences/currentGoalSugar").once("value")
+            .then(function(psnapshot) {
+              let goalSugar = psnapshot.val()
+              if (!goalSugar)
+                goalSugar = 36
+              let sugarPercentage = Math.ceil(psugar*100/goalSugar)
+              const cleanFoodName = currSugarIntake[lastKey].cleanText;
+              return exports.sugarResponse (userId, cleanFoodName, sugarPercentage)
+              .then(() => {
+                return [
+                  constants.generateTip(constants.encouragingTips),
+                  new fbTemplate.Button("Would you like to setup a reminder to track your next meal?")
+                  .addButton('Alright ✅', 'set a reminder')
+                  .addButton('Not now  ❌', 'notime')
+                  .get()
+                ];
+              })
+            })
+          }
+        });
+      }
+    });
+  })
+  .catch(error => {
+    console.log('AC Error', error)
+  });
+}
+
+exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data, favorite = false) {
   var userRef = firebase.database().ref("/global/sugarinfoai/" + userId)
   return userRef.once("value")
   .then(function(snapshot) {
@@ -139,70 +220,58 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data) {
       .then(() => {
         return userRef.child('/sugarIntake/' + date + '/dailyTotal/').update({ nsugar: newNSugar, psugar: newPSugar })
         .then(() => {
-          let sugarPercentage = Math.ceil(sugar*100/goalSugar)
-          // if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown') {
-          //   sugarPercentage = Math.ceil(sugar*100/goalSugar)
-          // }
-          // return sugarResponse (userId, foodName, sugarPercentage)
-          // .then(() => {
-            if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && sugar >= 3) {
-              return [
-                'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
-                'Sugar Visualization: 🍪🍭🍩🍫',
-                new fbTemplate
-                .Image(sugarUtils.getGifUrl(sugar))
-                .get(),
-                new fbTemplate.Button("Would you like to add the item to your journal?")
-                .addButton('Yes  ✅', 'add last item')
-                .get()
-                // constants.generateTip(constants.encouragingTips),
-                // utils.sendReminder()
-              ]
-            }
-            else if (Math.round(psugar) > 2) {
-              return [
-                'Sugar Visualization: 🍪🍭🍩🍫',
-                new fbTemplate
-                .Image(sugarUtils.getGifUrl(Math.round(psugar)))
-                .get(),
-                new fbTemplate.Button("Would you like to add the item to your journal?")
-                .addButton('Yes  ✅', 'add last item')
-                .get()
-                // constants.generateTip(constants.encouragingTips),
-                // utils.sendReminder()
-              ]
-            }
-            else if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && sugar > 0) {
-              return [
-                'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
-                sugar + 'g of sugar found',
-                new fbTemplate.Button("Would you like to add the item to your journal?")
-                .addButton('Yes  ✅', 'add last item')
-                .get()
-                // constants.generateTip(constants.encouragingTips),
-                // utils.sendReminder()
-              ]
-            }
-            else if (Math.round(psugar) > 0) {
-              return [
-                new fbTemplate.Button("Would you like to add the item to your journal?")
-                .addButton('Yes  ✅', 'add last item')
-                .get()
-                // constants.generateTip(constants.encouragingTips),
-                // utils.sendReminder()
-              ]
-            }
-            else if (sugar === 0) {
-              return [
-                'Congratulations! 🎉🎉 No sugars found!',
-                new fbTemplate.Button("Would you like to add the item to your journal?")
-                .addButton('Yes  ✅', 'add last item')
-                .get()
-                // constants.generateTip(constants.encouragingTips),
-                // utils.sendReminder()
-              ]
-            }
-          // })
+          if (favorite) {
+            return exports.addLastItem(userId, date)
+          }
+          const sugarPercentage = Math.ceil(psugar*100/goalSugar)
+          const roundSugar = Math.round(psugar)
+          if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && roundSugar >= 3) {
+            return [
+              'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
+              'Sugar Visualization: 🍪🍭🍩🍫',
+              new fbTemplate
+              .Image(sugarUtils.getGifUrl(roundSugar))
+              .get(),
+              new fbTemplate.Button("Would you like to add the item to your journal?")
+              .addButton('Yes  ✅', 'add last item')
+              .get()
+            ]
+          }
+          else if (roundSugar > 2) {
+            return [
+              'Sugar Visualization: 🍪🍭🍩🍫',
+              new fbTemplate
+              .Image(sugarUtils.getGifUrl(roundSugar))
+              .get(),
+              new fbTemplate.Button("Would you like to add the item to your journal?")
+              .addButton('Yes  ✅', 'add last item')
+              .get()
+            ]
+          }
+          else if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && roundSugar > 0) {
+            return [
+              'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
+              roundSugar + 'g of sugar found',
+              new fbTemplate.Button("Would you like to add the item to your journal?")
+              .addButton('Yes  ✅', 'add last item')
+              .get()
+            ]
+          }
+          else if (roundSugar > 0) {
+            return [
+              new fbTemplate.Button("Would you like to add the item to your journal?")
+              .addButton('Yes  ✅', 'add last item')
+              .get()
+            ]
+          }
+          else if (psugar === 0) {
+            return [
+              'Congratulations! 🎉🎉 No sugars found!',
+              new fbTemplate.Button("Would you like to add the item to your journal?")
+              .addButton('Yes  ✅', 'add last item')
+              .get()
+            ]
+          }
         })
       })
     })
@@ -216,11 +285,13 @@ exports.findMyFavorites = function(favoriteMeal, userId, date, fulldate) {
   let objRef = firebase.database().ref('/global/sugarinfoai/' + userId + '/myfoods/' + favoriteMeal + '/')
   return objRef.once("value")
   .then(function(snapshot) {
-    console.log('favorites snapshot', snapshot.val())
-    return firebase.database().ref('/global/sugarinfoai/' + userId + '/temp/data/favorites').remove()
-    .then(() => {
-      return exports.addSugarToFirebase(userId, date, fulldate, '', snapshot.val())
-    })
+    const favorite = true
+    if (snapshot.exists()) {
+      return exports.addSugarToFirebase(userId, date, fulldate, '', snapshot.val(), favorite)
+    }
+    else {
+      return nutrition.getNutritionix(favoriteMeal, userId, date, fulldate)
+    }
   })
   .catch(error => {
     console.log('Errors', error)
