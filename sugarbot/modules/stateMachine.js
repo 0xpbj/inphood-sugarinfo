@@ -190,7 +190,10 @@ exports.bot = function(request, messageText, userId) {
             return utils.parseMyFavorites(favorites, false)
           }
           case 'more favorites': {
-            return utils.parseMyFavorites(favorites, true)
+            if (favorites.length > 3) {
+              return utils.parseMyFavorites(favorites, true)
+            }
+            return 'No more favorites to display.'
           }
           case 'start food question': {
             const timeUser = timeUtils.getUserTimeObj(Date.now(), timezone)
@@ -270,7 +273,7 @@ exports.bot = function(request, messageText, userId) {
 
             // 2. Get their current sugarIntake dict for today's date.
             //
-            return fire.addLastItem()
+            return fire.addLastItem(userId, date)
           }
           case 'set a reminder': {
             return utils.sendReminder()

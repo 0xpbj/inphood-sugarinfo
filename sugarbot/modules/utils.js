@@ -232,9 +232,7 @@ exports.trackAlertness = function() {
 
 exports.parseMyFavorites = function(favorites, more) {
   let favArr = []
-  console.log('Favorites', favorites)
-  if (more && favorites.length < 4)
-    return 'No more favorites to display.'
+  console.log('Favorites', favorites, favorites.length)
   let myFavs = new fbTemplate.List()
   myFavs.addBubble('My Favorites Meals', 'Here are your most commonly added meals')
   .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/favorite.jpg')
@@ -260,7 +258,8 @@ exports.parseMyFavorites = function(favorites, more) {
     myFavs.addBubble('Meal #' + i, name.toLowerCase())
     .addButton('Add Meal', it.object)
   }
-  if (more || favorites.length < 4) {
+  console.log('fav arr', favArr.length, more)
+  if (more || favArr.length < 4) {
     return myFavs.get()
   }
   else {
