@@ -282,7 +282,8 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data, fav
 }
 
 exports.findMyFavorites = function(favoriteMeal, userId, date, fulldate) {
-  let objRef = firebase.database().ref('/global/sugarinfoai/' + userId + '/myfoods/' + favoriteMeal + '/')
+  const cleanFavMeal = subSlashes(favoriteMeal);
+  let objRef = firebase.database().ref('/global/sugarinfoai/' + userId + '/myfoods/' + cleanFavMeal + '/')
   return objRef.once("value")
   .then(function(snapshot) {
     const favorite = true
