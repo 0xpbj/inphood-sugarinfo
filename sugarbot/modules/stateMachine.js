@@ -53,7 +53,7 @@ exports.bot = function(request, messageText, userId) {
                   intro = 'Hi, I’m sugarinfoAI! I can help you understand how much sugar you are eating and help you bring it within recommended limits. Would you like that?'
                 }
                 return new fbTemplate.Button(intro)
-                .addButton('Tell me more', 'tell me more')
+                .addButton('Learn more', 'tell me more')
                 .addButton('Let\'s track', 'start food question')
                 .get()
               })
@@ -71,7 +71,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'How to analyze ingredients with the chatbot:',
               new fbTemplate
-              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/ingredients.gif')
+              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/analyze.gif')
               .get()
             ]
           }
@@ -79,7 +79,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'How to track with the chatbot:',
                new fbTemplate
-              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/tracking.gif')
+              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/tracks.gif')
               .get()
             ]
           }
