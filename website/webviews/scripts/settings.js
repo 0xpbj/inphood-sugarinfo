@@ -181,8 +181,8 @@ function initPageValuesFromDb(userRef) {
                   preferences.nightlySummary)
 
     // Now that the html is installed, style the switch.
-//    $("#nightlySummary").bootstrapSwitch({
-//      size: 'md'
-//    });
+    $("#nightlySummary").bootstrapSwitch({
+      size: 'md'
+    });
   });
 }
