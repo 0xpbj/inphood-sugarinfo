@@ -59,6 +59,14 @@ exports.bot = function(request, messageText, userId) {
               })
             })
           }
+          case 'feedback': {
+            return [
+              'Here is how you can send us feedback:',
+              new fbTemplate
+              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/feedback.gif')
+              .get()
+            ]
+          }
           case 'report animation': {
             return [
               'How to check your consumption report:',
@@ -325,8 +333,8 @@ exports.bot = function(request, messageText, userId) {
                       "elements":[
                          {
                           "title":"Settings",
-                          "image_url":"https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/arrows.jpg",
-                          "subtitle":"Webview settings",
+                          "image_url":"https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/settings.jpeg",
+                          "subtitle":"Weight, sugar, goals",
                           "default_action": {
                             "url": 'https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Settings.html',
                             "type": "web_url",
