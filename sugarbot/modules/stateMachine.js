@@ -25,6 +25,7 @@ exports.bot = function(request, messageText, userId) {
     const favorites = snapshot.child('/myfoods/').val()
     const timezone = snapshot.child('/profile/timezone').val() ? snapshot.child('/profile/timezone').val() : -7
     const {timestamp} = request.originalRequest
+
     const date = timeUtils.getUserDateString(timestamp, timezone)
     var messageAttachments = (request.originalRequest && request.originalRequest.message) ? request.originalRequest.message.attachments : null
     if (messageText && !isNaN(messageText)) {
