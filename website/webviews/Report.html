@@ -23,7 +23,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
     <!-- Material Design Bootstrap -->
-    <link href="../../lib/mdbootstrap/css/mdb.min.css" rel="stylesheet">
+    <link href="../lib/mdbootstrap/css/mdb.min.css" rel="stylesheet">
 
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -42,7 +42,8 @@
     <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
 
     <!-- MDB core JavaScript -->
-    <script type="text/javascript" src="../../lib/mdbootstrap/js/mdb.min.js"></script>
+    <script type="text/javascript" src="../lib/mdbootstrap/js/mdb.min.js"></script>
+
   </head>
   <body>
     <!-- debug o/p -->
@@ -54,142 +55,7 @@
     <script src="scripts/debug.js"></script>
     <script src="scripts/timeUtils.js"></script>
     <script src="scripts/report.js"></script>
-    <script src="scripts/dbConnection.js"></script>
     <script src="scripts/fbShareButton.js"></script>
+    <script src="scripts/dbConnection.js"></script>
   </body>
 </html>
-
-
-</head>
-<body>
-  <div style="padding-right: 10px; padding-left: 10px;">
-    <div class="row">
-      <div class="col-xs-6 text-left">
-        <h3>Sugar Report</h3>
-      </div>
-      <div class="col-xs-6 text-right">
-        <div id="shareBtn" class="btn btn-primary clearfix">Share</div>
-      </div>
-    </div>
-    <div style="height: 10px;">&nbsp</div>
-    <h4 class="text-left">Sugar Today (10% of maximum)</h4>
-    <div class="progress" style="height: 40px;">
-      <div class="progress-bar progress-bar-success" role="progressbar" style="width: 10%; height: 40px; line-height: 40px;" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100">
-        <h5 class="text-center" style="vertical-align: middle; display: inline-block;">10%</h5>
-      </div>
-    </div>
-    <div style="height: 10px;">&nbsp</div>
-    <h4 class="text-left">Sugar Journal</h4>
-    <div>
-      <canvas id="sugarHistoryChart"/>
-        <script>
-$(function () {
-  var data = {
-    labels: ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""],
-    datasets: [
-    {
-      label: "Sugar (grams)",
-      fillColor: "rgba(151,187,205,0.2)",
-      strokeColor: "rgba(151,187,205,1)",
-      pointColor: "rgba(151,187,205,1)",
-      pointStrokeColor: "#fff",
-      pointHighlightFill: "#fff",
-      pointHighlightStroke: "rgba(151,187,205,1)",
-      data: [22, 2, 117, 88, 13, 40, 74, 79, 86, 66, 110, 100, 44, 149, 75, 132, 48, 29, 40, 66, 47, 60, 75, 82, 215.67, 61, 77, 18, 6]
-    }
-    ]
-  };
-  var option = {
-    responsive: true,
-  };
-  var ctx = document.getElementById("sugarHistoryChart").getContext("2d");
-  var myLineChart = new Chart(ctx).Line(data, option);
-});
-        </script>
-    </div>
-    <div style="height: 10px;">&nbsp</div>
-    <h4 class="text-left">Sugar History</h4>
-    <ul class="list-group">
-      <li class="list-group-item justify-content-between">
-        <div class="media">
-          <div class="media-body">
-            <h5 class="media-heading">pasta, olive oil, chicken apple sausage</h5>
-            <small>(6 grams sugars)</small>
-          </div>
-          <div class="media-right">
-            <img src="../assets/blank.png" class="media-object" alt="Sample Image" width="64" height="64">
-          </div>
-        </div>
-        <div class="media">
-          <div class="media-left">&nbsp;&nbsp;&nbsp;</div>
-          <div class="media-body">
-            <h6 class="media-heading">pasta</h6>
-            <small>(1 gram sugars)</small>
-          </div>
-          <div class="media-right">
-            <img src="https://d2xdmhkmkbyw75.cloudfront.net/1012_thumb.jpg" class="media-object" alt="Sample Image" width="64" height="64">
-          </div>
-        </div>
-        <div class="media">
-          <div class="media-left">&nbsp;&nbsp;&nbsp;</div>
-          <div class="media-body">
-            <h6 class="media-heading">olive oil</h6>
-          </div>
-          <div class="media-right">
-            <img src="https://d2xdmhkmkbyw75.cloudfront.net/42_thumb.jpg" class="media-object" alt="Sample Image" width="64" height="64">
-          </div>
-        </div>
-        <div class="media">
-          <div class="media-left">&nbsp;&nbsp;&nbsp;</div>
-          <div class="media-body">
-            <h6 class="media-heading">chicken apple sausage</h6>
-            <small>(5 grams sugars)</small>
-          </div>
-          <div class="media-right">
-            <img src="https://d2xdmhkmkbyw75.cloudfront.net/1390_thumb.jpg" class="media-object" alt="Sample Image" width="64" height="64">
-          </div>
-        </div>
-      </li>
-      <li class="list-group-item justify-content-between">
-      </li>
-      <li class="list-group-item active justify-content-between">
-        <div class="media">
-          <div class="media-left">
-            <h4 class="media-heading">Total</h4>
-          </div>
-          <div class="media-body text-right">
-            6 grams sugar
-          </div>
-        </div>
-      </li></ul>
-  </div>
-</body>
-<script>
-window.fbAsyncInit = function() {
-  FB.init({
-    appId
-      : "669941103143805",
-    autoLogAppEvents : true,
-    xfbml
-      : true,
-    version
-      : "v2.9"
-  });
-  FB.AppEvents.logPageView();
-};
-(function(d, s, id){
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) {return;}
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/sdk.js";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, "script", "facebook-jssdk"));
-document.getElementById("shareBtn").onclick = function() {
-  FB.ui({
-    method: "share",
-    href: "https://www.inphood.com/reports/1322516797796635/267733510.html",
-  }, function(response){});
-}
-</script>
-</html> 
-
