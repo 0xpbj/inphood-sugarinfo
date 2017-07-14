@@ -190,6 +190,12 @@ exports.bot = function(request, messageText, userId) {
             return utils.parseMyFavorites(favorites, false)
           }
           case 'more favorites': {
+            console.log('MORE FAVORITES')
+            console.log('-----------------------------')
+            console.log('  favorites.length: ' + favorites.length)
+            for (let key in favorites) {
+              console.log('  ' + key)
+            }
             if (favorites.length > 3) {
               return utils.parseMyFavorites(favorites, true)
             }
