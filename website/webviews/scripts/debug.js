@@ -1,6 +1,6 @@
 // Test mode:
-var showLog = false;
-var simulatedInit = false;
+var showLog = true;
+var simulatedInit = true;
 
 // TODO: add some js in here that autoruns and inserts an element at the bottom
 // of the dom where all this stuff is to get written too. At the moment you have

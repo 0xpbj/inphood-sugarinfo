@@ -15,7 +15,7 @@ function getDailyProcessedSugar(dailyTotalObj) {
 }
 
 
-function getReportHtml(date, userId, snapshot) {
+function getReportHtml(date, snapshot) {
   
   // Create HTML for the reports we wish to see:
   // 1. (MVP) List of items for the day
@@ -57,8 +57,8 @@ function getReportHtml(date, userId, snapshot) {
                       snapshot.child('preferences/currentGoalSugar').val() : undefined
 
     if (sugarGoal === undefined) {
-      logIt('ERROR: UNDEFINED SUGAR GOAL - DEFAULTING TO PBJ 40')
-      sugarGoal = 40
+      logIt('ERROR: UNDEFINED SUGAR GOAL - DEFAULTING TO Heart Assoc. 36')
+      sugarGoal = 36
     }
 
     const progBarColor = (totalProcessedSugarToday <= sugarGoal) ?
@@ -117,6 +117,7 @@ function getReportHtml(date, userId, snapshot) {
       //      --> display aggregate on first line with total sugar, no picture, time
       //        --> indented display each sub-component
       //
+      const userFoodName = (itemConsumed.hasOwnProperty('cleanText')) ?  itemConsumed.cleanText : ''
       const foodName = (itemConsumed.hasOwnProperty('foodName')) ?
         itemConsumed.foodName : ''
       const photoArr = itemConsumed.photo
@@ -126,20 +127,22 @@ function getReportHtml(date, userId, snapshot) {
       const singleItemUseCase = ((sugarArr === null) ||
                                  (sugarArr === undefined) ||
                                  (sugarArr.length === 1))
+      
+      const blankPath = './assets/blank.png'
 
       if (singleItemUseCase) {
         const measure = (totalProcessedSugar > 1) ? 'grams' : 'gram'
         const sugarLine = (totalProcessedSugar !== null && totalProcessedSugar !== undefined) ?
           '<small>(' + totalProcessedSugar + ' ' + measure + ' sugars)</small>' : ''
 
-        const imgSrc = (photoArr) ? photoArr[0] : '../assets/blank.png'
+        const imgSrc = (photoArr) ? photoArr[0] : blankPath
         const imgHtml = '<img src="' + imgSrc + '" class="media-object" alt="Sample Image" width="64" height="64">'
 
         sugarConsumptionReport += ' \
           <li class="list-group-item justify-content-between"> \
             <div class="media"> \
               <div class="media-body"> \
-                <h5 class="media-heading">' + foodName.replace('\n', '') + '</h5> \
+                <h5 class="media-heading">' + userFoodName + '</h5> \
                 ' + sugarLine + ' \
               </div> \
               <div class="media-right"> \
@@ -164,7 +167,7 @@ function getReportHtml(date, userId, snapshot) {
           const measure = (processedSugar > 1) ? 'grams' : 'gram';
           const indentedSugarLine = (processedSugar) ?
             '<small>(' + processedSugar + ' ' + measure + ' sugars)</small>' : ''
-          const imgSrc = (photoArr[index]) ? photoArr[index] : '../assets/blank.png'
+          const imgSrc = (photoArr[index]) ? photoArr[index] : blankPath
           const indentedImgHtml = '<img src="' + imgSrc + '" class="media-object" alt="Sample Image" width="64" height="64">'
 
           indentedConsumptionReport += ' \
@@ -180,13 +183,13 @@ function getReportHtml(date, userId, snapshot) {
             </div>'
         }
 
-        const imgHtml = '<img src="../assets/blank.png" class="media-object" alt="Sample Image" width="64" height="64">'
+        const imgHtml = '<img src="' + blankPath + '" class="media-object" alt="Sample Image" width="64" height="64">'
         // Main line
         sugarConsumptionReport += ' \
           <li class="list-group-item justify-content-between"> \
             <div class="media"> \
               <div class="media-body"> \
-                <h5 class="media-heading">' + titleFoodName + '</h5> \
+                <h5 class="media-heading">' + userFoodName + '</h5> \
                 ' + sugarLine + ' \
               </div> \
               <div class="media-right"> \
@@ -217,82 +220,6 @@ function getReportHtml(date, userId, snapshot) {
     sugarConsumptionReport += '</ul>'
   }
 
-
-  let sugarHistoryChart = ''
-  const hasChartData = snapshot.exists() &&
-                       snapshot.child('sugarIntake').exists()
-
-  if (hasChartData) {
-    const sugarConsumptionHistory = snapshot.child('sugarIntake').val()
-
-    // sugarHistoryChart += '<ul>'
-    let dataDaySugar = []
-    for (let day in sugarConsumptionHistory) {
-      const dateMs = Date.parse(day)
-      const dailyTotal = sugarConsumptionHistory[day].dailyTotal
-      if (!dailyTotal) {
-        logIt('dailyTotal is missing for ' + day + ' for user ' + userId)
-        continue
-      }
-      const sugarG = getDailyProcessedSugar(dailyTotal);
-      dataDaySugar.push({dateMs: dateMs, sugarG: sugarG, dayString: day})
-    }
-
-    dataDaySugar.sort(function(a, b) {
-      return a.dateMs - b.dateMs
-    })
-
-    labels = '['
-    data = '['
-    for (let index in dataDaySugar) {
-      let dateSugarDay = dataDaySugar[index]
-      // sugarHistoryChart += '<li>' + dateSugarDay.dateMs + ', ' + dateSugarDay.sugarG + '</li>'
-      if (index != dataDaySugar.length - 1) {
-        labels += '"", '
-        data += dateSugarDay.sugarG + ', '
-      } else {
-        labels += '""]'
-        data += dateSugarDay.sugarG + ']'
-      }
-    }
-
-    // sugarHistoryChart += '<ul>'
-
-    sugarHistoryChart += ' \
-    <div> \
-      <canvas id="sugarHistoryChart"/> \
-      <script> \
-        $(function () { \
-          var data = { \
-            labels: ' + labels + ', \
-            datasets: [ \
-              { \
-                label: "Sugar (grams)", \
-                fillColor: "rgba(151,187,205,0.2)", \
-                strokeColor: "rgba(151,187,205,1)", \
-                pointColor: "rgba(151,187,205,1)", \
-                pointStrokeColor: "#fff", \
-                pointHighlightFill: "#fff", \
-                pointHighlightStroke: "rgba(151,187,205,1)", \
-                data: ' + data + ' \
-              } \
-            ] \
-          }; \
-   \
-          var option = { \
-           responsive: true, \
-          }; \
-   \
-          var ctx = document.getElementById("sugarHistoryChart").getContext("2d"); \
-          var myLineChart = new Chart(ctx).Line(data, option); \
-        }); \
-    </script> \
-   \
-    </div> '
-  }
-
-
-
   const sectionSpacer = '<div style="height: 10px;">&nbsp</div>'
 
   const reportHtml = ' \
@@ -313,45 +240,105 @@ function getReportHtml(date, userId, snapshot) {
    \
         ' + sectionSpacer + ' \
         <h4 class="text-left">Sugar Journal</h4> \
-        ' + sugarHistoryChart + ' \
+        <div> \
+          <canvas id="sugarHistoryChart"/> \
+        </div> \
    \
         ' + sectionSpacer + ' \
         <h4 class="text-left">Sugar History</h4> \
-        ' + sugarConsumptionReport + ' 
+        ' + sugarConsumptionReport; 
   
   return reportHtml
+}
+
+function populateGraph(snapshot) {
+  logIt('Creating sugarHistoryChart')
+  let sugarHistoryChart = ''
+  const hasChartData = snapshot.exists() &&
+                       snapshot.child('sugarIntake').exists()
+
+  if (hasChartData) {
+    const sugarConsumptionHistory = snapshot.child('sugarIntake').val()
+
+    let dataDaySugar = []
+    for (let day in sugarConsumptionHistory) {
+      const dateMs = Date.parse(day)
+      const dailyTotal = sugarConsumptionHistory[day].dailyTotal
+      if (!dailyTotal) {
+        logIt('dailyTotal is missing for ' + day + ' for user ')
+        continue
+      }
+      const sugarG = getDailyProcessedSugar(dailyTotal);
+      dataDaySugar.push({dateMs: dateMs, sugarG: sugarG, dayString: day})
+    }
+
+    dataDaySugar.sort(function(a, b) {
+      return a.dateMs - b.dateMs
+    })
+
+    var labels = []
+    var plotData = []
+    for (let index in dataDaySugar) {
+      let dateSugarDay = dataDaySugar[index]
+      labels.push("")
+      plotData.push(dateSugarDay.sugarG)
+    }
+
+    var data = { 
+      labels: labels, 
+      datasets: [ 
+        { 
+          label: "Sugar (grams)", 
+          fillColor: "rgba(151,187,205,0.2)", 
+          strokeColor: "rgba(151,187,205,1)", 
+          pointColor: "rgba(151,187,205,1)", 
+          pointStrokeColor: "#fff", 
+          pointHighlightFill: "#fff", 
+          pointHighlightStroke: "rgba(151,187,205,1)", 
+          data: plotData 
+        } 
+      ] 
+    }; 
+
+    var option = { 
+     responsive: true, 
+    }; 
+
+    var ctx = document.getElementById("sugarHistoryChart").getContext("2d"); 
+    var myLineChart = new Chart(ctx).Line(data, option); 
+  }
 }
 
 function initPageValuesFromDb(userRef) {
   logIt('initPageValuesFromDb');
   logIt('-------------------------------');
 
-    const target = document.getElementById('myReport')
+  const target = document.getElementById('myReport')
     let spinner = new Spinner().spin(target);
-    logIt('spinner on');
+  logIt('spinner on');
 
-    return userRef.once('value')
-    .then(function(userSnapshot) {
-      if (userSnapshot) {
-        const userTimeZone = userSnapshot.child('/profile/timezone').val()
-        const firstName = userSnapshot.child('/profile/first_name').val()
-        const date = timeUtils.getUserDateString(Date.now(), userTimeZone)
+  return userRef.once('value')
+  .then(function(userSnapshot) {
+    if (userSnapshot) {
+      const userTimeZone = userSnapshot.child('/profile/timezone').val()
+      const firstName = userSnapshot.child('/profile/first_name').val()
+      const date = getUserDateString(Date.now(), userTimeZone)
 
-        let myReportHtml = dailyReportUtils.getReportHtml(date, userId, userSnapshot)
-        spinner.stop();
-        logIt('spinner off');
+      let myReportHtml = getReportHtml(date, userSnapshot)
+      spinner.stop();
+      logIt('spinner off');
 
-        // Replace the empty html with our form that has proper
-        // initial values from firebase.
-        document.getElementById('titleDate').innerHTML = date
-        target.innerHTML = myReportHtml
+      // Replace the empty html with our form that has proper
+      // initial values from firebase.
+      document.getElementById('titleDate').innerHTML = date
+      target.innerHTML = myReportHtml
+      
+      populateGraph(userSnapshot)
+    } else {
+      spinner.stop();
+      logIt('spinner off');
 
-      } else {
-        spinner.stop();
-        logIt('spinner off');
-
-        logIt('Error: userSnapshot is null or undefined');
-      }
-    })
-  }
+      logIt('Error: userSnapshot is null or undefined');
+    }
+  })
 }

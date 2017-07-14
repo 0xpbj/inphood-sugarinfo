@@ -56,8 +56,11 @@ function initAndAuthDb() {
 function initValuesFromDb(psid) {
   logIt('initValuesFromDb');
   logIt('-------------------------------');
+  
+  logIt('  getting firebase user reference');
   let userRef = firebase.database().ref('global/sugarinfoai/' + psid);
 
+  logIt('  calling initPageValuesFromDb');
   initPageValuesFromDb(userRef)
 }
 
