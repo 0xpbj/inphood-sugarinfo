@@ -76,7 +76,7 @@ function send_notification(userId) {
              },
              {
                "type":"postback",
-               "title":"Favorite Meals 😍",
+               "title":"Favorite Meals ❤️",
                "payload":"my favorites"
              }
            ]

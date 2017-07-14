@@ -283,6 +283,9 @@ exports.bot = function(request, messageText, userId) {
             .addButton('Processed? 🍭', 'Processed Sugar?')
             .get()
           }
+          case 'ignore last item': {
+            return 'Ok, no problem'
+          }
           case 'add last item': {
             // #OhNoItsJake! This code is a dup of js in FoodJournalEntry.js for
             //               webviews. I don't know of a good way to share it

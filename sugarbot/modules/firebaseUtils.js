@@ -234,6 +234,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data, fav
               .get(),
               new fbTemplate.Button("Would you like to add the item to your journal?")
               .addButton('Yes  ✅', 'add last item')
+              .addButton('No ❌', 'ignore last item')
               .get()
             ]
           }
@@ -245,6 +246,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data, fav
               .get(),
               new fbTemplate.Button("Would you like to add the item to your journal?")
               .addButton('Yes  ✅', 'add last item')
+              .addButton('No ❌', 'ignore last item')
               .get()
             ]
           }
@@ -254,21 +256,28 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data, fav
               roundSugar + 'g of sugar found',
               new fbTemplate.Button("Would you like to add the item to your journal?")
               .addButton('Yes  ✅', 'add last item')
+              .addButton('No ❌', 'ignore last item')
               .get()
             ]
           }
           else if (roundSugar > 0) {
             return [
+              roundSugar + 'g of natural sugars found',
               new fbTemplate.Button("Would you like to add the item to your journal?")
               .addButton('Yes  ✅', 'add last item')
+              .addButton('No ❌', 'ignore last item')
               .get()
             ]
           }
           else if (psugar === 0) {
+            const roundNSugar = Math.round(nsugar)
+            let reply = (roundNSugar) ? roundNSugar + 'g of natural sugars found.\nCongratulations! 🎉🎉 No refined sugars found!' 
+              : 'Congratulations! 🎉🎉 No refined sugars found!'
             return [
-              'Congratulations! 🎉🎉 No sugars found!',
+              reply,
               new fbTemplate.Button("Would you like to add the item to your journal?")
               .addButton('Yes  ✅', 'add last item')
+              .addButton('No ❌', 'ignore last item')
               .get()
             ]
           }

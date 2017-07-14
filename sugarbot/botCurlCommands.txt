@@ -160,11 +160,12 @@ curl -X POST -H "Content-Type: application/json" -d '{
               "payload":"report"
             },
             {
-              "type":"web_url",
               "title":"My Settings ⚙️",
-              "url":"https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Settings.html",
+              "type":"web_url",
+              "messenger_extensions": true,
+              "webview_share_button": "hide",
               "webview_height_ratio":"tall",
-              "messenger_extensions": true
+              "url":"https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Settings.html",
             }
           ]
         }

@@ -3,6 +3,7 @@ const fbTemplate = botBuilder.fbTemplate;
 const utils = require('./utils.js')
 const sugarUtils = require('./sugarUtils.js')
 const fire = require('./firebaseUtils.js')
+const wolf = require('./wolframUtils.js')
 const names = require('./foodNames.js')
 const firebase = require('firebase')
 
@@ -140,8 +141,9 @@ exports.getNutritionix = function(messageText, userId, date, fulldate) {
     return fire.addSugarToFirebase(userId, date, fulldate, '', sugarData)
   })
   .catch(error => {
-    return [
-      "We couldn\'t match any of your foods",
-    ]
+    // return [
+    //   "We couldn\'t match any of your foods",
+    // ]
+    return wolf.getWolfram(messageText, userId)
   })
 }
