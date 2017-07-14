@@ -59,22 +59,44 @@ exports.bot = function(request, messageText, userId) {
             })
           }
           case 'report animation': {
-            return new fbTemplate
-            .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/report.gif')
-            .get()
+            return [
+              'How to check your consumption report:',
+              new fbTemplate
+              .Image('https://s3-us-west-1.amazonaws.com/www.inphood.com/chatbotimages/report.gif')
+              .get()
+            ]
           }
           case 'label animation': {
-            return new fbTemplate
-            .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/ingredient.gif')
-            .get()
+            return [
+              'How to analyze ingredients with the chatbot:',
+              new fbTemplate
+              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/ingredients.gif')
+              .get()
+            ]
           }
           case 'track animation': {
-            return new fbTemplate
-            .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/track.gif')
-            .get()
+            return [
+              'How to track with the chatbot:',
+               new fbTemplate
+              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/tracking.gif')
+              .get()
+            ]
           }
           case 'favorite animation': {
-            return 'in progress'
+            return [
+              'How to use the favorites feature:',
+              new fbTemplate
+              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/favorites.gif')
+              .get()
+            ]
+          }
+          case 'chatbot menu animation': {
+            return [
+              'How to use the chatbot menu:',
+              new fbTemplate
+              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/chatbotMenu.gif')
+              .get()
+            ]
           }
           case 'learn more':
           case 'need help':
@@ -96,6 +118,7 @@ exports.bot = function(request, messageText, userId) {
                 .addBubble('Daily Reports', 'Check your daily progress')
                   .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/arrows.jpg')
                   .addButton('Learn More', 'report animation')
+                .addListButton('Chatbot Menu Help', 'chatbot menu animation')
                 .get()
             ]
           }
@@ -108,7 +131,6 @@ exports.bot = function(request, messageText, userId) {
             .then(() => {
               return [
                 "Great I'll remind you in a hour! You can still add meals when you please.",
-                utils.otherOptions(false)
               ]
             })
           }
@@ -121,7 +143,6 @@ exports.bot = function(request, messageText, userId) {
             .then(() => {
               return [
                 "Great I'll remind you in 3 hours! You can still add meals when you please.",
-                utils.otherOptions(false)
               ]
             })
           }
@@ -134,7 +155,6 @@ exports.bot = function(request, messageText, userId) {
             .then(() => {
               return [
                 "Great I'll remind you in 5 hours! You can still add meals when you please.",
-                utils.otherOptions(false)
               ]
             })
           }
@@ -144,7 +164,6 @@ exports.bot = function(request, messageText, userId) {
             .then(() => {
               return [
                 "Ok I will not remind you! You can still add meals when you please.",
-                utils.otherOptions(false)
               ]
             })
           }

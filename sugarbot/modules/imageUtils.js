@@ -192,10 +192,7 @@ exports.processLabelImage = function(url, userId, date, timestamp) {
       return exports.fdaProcess(userId, response, date, timestamp)
     })
     .catch(() => {
-      return new fbTemplate.Button("I couldn't read that barcode. Would you like to try another picture or manually enter the barcode?")
-      .addButton('Yes  ✅', 'analyze upc')
-      .addButton('No  ❌', 'other options')
-      .get()
+      return "I couldn't read that barcode. Try taking another picture or manually enter the barcode"
     })
   })
   .catch(err => {

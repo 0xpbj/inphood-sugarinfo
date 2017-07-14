@@ -156,12 +156,14 @@ exports.otherOptions = function(option) {
       "Welcome back! I'm here to help you understand sugar 🤓",
       new fbTemplate.Button("Here are your options")
         .addButton('Add to Journal ✏️', 'journal')
+        .addButton('Favorite Meals ❤️', 'my favorites')
         .get()
     ]
   }
   else {
     return new fbTemplate.Button('What would you like to do next?')
       .addButton('Add to Journal ✏️', 'journal')
+      .addButton('Favorite Meals ❤️', 'my favorites')
       .get();
   }
 }
@@ -173,8 +175,7 @@ exports.randomSugarFacts = function() {
     new fbTemplate.ChatAction('typing_on').get(),
     new fbTemplate.Pause(100).get(),
     data.fact,
-    data.source,
-    exports.otherOptions(false)
+    data.source
   ]
 }
 
@@ -188,8 +189,7 @@ exports.todaysSugarRecipe = function(dateVal) {
     new fbTemplate.ChatAction('typing_on').get(),
     new fbTemplate.Pause(100).get(),
     message,
-    data.recipe + ': ' + data.link,
-    exports.otherOptions(false)
+    data.recipe + ': ' + data.link
   ]
 }
 
@@ -216,7 +216,6 @@ exports.trackMood = function() {
   .addButton('😐', 'neutral mood')
   .addButton('🙁', 'negative mood')
   .addButton('Not now  ❌', 'not now mood')
-//   .addButton('Don\'t ask again', 'don\'t ask mood again')
   .get();
 }
 
@@ -226,7 +225,6 @@ exports.trackAlertness = function() {
   .addButton('😐', 'typical alertness')
   .addButton('😴', 'drowsy')
   .addButton('Not now  ❌', 'not now alertness')
-//   .addButton('Don\'t ask again', 'do not ask alertness again')
   .get();
 }
 
