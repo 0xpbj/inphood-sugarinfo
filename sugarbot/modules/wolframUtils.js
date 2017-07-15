@@ -9,9 +9,9 @@ exports.getWolfram = function(messageText, userId) {
   return request(wolfOptions)
   .then(result => {
     return [
-      'Um...I\'m a sugar information chatbot remember... 🤔',
-      'Here\'s what I found: ' + result.body,
-      'Now let\'s keep the topic on food shall we 🤓'
+      result.body,
+      'I\'m a sugar information chatbot remember... 🤔',
+      'Let\'s keep the topic on food shall we 🤓'
     ]
   })
   .catch(error => {

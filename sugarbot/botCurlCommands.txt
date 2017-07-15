@@ -118,14 +118,14 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 curl -X POST -H "Content-Type: application/json" -d '{
   "home_url" : {
-     "url": "https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Report.html",
+     "url": "https://www.inphood.com/webviews/DynamicReport.html",
      "webview_height_ratio": "tall",
-     "in_test":true
+     "in_test":false
   }
 }' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BAJBNqUODpgt5aaDt8ZBOlewGQLKIASZAjjSipZCZBunyyQ0ZBZCc3YG3SfweKOGZB5k6kDADBlWfKO5VhZB4xJ07yMI8UzbMrYrhIBf1giFi4FMI6REaVwFNPmTOVdY9fbP4UMgfUPkSbcldRIDqZAHaAEuhiKZCgVFwZDZD"
 
 
-curl -X GET "https://graph.facebook.com/v2.6/me/messenger_profile?fields=get_started&access_token=EAAJhTtF5K30BAJBNqUODpgt5aaDt8ZBOlewGQLKIASZAjjSipZCZBunyyQ0ZBZCc3YG3SfweKOGZB5k6kDADBlWfKO5VhZB4xJ07yMI8UzbMrYrhIBf1giFi4FMI6REaVwFNPmTOVdY9fbP4UMgfUPkSbcldRIDqZAHaAEuhiKZCgVFwZDZD"
+curl -X GET "https://graph.facebook.com/v2.6/me/messenger_profile?fields=home_url&access_token=EAAJhTtF5K30BAJBNqUODpgt5aaDt8ZBOlewGQLKIASZAjjSipZCZBunyyQ0ZBZCc3YG3SfweKOGZB5k6kDADBlWfKO5VhZB4xJ07yMI8UzbMrYrhIBf1giFi4FMI6REaVwFNPmTOVdY9fbP4UMgfUPkSbcldRIDqZAHaAEuhiKZCgVFwZDZD"
 
 
 curl -X DELETE -H "Content-Type: application/json" -d '{

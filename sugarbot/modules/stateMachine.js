@@ -24,6 +24,7 @@ exports.bot = function(request, messageText, userId) {
   .then(function(snapshot) {
     const favorites = snapshot.child('/myfoods/').val()
     const timezone = snapshot.child('/profile/timezone').val() ? snapshot.child('/profile/timezone').val() : -7
+    const name = snapshot.child('/profile/first_name').val() ? snapshot.child('/profile/first_name').val() : ""
     const {timestamp} = request.originalRequest
 
     const date = timeUtils.getUserDateString(timestamp, timezone)
@@ -58,6 +59,9 @@ exports.bot = function(request, messageText, userId) {
                 .get()
               })
             })
+          }
+          case 'name': {
+            return 'My name is sugarinfoAI. Nice to meet you ' + name
           }
           case 'feedback': {
             return [
