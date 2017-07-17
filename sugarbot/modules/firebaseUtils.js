@@ -127,7 +127,7 @@ exports.addLastItem = function(userId, date) {
               return exports.sugarResponse (userId, cleanFoodName, sugarPercentage)
               .then(() => {
                 return [
-                  constants.generateTip(constants.encouragingTips),
+                  // constants.generateTip(constants.encouragingTips),
                   new fbTemplate.Button("Would you like to setup a reminder to track your next meal?")
                   .addButton('Alright ✅', 'set a reminder')
                   .addButton('Not now  ❌', 'notime')

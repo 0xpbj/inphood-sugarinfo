@@ -24,6 +24,7 @@ exports.bot = function(request, messageText, userId) {
   .then(function(snapshot) {
     const favorites = snapshot.child('/myfoods/').val()
     const timezone = snapshot.child('/profile/timezone').val() ? snapshot.child('/profile/timezone').val() : -7
+    const name = snapshot.child('/profile/first_name').val() ? snapshot.child('/profile/first_name').val() : ""
     const {timestamp} = request.originalRequest
 
     const date = timeUtils.getUserDateString(timestamp, timezone)
@@ -58,6 +59,17 @@ exports.bot = function(request, messageText, userId) {
                 .get()
               })
             })
+          }
+          case 'name': {
+            return 'My name is sugarinfoAI. Nice to meet you ' + name
+          }
+          case 'feedback': {
+            return [
+              'Here is how you can send us feedback:',
+              new fbTemplate
+              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/feedback.gif')
+              .get()
+            ]
           }
           case 'report animation': {
             return [
@@ -179,20 +191,20 @@ exports.bot = function(request, messageText, userId) {
             // .addButton('Photo 🥗', 'send food picture')
             .get()
           }
-          case 'report': {
-            console.log('REPORT ------------------------------------------------')
-            const reportRequest = {
-              reportType: 'dailySummary',
-              userId: userId,
-              userTimeStamp: timestamp
-            }
-            console.log('  adding report request to firebase')
-            const dbReportQueue = firebase.database().ref("/global/sugarinfoai/reportQueue")
-            const dbReportQueueRequest = dbReportQueue.push()
-            dbReportQueueRequest.set(reportRequest)
-            console.log('  returning')
-            return 'A report is on the way.'
-          }
+          // case 'report': {
+          //   console.log('REPORT ------------------------------------------------')
+          //   const reportRequest = {
+          //     reportType: 'dailySummary',
+          //     userId: userId,
+          //     userTimeStamp: timestamp
+          //   }
+          //   console.log('  adding report request to firebase')
+          //   const dbReportQueue = firebase.database().ref("/global/sugarinfoai/reportQueue")
+          //   const dbReportQueueRequest = dbReportQueue.push()
+          //   dbReportQueueRequest.set(reportRequest)
+          //   console.log('  returning')
+          //   return 'A report is on the way.'
+          // }
           case 'scan upc code':
           case 'label': {
             return [
@@ -325,8 +337,8 @@ exports.bot = function(request, messageText, userId) {
                       "elements":[
                          {
                           "title":"Settings",
-                          "image_url":"https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/arrows.jpg",
-                          "subtitle":"Webview settings",
+                          "image_url":"https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/settings.jpeg",
+                          "subtitle":"Weight, sugar, goals",
                           "default_action": {
                             "url": 'https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Settings.html',
                             "type": "web_url",
@@ -351,9 +363,7 @@ exports.bot = function(request, messageText, userId) {
           case 'share': {
             return utils.sendShareButton()
           }
-          case 'debug_new_wv': {
-            console.log('DEBUG NEW WEBVIEW:')
-            console.log('-------------------------------------------------------')
+          case 'report': {
             const wvMsg = {
               uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + process.env.FACEBOOK_BEARER_TOKEN,
               json: true,
@@ -369,11 +379,11 @@ exports.bot = function(request, messageText, userId) {
                       "template_type":"generic",
                       "elements":[
                          {
-                          "title":"New WV",
+                          "title":"Food Report",
                           "image_url":"https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/arrows.jpg",
-                          "subtitle":"Webview",
+                          "subtitle":"Breakdown of your meals",
                           "default_action": {
-                            "url": 'https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Report.html',
+                            "url": 'https://www.inphood.com/webviews/DynamicReport.html',
                             "type": "web_url",
                             "messenger_extensions": true,
                             "webview_height_ratio": "tall",

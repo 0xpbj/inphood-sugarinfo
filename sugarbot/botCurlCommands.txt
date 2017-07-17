@@ -8,13 +8,19 @@ curl -X POST -H "Content-Type: application/json" -d '{
       "text":"Your own virtual sugar expert!"
     }
   ] 
-}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BAJaPLaqAsQe38FK2nToDDxB4PF7ddr28iHlgLEUWGd0JZCLOQxeJrSqED8o0DwE7U5zBrDblSGM2dha9k3STKk3iVOkfSBW2L5eeDe0ylyiCp1Vq50Ac4ZBdouD3p5rGtfVnjVh4YLtOsQDIgS7T1W10PCZBQZDZD"
+}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BAJBNqUODpgt5aaDt8ZBOlewGQLKIASZAjjSipZCZBunyyQ0ZBZCc3YG3SfweKOGZB5k6kDADBlWfKO5VhZB4xJ07yMI8UzbMrYrhIBf1giFi4FMI6REaVwFNPmTOVdY9fbP4UMgfUPkSbcldRIDqZAHaAEuhiKZCgVFwZDZD"
 
 curl -X POST -H "Content-Type: application/json" -d '{
   "get_started":{
     "payload":"GET STARTED"
   }
-}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BAJaPLaqAsQe38FK2nToDDxB4PF7ddr28iHlgLEUWGd0JZCLOQxeJrSqED8o0DwE7U5zBrDblSGM2dha9k3STKk3iVOkfSBW2L5eeDe0ylyiCp1Vq50Ac4ZBdouD3p5rGtfVnjVh4YLtOsQDIgS7T1W10PCZBQZDZD"
+}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BAJBNqUODpgt5aaDt8ZBOlewGQLKIASZAjjSipZCZBunyyQ0ZBZCc3YG3SfweKOGZB5k6kDADBlWfKO5VhZB4xJ07yMI8UzbMrYrhIBf1giFi4FMI6REaVwFNPmTOVdY9fbP4UMgfUPkSbcldRIDqZAHaAEuhiKZCgVFwZDZD"
+
+curl -X DELETE -H "Content-Type: application/json" -d '{
+  "fields":[
+    "get_started"
+  ]
+}' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BAJBNqUODpgt5aaDt8ZBOlewGQLKIASZAjjSipZCZBunyyQ0ZBZCc3YG3SfweKOGZB5k6kDADBlWfKO5VhZB4xJ07yMI8UzbMrYrhIBf1giFi4FMI6REaVwFNPmTOVdY9fbP4UMgfUPkSbcldRIDqZAHaAEuhiKZCgVFwZDZD"
 
 curl -X POST -H "Content-Type: application/json" -d '{
   "persistent_menu":[
@@ -112,13 +118,14 @@ curl -X POST -H "Content-Type: application/json" -d '{
 
 curl -X POST -H "Content-Type: application/json" -d '{
   "home_url" : {
-     "url": "https://s3-us-west-1.amazonaws.com/www.inphood.com/",
+     "url": "https://www.inphood.com/webviews/DynamicReport.html",
      "webview_height_ratio": "tall",
-     "in_test":true
+     "in_test":false
   }
 }' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BAJBNqUODpgt5aaDt8ZBOlewGQLKIASZAjjSipZCZBunyyQ0ZBZCc3YG3SfweKOGZB5k6kDADBlWfKO5VhZB4xJ07yMI8UzbMrYrhIBf1giFi4FMI6REaVwFNPmTOVdY9fbP4UMgfUPkSbcldRIDqZAHaAEuhiKZCgVFwZDZD"
 
 
+curl -X GET "https://graph.facebook.com/v2.6/me/messenger_profile?fields=home_url&access_token=EAAJhTtF5K30BAJBNqUODpgt5aaDt8ZBOlewGQLKIASZAjjSipZCZBunyyQ0ZBZCc3YG3SfweKOGZB5k6kDADBlWfKO5VhZB4xJ07yMI8UzbMrYrhIBf1giFi4FMI6REaVwFNPmTOVdY9fbP4UMgfUPkSbcldRIDqZAHaAEuhiKZCgVFwZDZD"
 
 
 curl -X DELETE -H "Content-Type: application/json" -d '{
@@ -126,8 +133,6 @@ curl -X DELETE -H "Content-Type: application/json" -d '{
     "persistent_menu"
   ]
 }' "https://graph.facebook.com/v2.6/me/messenger_profile?access_token=EAAJhTtF5K30BAJBNqUODpgt5aaDt8ZBOlewGQLKIASZAjjSipZCZBunyyQ0ZBZCc3YG3SfweKOGZB5k6kDADBlWfKO5VhZB4xJ07yMI8UzbMrYrhIBf1giFi4FMI6REaVwFNPmTOVdY9fbP4UMgfUPkSbcldRIDqZAHaAEuhiKZCgVFwZDZD"
-
-
 
 curl -X POST -H "Content-Type: application/json" -d '{
   "persistent_menu":[
@@ -150,9 +155,9 @@ curl -X POST -H "Content-Type: application/json" -d '{
           "type":"nested",
           "call_to_actions":[
             {
-              "title":"Need Help 🚑",
+              "title":"Share chatbot 🎁",
               "type":"postback",
-              "payload":"tell me more"
+              "payload":"share"
             },
             {
               "title":"My Report 💻",
@@ -161,11 +166,18 @@ curl -X POST -H "Content-Type: application/json" -d '{
             },
             {
               "title":"My Settings ⚙️",
-              "type":"web_url",
-              "messenger_extensions": true,
-              "webview_share_button": "hide",
-              "webview_height_ratio":"tall",
-              "url":"https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Settings.html",
+              "type":"postback",
+              "payload":"settings"
+            },
+            {
+              "title":"Need Help 🚑",
+              "type":"postback",
+              "payload":"tell me more"
+            },
+            {
+              "title":"Send Feedback 📝",
+              "type":"postback",
+              "payload":"feedback"
             }
           ]
         }
