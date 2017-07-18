@@ -26,6 +26,11 @@ exports.bot = function(request, messageText, userId) {
     const timezone = snapshot.child('/profile/timezone').val() ? snapshot.child('/profile/timezone').val() : -7
     const name = snapshot.child('/profile/first_name').val() ? snapshot.child('/profile/first_name').val() : ""
     const {timestamp} = request.originalRequest
+    //
+    // if (constants.testUsers.includes(userId)) {
+    //   console.log('SETTING BACK TIME FOR AC LOGGING')
+    //   timestamp = timestamp - 1000 * 60 * 60 * 2
+    // }
 
     const date = timeUtils.getUserDateString(timestamp, timezone)
     var messageAttachments = (request.originalRequest && request.originalRequest.message) ? request.originalRequest.message.attachments : null
@@ -383,7 +388,7 @@ exports.bot = function(request, messageText, userId) {
                           "image_url":"https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/arrows.jpg",
                           "subtitle":"Breakdown of your meals",
                           "default_action": {
-                            "url": 'https://www.inphood.com/webviews/DynamicReport.html',
+                            "url": 'https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Report.html',
                             "type": "web_url",
                             "messenger_extensions": true,
                             "webview_height_ratio": "tall",
