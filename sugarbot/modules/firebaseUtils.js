@@ -127,7 +127,7 @@ exports.addLastItem = function(userId, date) {
               return exports.sugarResponse (userId, cleanFoodName, sugarPercentage)
               .then(() => {
                 return [
-                  // constants.generateTip(constants.encouragingTips),
+                  constants.generateTip(),
                   new fbTemplate.Button("Would you like to setup a reminder to track your next meal?")
                   .addButton('Alright ✅', 'set a reminder')
                   .addButton('Not now  ❌', 'notime')
@@ -233,8 +233,8 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data, fav
               .Image(sugarUtils.getGifUrl(roundSugar))
               .get(),
               new fbTemplate.Button("Would you like to add the item to your journal?")
-              .addButton('Yes  ✅', 'add last item')
-              .addButton('No ❌', 'ignore last item')
+              .addButton('Add Item ✅', 'add last item')
+              .addButton('Ignore Item ❌', 'ignore last item')
               .get()
             ]
           }
@@ -245,8 +245,8 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data, fav
               .Image(sugarUtils.getGifUrl(roundSugar))
               .get(),
               new fbTemplate.Button("Would you like to add the item to your journal?")
-              .addButton('Yes  ✅', 'add last item')
-              .addButton('No ❌', 'ignore last item')
+              .addButton('Add Item ✅', 'add last item')
+              .addButton('Ignore Item ❌', 'ignore last item')
               .get()
             ]
           }
@@ -255,8 +255,8 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data, fav
               'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
               roundSugar + 'g of sugar found',
               new fbTemplate.Button("Would you like to add the item to your journal?")
-              .addButton('Yes  ✅', 'add last item')
-              .addButton('No ❌', 'ignore last item')
+              .addButton('Add Item ✅', 'add last item')
+              .addButton('Ignore Item ❌', 'ignore last item')
               .get()
             ]
           }
@@ -264,8 +264,8 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data, fav
             return [
               roundSugar + 'g of natural sugars found',
               new fbTemplate.Button("Would you like to add the item to your journal?")
-              .addButton('Yes  ✅', 'add last item')
-              .addButton('No ❌', 'ignore last item')
+              .addButton('Add Item ✅', 'add last item')
+              .addButton('Ignore Item ❌', 'ignore last item')
               .get()
             ]
           }
@@ -276,8 +276,8 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data, fav
             return [
               reply,
               new fbTemplate.Button("Would you like to add the item to your journal?")
-              .addButton('Yes  ✅', 'add last item')
-              .addButton('No ❌', 'ignore last item')
+              .addButton('Add Item ✅', 'add last item')
+              .addButton('Ignore Item ❌', 'ignore last item')
               .get()
             ]
           }

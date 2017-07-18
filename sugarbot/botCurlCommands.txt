@@ -119,6 +119,7 @@ curl -X POST -H "Content-Type: application/json" -d '{
 curl -X POST -H "Content-Type: application/json" -d '{
   "home_url" : {
      "url": "https://www.inphood.com/webviews/DynamicReport.html",
+     "webview_share_button": "show",
      "webview_height_ratio": "tall",
      "in_test":false
   }
@@ -166,8 +167,11 @@ curl -X POST -H "Content-Type: application/json" -d '{
             },
             {
               "title":"My Settings ⚙️",
-              "type":"postback",
-              "payload":"settings"
+              "type":"web_url",
+              "messenger_extensions": true,
+              "webview_share_button": "hide",
+              "webview_height_ratio":"tall",
+              "url":"https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Settings.html",
             },
             {
               "title":"Need Help 🚑",
