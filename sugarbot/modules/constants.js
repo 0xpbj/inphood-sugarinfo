@@ -46,27 +46,27 @@ exports.defaultAlerts = [
 
 exports.reminderTips = [
   "",
-  "Daily tip: Add healthy vegetable fats to your diet.",
-  "Daily tip: Eat regularly to optimize your metabolism.",
-  "Daily tip: Try listening to your hunger cues and eating with them.",
-  "Daily tip: Pause between bites and see if you are not already full.",
-  "Daily tip: Three months from now you’ll be proud you stuck to it today.",
-  "Daily tip: Use the red, orange and green rule, a vegetable from each group.",
-  "Daily tip: Make sure that at least 1/4 of your plate is filled with veggies.",
-  "Daily tip: Whole grains are full of vitamins and will keep you full for longer.",
-  "Daily tip: Water is essential for keeping the body hydrated, try to drink 64 ounces everyday.",
-  "Daily tip: Consistency is the key to success, so don’t forget to tell me about your food and drinks.",
-  "Daily tip: When you overestimate the calories you burn during exercise, you may eat more than you need.",
-  "Daily tip: Research shows that people who eat regularly are on average leaner than people who skip it.",
-  "Daily tip: Keeping a food journal can help you measure progress, identify triggers and hold yourself accountable.",
-  "Daily tip: Adding hot spices to your meals can help curb hunger, according to a study in the British Journal of Nutrition.",
-  "Daily tip: Meals with healthy carbs, protein, and fat delivers better energy and fat loss results by giving the body what it needs",
-  "Daily tip: Stay hydrated by drinking water instead of sugary drinks. Keep a reusable water bottle with you to always have water on hand.",
-  "Daily tip: Eat slowly, it takes 20 minutes for your stomach to send a message to your brain that you have eaten enough and are satisfied.",
-  "Daily tip: Science tells us that the best way to control ghrelin (hunger hormone) is to eat small, balanced meals about every 3 hours or so.",
-  "Daily tip: Deep breaths take you out of your immersion in momentary stress, oxygenate your brain and tissues, and they help to reduce stress hormones.",
-  "Daily tip: Foods like fat-free and low-fat milk, cheese, yogurt, and fortified soy beverages (soymilk) help to build and maintain strong bones needed for everyday activities.",
-  "Daily tip: Eating with chopsticks takes more time because you have to closely watch each bite so the food doesn’t fall off. They can act as a reminder to slow down, savor and chew consciously.",
+  "Add healthy vegetable fats to your diet.",
+  "Eat regularly to optimize your metabolism.",
+  "Try listening to your hunger cues and eating with them.",
+  "Pause between bites and see if you are not already full.",
+  "Three months from now you’ll be proud you stuck to it today.",
+  "Use the red, orange and green rule, a vegetable from each group.",
+  "Make sure that at least 1/4 of your plate is filled with veggies.",
+  "Whole grains are full of vitamins and will keep you full for longer.",
+  "Water is essential for keeping the body hydrated, try to drink 64 ounces everyday.",
+  "Consistency is the key to success, so don’t forget to tell me about your food and drinks.",
+  "When you overestimate the calories you burn during exercise, you may eat more than you need.",
+  "Research shows that people who eat regularly are on average leaner than people who skip it.",
+  "Keeping a food journal can help you measure progress, identify triggers and hold yourself accountable.",
+  "Adding hot spices to your meals can help curb hunger, according to a study in the British Journal of Nutrition.",
+  "Meals with healthy carbs, protein, and fat delivers better energy and fat loss results by giving the body what it needs",
+  "Stay hydrated by drinking water instead of sugary drinks. Keep a reusable water bottle with you to always have water on hand.",
+  "Eat slowly, it takes 20 minutes for your stomach to send a message to your brain that you have eaten enough and are satisfied.",
+  "Science tells us that the best way to control ghrelin (hunger hormone) is to eat small, balanced meals about every 3 hours or so.",
+  "Deep breaths take you out of your immersion in momentary stress, oxygenate your brain and tissues, and they help to reduce stress hormones.",
+  "Foods like fat-free and low-fat milk, cheese, yogurt, and fortified soy beverages (soymilk) help to build and maintain strong bones needed for everyday activities.",
+  "Eating with chopsticks takes more time because you have to closely watch each bite so the food doesn’t fall off. They can act as a reminder to slow down, savor and chew consciously.",
 ]
 
 exports.encouragingTips = [
@@ -84,267 +84,267 @@ exports.encouragingTips = [
 
 exports.sugarFacts = [
   {
-    fact: 'Fact: Sugar is one of the world’s oldest ingredients. The people of New Guinea were most likely the first to domesticate sugar cane around 8000 B.C.',
+    fact: 'Sugar is one of the world’s oldest ingredients. The people of New Guinea were most likely the first to domesticate sugar cane around 8000 B.C.',
     source: 'Source: Macinnis, Peter. Bittersweet: The Story of Sugar. Crows Nest, Australia: McPherson’s Printing Group, 2002.'
   },
   {
-    fact: 'Fact: In the 16th century, a teaspoon of sugar cost the equivalent of five dollars in London.',
+    fact: 'In the 16th century, a teaspoon of sugar cost the equivalent of five dollars in London.',
     source: 'Source: Macinnis, Peter. Bittersweet: The Story of Sugar. Crows Nest, Australia: McPherson’s Printing Group, 2002.'
   },
   {
-    fact: 'Fact: The word “sugar” originates from the Sanskrit word sharkara, which means “material in a granule form.” In Arabic, it is sakkar; Turkish is sheker; Italian is zucchero; and Yoruba speakers in Nigeria call it suga.',
+    fact: 'The word “sugar” originates from the Sanskrit word sharkara, which means “material in a granule form.” In Arabic, it is sakkar; Turkish is sheker; Italian is zucchero; and Yoruba speakers in Nigeria call it suga.',
     source: 'Source: Chapman, Garry and Gary Hodges. Sugar World (Commodities). Mankato, MN: Smart Apple Media, 2011'
   },
   {
-    fact: 'Fact: The American Heart Association recommends that adult women eat no more than 24 grams, or 6 teaspoons, of added (beyond naturally occurring sugar) sugar and men no more than 36 grams, or 9 teaspoons, per day. The current average is over 30 teaspoons of sugar per day.',
+    fact: 'The American Heart Association recommends that adult women eat no more than 24 grams, or 6 teaspoons, of added (beyond naturally occurring sugar) sugar and men no more than 36 grams, or 9 teaspoons, per day. The current average is over 30 teaspoons of sugar per day.',
     source: 'Source: https://www.hsph.harvard.edu/nutritionsource/carbohydrates/added-sugar-in-the-diet/'
   },
   {
-    fact: 'Fact: The only taste humans are born craving is sugar.',
+    fact: 'The only taste humans are born craving is sugar.',
     source: 'Source: O’Connell, Jeff. Sugar Nation: The Hidden Truth behind America’s Deadliest Habit and the Simple Way to Beat It. New York, NY: Hyperion, 2010.'
   },
   {
-    fact: 'Fact: The tallest sugar cube tower measured 6 feet, 10 inches and was built by Camille Courgeon of France on July 1, 2013. The tower used 2,669 cubes and was built in 2 hours and 59 minutes.',
+    fact: 'The tallest sugar cube tower measured 6 feet, 10 inches and was built by Camille Courgeon of France on July 1, 2013. The tower used 2,669 cubes and was built in 2 hours and 59 minutes.',
     source: 'Source: http://www.guinnessworldrecords.com/world-records/tallest-sugar-cube-tower'
   },
   {
-    fact: 'Fact: In 1822, the average American ate 45 grams of sugar—which is the amount in one of today’s 12 oz. sodas—every five days. In 2012, Americans consumed 765 grams of sugar every five days.',
+    fact: 'In 1822, the average American ate 45 grams of sugar—which is the amount in one of today’s 12 oz. sodas—every five days. In 2012, Americans consumed 765 grams of sugar every five days.',
     source: 'Source: https://www.hsph.harvard.edu/nutritionsource/carbohydrates/added-sugar-in-the-diet/'
   },
   {
-    fact: 'Fact: Heinz ketchup contains 1 teaspoon of sugar in each 1 tablespoon serving.',
+    fact: 'Heinz ketchup contains 1 teaspoon of sugar in each 1 tablespoon serving.',
     source: 'Source: O’Connell, Jeff. Sugar Nation: The Hidden Truth behind America’s Deadliest Habit and the Simple Way to Beat It. New York, NY: Hyperion, 2010.'
   },
   {
-    fact: 'Fact: Worldwide, people consume 500 extra calories a day from sugar, which is roughly the amount of calories needed to gain a pound a week.',
+    fact: 'Worldwide, people consume 500 extra calories a day from sugar, which is roughly the amount of calories needed to gain a pound a week.',
     source: 'Source: http://www.huffingtonpost.com/laura-kumin/shocking-sugar-facts_b_5455137.html'
   },
   {
-    fact: 'Fact: Too much sugar can increase the overall risk for heart disease. In fact, sugar actually changes the muscle protein of the heart as well as the pumping mechanics of the heart.',
+    fact: 'Too much sugar can increase the overall risk for heart disease. In fact, sugar actually changes the muscle protein of the heart as well as the pumping mechanics of the heart.',
     source: 'Source: O’Connell, Jeff. Sugar Nation: The Hidden Truth behind America’s Deadliest Habit and the Simple Way to Beat It. New York, NY: Hyperion, 2010.'
   },
   {
-    fact: 'Fact: Christopher Columbus introduced sugar cane seeds to the New World, specifically to Hispaniola, on his second voyage in 1493.',
+    fact: 'Christopher Columbus introduced sugar cane seeds to the New World, specifically to Hispaniola, on his second voyage in 1493.',
     source: 'Source: Macinnis, Peter. Bittersweet: The Story of Sugar. Crows Nest, Australia: McPherson’s Printing Group, 2002.'
   },
   {
-    fact: 'Fact: Excess sugar consumption has been linked to cancer production. Studies have found that high sugar intake negatively affects the survival rates in both breast cancer patients and colon cancer patients.',
+    fact: 'Excess sugar consumption has been linked to cancer production. Studies have found that high sugar intake negatively affects the survival rates in both breast cancer patients and colon cancer patients.',
     source: 'Source: http://www.huffingtonpost.com/kristin-kirkpatrick-ms-rd-ld/dangers-of-sugar_b_3658061.html'
   },
   {
-    fact: 'Fact: Sugar addiction may be genetic. Studies show that those who had genetic changes in a hormone called ghrelin consume more sugar (and alcohol) than those who had no gene variation.',
+    fact: 'Sugar addiction may be genetic. Studies show that those who had genetic changes in a hormone called ghrelin consume more sugar (and alcohol) than those who had no gene variation.',
     source: 'Source: http://discovermagazine.com/2009/oct/30-20-things-you-didnt-know-about-sugar'
   },
   {
-    fact: 'Fact: Sugar and alcohol have similar toxic liver effects. Additionally, liver damage can occur even without excess calories or weight gain.',
+    fact: 'Sugar and alcohol have similar toxic liver effects. Additionally, liver damage can occur even without excess calories or weight gain.',
     source: 'Source: http://www.huffingtonpost.com/kristin-kirkpatrick-ms-rd-ld/dangers-of-sugar_b_3658061.html'
   },
   {
-    fact: 'Fact: A 2009 study found that glucose consumption accelerated the aging of cells in the body. Additionally, a 2012 study found that excess sugar consumption was tied to deficiencies in memory and overall cognitive processing.',
+    fact: 'A 2009 study found that glucose consumption accelerated the aging of cells in the body. Additionally, a 2012 study found that excess sugar consumption was tied to deficiencies in memory and overall cognitive processing.',
     source: 'Source: http://www.huffingtonpost.com/kristin-kirkpatrick-ms-rd-ld/dangers-of-sugar_b_3658061.html'
   },
   {
-    fact: 'Fact: Sugar is found in unlikely places, such as tonic water, marinades, crackers, bread, fat-free dressing, and tomato sauce.',
+    fact: 'Sugar is found in unlikely places, such as tonic water, marinades, crackers, bread, fat-free dressing, and tomato sauce.',
     source: 'Source: Chapman, Garry and Gary Hodges. Sugar World (Commodities). Mankato, MN: Smart Apple Media, 2011'
   },
   {
-    fact: 'Fact: A 2013 study found that at least 180,000 deaths worldwide are linked to sweetened-beverage consumption. The U.S. alone accounted for 25,000 deaths in 2010.',
+    fact: 'A 2013 study found that at least 180,000 deaths worldwide are linked to sweetened-beverage consumption. The U.S. alone accounted for 25,000 deaths in 2010.',
     source: 'Source: https://www.forbes.com/sites/alicegwalton/2012/08/30/how-much-sugar-are-americans-eating-infographic/#1c011ef64ee7'
   },
   {
-    fact: 'Fact: While foods rich in fiber, fat, and protein help make a person feel full, sugar does not create feelings of satiety.',
+    fact: 'While foods rich in fiber, fat, and protein help make a person feel full, sugar does not create feelings of satiety.',
     source: 'Source: Chapman, Garry and Gary Hodges. Sugar World (Commodities). Mankato, MN: Smart Apple Media, 2011'
   },
   {
-    fact: 'Fact: One 20 oz. bottle of Coca Cola has 65 grams of sugar. This is the same amount of sugar in five Little Debbie Swiss Rolls.',
+    fact: 'One 20 oz. bottle of Coca Cola has 65 grams of sugar. This is the same amount of sugar in five Little Debbie Swiss Rolls.',
     source: 'Source: http://www.cnn.com/2014/07/02/health/gallery/sugar-sweetened-beverages/'
   },
   {
-    fact: 'Fact: A 15.2 oz. bottle of Minute Maid 100% Apple Juice contains 49 grams of sugar. This is about the same amount of sugar in 10 Oreos.',
+    fact: 'A 15.2 oz. bottle of Minute Maid 100% Apple Juice contains 49 grams of sugar. This is about the same amount of sugar in 10 Oreos.',
     source: 'Source: http://www.cnn.com/2014/07/02/health/gallery/sugar-sweetened-beverages/'
   },
   {
-    fact: 'Fact: A 23 oz. bottle of Arizona Green Tea has about 51 grams of sugar, which is about the same as eating 20 Hershey’s Kisses.',
+    fact: 'A 23 oz. bottle of Arizona Green Tea has about 51 grams of sugar, which is about the same as eating 20 Hershey’s Kisses.',
     source: 'Source: http://www.cnn.com/2014/07/02/health/gallery/sugar-sweetened-beverages/'
   },
   {
-    fact: 'Fact: A 16 oz. can of Monster Energy has 54 ounces of sugar, which is the same amount of sugar as 3.5 cups of Frosted Flakes.',
+    fact: 'A 16 oz. can of Monster Energy has 54 ounces of sugar, which is the same amount of sugar as 3.5 cups of Frosted Flakes.',
     source: 'Source: http://www.cnn.com/2014/07/02/health/gallery/sugar-sweetened-beverages/'
   },
   {
-    fact: 'Fact: A 32 oz. Gatorade bottle has 36 grams of sugar, which is like eating 5 Reese’s Peanut Butter Cups.',
+    fact: 'A 32 oz. Gatorade bottle has 36 grams of sugar, which is like eating 5 Reese’s Peanut Butter Cups.',
     source: 'Source: http://www.cnn.com/2014/07/02/health/gallery/sugar-sweetened-beverages/'
   },
   {
-    fact: 'Fact: A Grande Starbucks Iced Flavored drink has about 28 grams of sugar, which is the same amount of sugar in 2.5 Krispy Kreme donuts.',
+    fact: 'A Grande Starbucks Iced Flavored drink has about 28 grams of sugar, which is the same amount of sugar in 2.5 Krispy Kreme donuts.',
     source: 'Source: http://www.cnn.com/2014/07/02/health/gallery/sugar-sweetened-beverages/'
   },
   {
-    fact: 'Fact: Lemons have more sugar than strawberries.',
+    fact: 'Lemons have more sugar than strawberries.',
     source: 'Source: O’Connell, Jeff. Sugar Nation: The Hidden Truth behind America’s Deadliest Habit and the Simple Way to Beat It. New York, NY: Hyperion, 2010.'
   },
   {
-    fact: 'Fact: Sugar threatens more than thin waistlines. It has also been associated with several conditions and diseases, including type 2 diabetes, arthritis, acne, heart disease, depression, thrush/yeast infections, and cancer.',
+    fact: 'Sugar threatens more than thin waistlines. It has also been associated with several conditions and diseases, including type 2 diabetes, arthritis, acne, heart disease, depression, thrush/yeast infections, and cancer.',
     source: 'Source: http://www.huffingtonpost.com/kristin-kirkpatrick-ms-rd-ld/dangers-of-sugar_b_3658061.html'
   },
   {
-    fact: 'Fact: More than half of the 8.4 million metric tons of sugar that is produced in the United States each year comes from sugar beets.',
+    fact: 'More than half of the 8.4 million metric tons of sugar that is produced in the United States each year comes from sugar beets.',
     source: 'Source: http://www.dhhs.nh.gov/dphs/nhp/documents/sugar.pdf'
   },
   {
-    fact: 'Fact: The scientists who discovered sucralose (Splenda) were trying to make an insecticide. An assistant thought he had been instructed to “taste” a sample he had been asked to “test.”',
+    fact: 'The scientists who discovered sucralose (Splenda) were trying to make an insecticide. An assistant thought he had been instructed to “taste” a sample he had been asked to “test.”',
     source: 'Source: http://discovermagazine.com/2009/oct/30-20-things-you-didnt-know-about-sugar'
   },
   {
-    fact: 'Fact: The sweetest compound known is called lugduname. It’s over 20,000 times sweeter than sugar.',
+    fact: 'The sweetest compound known is called lugduname. It’s over 20,000 times sweeter than sugar.',
     source: 'Source: http://discovermagazine.com/2009/oct/30-20-things-you-didnt-know-about-sugar'
   },
   {
-    fact: 'Fact: Sugar is everywhere. It is the building blocks of carbohydrates, the most abundant type of organic molecules in living things. Researchers note that sugar is not necessarily a health problem, but the amount of sugar we consume is.',
+    fact: 'Sugar is everywhere. It is the building blocks of carbohydrates, the most abundant type of organic molecules in living things. Researchers note that sugar is not necessarily a health problem, but the amount of sugar we consume is.',
     source: 'Source: http://www.cnn.com/2014/02/11/opinion/briscoe-sugar-getting-it-wrong/'
   },
   {
-    fact: 'Fact: One teaspoon of white sugar has 15 calories and one teaspoon of corn syrup (a type of sugar) has 20 calories. Soft drinks are responsible for most of the added sugar in the average American diet.',
+    fact: 'One teaspoon of white sugar has 15 calories and one teaspoon of corn syrup (a type of sugar) has 20 calories. Soft drinks are responsible for most of the added sugar in the average American diet.',
     source: 'Source: http://www.cnn.com/2014/03/06/health/who-sugar-guidelines/'
   },
   {
-    fact: 'Fact: Two hundred years ago, the average American ate only 2 pounds of sugar a year. In 1970, Americans ate 123 pounds of sugar per year. Today the average American consumes almost 152 pounds of sugar in one year. This is equal to 3 pounds (or 6 cups) of sugar consumed in one week.',
+    fact: 'Two hundred years ago, the average American ate only 2 pounds of sugar a year. In 1970, Americans ate 123 pounds of sugar per year. Today the average American consumes almost 152 pounds of sugar in one year. This is equal to 3 pounds (or 6 cups) of sugar consumed in one week.',
     source: 'Source: http://www.dhhs.nh.gov/dphs/nhp/documents/sugar.pdf'
   },
   {
-    fact: 'Fact: The World Health Organization (WHO) recommends people consume less sugar than is found in one regular soda per day.',
+    fact: 'The World Health Organization (WHO) recommends people consume less sugar than is found in one regular soda per day.',
     source: 'Source: http://www.cnn.com/2014/03/06/health/who-sugar-guidelines/'
   },
   {
-    fact: 'Fact: Just one 12 oz. can of soda a day adds enough sugar to a person’s diet to boost their odds of developing heart disease by one third.',
+    fact: 'Just one 12 oz. can of soda a day adds enough sugar to a person’s diet to boost their odds of developing heart disease by one third.',
     source: 'Source: http://www.cnn.com/2014/03/06/health/who-sugar-guidelines/'
   },
   {
-    fact: 'Fact: Americans consume most sugar (33%) through regular soft drinks, followed by sugars and candy (16.1%); cakes, cookies, and pies (12.9%); fruit drinks (9.7%); dairy desserts and milk (8.6%); and other grains (5.8%).',
+    fact: 'Americans consume most sugar (33%) through regular soft drinks, followed by sugars and candy (16.1%); cakes, cookies, and pies (12.9%); fruit drinks (9.7%); dairy desserts and milk (8.6%); and other grains (5.8%).',
     source: 'Source: http://www.cnn.com/2014/07/02/health/gallery/sugar-sweetened-beverages/'
   },
   {
-    fact: 'Fact: One 12 oz. can of Coke has 10 teaspoons of sugar, which is more sugar than 2 frosted Pop Tarts and a Twinkie combined.',
+    fact: 'One 12 oz. can of Coke has 10 teaspoons of sugar, which is more sugar than 2 frosted Pop Tarts and a Twinkie combined.',
     source: 'Source: http://www.cnn.com/2014/07/02/health/gallery/sugar-sweetened-beverages/'
   },
   {
-    fact: 'Fact: The average American consumes 53 gallons of soft drinks per year.',
+    fact: 'The average American consumes 53 gallons of soft drinks per year.',
     source: 'Source: http://www.cnn.com/2014/07/02/health/gallery/sugar-sweetened-beverages/'
   },
   {
-    fact: 'Fact: In the American diet, added sugar accounts for nearly 500 calories every day. This is equivalent to eating 10 strips of bacon every day.',
+    fact: 'In the American diet, added sugar accounts for nearly 500 calories every day. This is equivalent to eating 10 strips of bacon every day.',
     source: 'Source: https://www.forbes.com/sites/alicegwalton/2012/08/30/how-much-sugar-are-americans-eating-infographic/#1c011ef64ee7'
   },
   {
-    fact: 'Fact: Americans eat 10 times more sugar than all other food additives—except for salt.',
+    fact: 'Americans eat 10 times more sugar than all other food additives—except for salt.',
     source: 'Source: Chapman, Garry and Gary Hodges. Sugar World (Commodities). Mankato, MN: Smart Apple Media, 2011'
   },
   {
-    fact: 'Fact: To find the amount of calories from sugar in a product, multiply the grams by 4. For example, a product containing 15 grams of sugar has 60 calories from sugar per serving.',
+    fact: 'To find the amount of calories from sugar in a product, multiply the grams by 4. For example, a product containing 15 grams of sugar has 60 calories from sugar per serving.',
     source: 'Source: https://www.hsph.harvard.edu/nutritionsource/carbohydrates/added-sugar-in-the-diet/'
   },
   {
-    fact: 'Fact: Sugar can take several forms, including sucrose, fructose, and lactose. Sucrose is the most commonly used form of sugar and is usually called table sugar.',
+    fact: 'Sugar can take several forms, including sucrose, fructose, and lactose. Sucrose is the most commonly used form of sugar and is usually called table sugar.',
     source: 'Source: http://www.cnn.com/2014/02/11/opinion/briscoe-sugar-getting-it-wrong/'
   },
   {
-    fact: 'Fact: The average American consumes 3 pounds of sugar each week—or 3,550 pounds in an entire lifetime. This is equivalent to about 1,767,900 Skittles, which is enough sugar to fill an industrialized dumpster.',
+    fact: 'The average American consumes 3 pounds of sugar each week—or 3,550 pounds in an entire lifetime. This is equivalent to about 1,767,900 Skittles, which is enough sugar to fill an industrialized dumpster.',
     source: 'Source: https://www.forbes.com/sites/alicegwalton/2012/08/30/how-much-sugar-are-americans-eating-infographic/#1c011ef64ee7'
   },
   {
-    fact: 'Fact: Many cereals for children, such as Fruit Loops, contain one spoonful of sugar for every three spoonfuls of cereal eaten. Often the least healthful cereals are marketed the most aggressively, even to kids as young as 2 years old.',
+    fact: 'Many cereals for children, such as Fruit Loops, contain one spoonful of sugar for every three spoonfuls of cereal eaten. Often the least healthful cereals are marketed the most aggressively, even to kids as young as 2 years old.',
     source: 'Source: http://www.medicalnewstoday.com/articles/246996.php'
   },
   {
-    fact: 'Fact: Two different types of plants provide the world with most of its sugar: sugar cane and sugar beet. Sugar cane is grown in tropical and subtropical regions. Sugar beet is grown in temperate climates, such as parts of Europe, Japan, and the United States.',
+    fact: 'Two different types of plants provide the world with most of its sugar: sugar cane and sugar beet. Sugar cane is grown in tropical and subtropical regions. Sugar beet is grown in temperate climates, such as parts of Europe, Japan, and the United States.',
     source: 'Source: Macinnis, Peter. Bittersweet: The Story of Sugar. Crows Nest, Australia: McPherson’s Printing Group, 2002.'
   },
   {
-    fact: 'Fact: About 70% of all sugar produced is used in its country of origin. More than 100 countries produce sugar commercially.',
+    fact: 'About 70% of all sugar produced is used in its country of origin. More than 100 countries produce sugar commercially.',
     source: 'Source: Macinnis, Peter. Bittersweet: The Story of Sugar. Crows Nest, Australia: McPherson’s Printing Group, 2002.'
   },
   {
-    fact: 'Fact: Brazil is the world’s largest producer of sugar cane.',
+    fact: 'Brazil is the world’s largest producer of sugar cane.',
     source: 'Source: Macinnis, Peter. Bittersweet: The Story of Sugar. Crows Nest, Australia: McPherson’s Printing Group, 2002.'
   },
   {
-    fact: 'Fact: India is the world’s largest consumer of sugar.',
+    fact: 'India is the world’s largest consumer of sugar.',
     source: 'Source: Chapman, Garry and Gary Hodges. Sugar World (Commodities). Mankato, MN: Smart Apple Media, 2011'
   },
   {
-    fact: 'Fact: Sugar cane is usually grown in large plantations or cane fields. It can yield up to 44 pounds (20 kg) of sugar for every 11 square feet (1 square m) of land.',
+    fact: 'Sugar cane is usually grown in large plantations or cane fields. It can yield up to 44 pounds (20 kg) of sugar for every 11 square feet (1 square m) of land.',
     source: 'Source: Chapman, Garry and Gary Hodges. Sugar World (Commodities). Mankato, MN: Smart Apple Media, 2011'
   },
   {
-    fact: 'Fact: Sugar is useful in cooking: it helps cakes and bread rise, prevents food from spoiling, keeps the color of fruit by holding water, and brings out the flavor in many different foods.',
+    fact: 'Sugar is useful in cooking: it helps cakes and bread rise, prevents food from spoiling, keeps the color of fruit by holding water, and brings out the flavor in many different foods.',
     source: 'Source: Macinnis, Peter. Bittersweet: The Story of Sugar. Crows Nest, Australia: McPherson’s Printing Group, 2002.'
   },
   {
-    fact: 'Fact: The sugar trade is one of the most complex in the world and involves price controls, quotas, subsidies, and preferential arrangements.',
+    fact: 'The sugar trade is one of the most complex in the world and involves price controls, quotas, subsidies, and preferential arrangements.',
     source: 'Source: Macinnis, Peter. Bittersweet: The Story of Sugar. Crows Nest, Australia: McPherson’s Printing Group, 2002.'
   },
   {
-    fact: 'Fact: The world sugar trade is regulated by the World Trade Organization (WTO), which helps ensure any business between the countries is conducted fairly.',
+    fact: 'The world sugar trade is regulated by the World Trade Organization (WTO), which helps ensure any business between the countries is conducted fairly.',
     source: 'Source: Macinnis, Peter. Bittersweet: The Story of Sugar. Crows Nest, Australia: McPherson’s Printing Group, 2002.'
   },
   {
-    fact: 'Fact: One of the most important agreements governing the sugar trade is the Anti-Dumping Agreement, which tries to prevent large sugar producers, such as the U.S. and Europe, from dumping their surplus sugar on the world market at low prices.',
+    fact: 'One of the most important agreements governing the sugar trade is the Anti-Dumping Agreement, which tries to prevent large sugar producers, such as the U.S. and Europe, from dumping their surplus sugar on the world market at low prices.',
     source: 'Source: Macinnis, Peter. Bittersweet: The Story of Sugar. Crows Nest, Australia: McPherson’s Printing Group, 2002.'
   },
   {
-    fact: 'Fact: There are at least 115 names for sugar in its many forms and for other types of sweeteners. To avoid listing “sugar” as the first ingredient, food manufactures may use a different name.',
+    fact: 'There are at least 115 names for sugar in its many forms and for other types of sweeteners. To avoid listing “sugar” as the first ingredient, food manufactures may use a different name.',
     source: 'Source: http://www.huffingtonpost.com/laura-kumin/shocking-sugar-facts_b_5455137.html'
   },
   {
-    fact: 'Fact: Sugar has been shown to cause wrinkles via glycation, which happens when excess blood sugar binds to collagen in the skin and makes it less elastic.',
+    fact: 'Sugar has been shown to cause wrinkles via glycation, which happens when excess blood sugar binds to collagen in the skin and makes it less elastic.',
     source: 'Source: http://discovermagazine.com/2009/oct/30-20-things-you-didnt-know-about-sugar'
   },
   {
-    fact: 'Fact: Until the late 1500s, sugar was called “White Gold,” and European nobility used it to display their social standing. After about 1600 on, technological improvements and New World sources helped turn sugar into a bulk commodity.',
+    fact: 'Until the late 1500s, sugar was called “White Gold,” and European nobility used it to display their social standing. After about 1600 on, technological improvements and New World sources helped turn sugar into a bulk commodity.',
     source: 'Source: Macinnis, Peter. Bittersweet: The Story of Sugar. Crows Nest, Australia: McPherson’s Printing Group, 2002.'
   },
   {
-    fact: 'Fact: Four grams of sugar equal 1 teaspoon of sugar. So, for example, the cereal Cocoa Puffs has 10 grams, or 2½ teaspoons, of sugar in each ¾ cup serving.',
+    fact: 'Four grams of sugar equal 1 teaspoon of sugar. So, for example, the cereal Cocoa Puffs has 10 grams, or 2½ teaspoons, of sugar in each ¾ cup serving.',
     source: 'Source: https://www.forbes.com/sites/alicegwalton/2012/08/30/how-much-sugar-are-americans-eating-infographic/#1c011ef64ee7'
   },
   {
-    fact: 'Fact: Ralf Schroder of Germany holds the Guinness World Record for the largest collection of sugar packets as of May 14, 2013. He owns 14,502 different sugar packets, the oldest of which dates back to the 1950s.',
+    fact: 'Ralf Schroder of Germany holds the Guinness World Record for the largest collection of sugar packets as of May 14, 2013. He owns 14,502 different sugar packets, the oldest of which dates back to the 1950s.',
     source: 'Source: http://www.guinnessworldrecords.com/world-records/largest-collection-of-sugar-packets/'
   },
   {
-    fact: 'Fact: Originally, people would chew sugar cane raw for its sweetness. Indians were the first to crystallize sugar during the Gupta dynasty around A.D. 350.',
+    fact: 'Originally, people would chew sugar cane raw for its sweetness. Indians were the first to crystallize sugar during the Gupta dynasty around A.D. 350.',
     source: 'Source: Macinnis, Peter. Bittersweet: The Story of Sugar. Crows Nest, Australia: McPherson’s Printing Group, 2002.'
   },
   {
-    fact: 'Fact: Crusaders were the first to introduce sugar to Europe after they encountered caravans carrying “sweet salt.”',
+    fact: 'Crusaders were the first to introduce sugar to Europe after they encountered caravans carrying “sweet salt.”',
     source: 'Source: Macinnis, Peter. Bittersweet: The Story of Sugar. Crows Nest, Australia: McPherson’s Printing Group, 2002.'
   },
   {
-    fact: 'Fact: In the United States and Japan, high-fructose corn syrup is used in place of sugar in many instances, especially in soft drinks and processed foods.',
+    fact: 'In the United States and Japan, high-fructose corn syrup is used in place of sugar in many instances, especially in soft drinks and processed foods.',
     source: 'Source: O’Connell, Jeff. Sugar Nation: The Hidden Truth behind America’s Deadliest Habit and the Simple Way to Beat It. New York, NY: Hyperion, 2010.'
   },
   {
-    fact: 'Fact: When the body cannot clear glucose, or sugar, quickly enough, sugar destroys tissue. This is basically what diabetes is: the inability to eliminate glucose.',
+    fact: 'When the body cannot clear glucose, or sugar, quickly enough, sugar destroys tissue. This is basically what diabetes is: the inability to eliminate glucose.',
     source: 'Source: O’Connell, Jeff. Sugar Nation: The Hidden Truth behind America’s Deadliest Habit and the Simple Way to Beat It. New York, NY: Hyperion, 2010.'
   },
   {
-    fact: 'Fact: The percentage of total calories from added sugars decreases linearly with increasing income for men and women. In other words, people living in poverty are more likely to eat more added sugar than their wealthier counterparts.',
+    fact: 'The percentage of total calories from added sugars decreases linearly with increasing income for men and women. In other words, people living in poverty are more likely to eat more added sugar than their wealthier counterparts.',
     source: 'Source: https://www.cdc.gov/nchs/data/databriefs/db122.htm'
   },
   {
-    fact: 'Fact: Men consume a larger absolute amount of calories from added sugars than women, but not when their added sugars intakes were expressed as a percentage of total calories. The percentage of calories from added sugars declines with increasing age and income.',
+    fact: 'Men consume a larger absolute amount of calories from added sugars than women, but not when their added sugars intakes were expressed as a percentage of total calories. The percentage of calories from added sugars declines with increasing age and income.',
     source: 'Source: https://www.cdc.gov/nchs/data/databriefs/db122.htm'
   },
   {
-    fact: 'Fact: According to brain scans, sugar is as addictive as cocaine.',
+    fact: 'According to brain scans, sugar is as addictive as cocaine.',
     source: 'Source: https://www.forbes.com/sites/alicegwalton/2012/08/30/how-much-sugar-are-americans-eating-infographic/#1c011ef64ee7'
   },
   {
-    fact: 'Fact: Non-Hispanic black men and women ate a larger percentage of calories from added sugars than non-Hispanic white or Mexican American men and women.',
+    fact: 'Non-Hispanic black men and women ate a larger percentage of calories from added sugars than non-Hispanic white or Mexican American men and women.',
     source: 'Source: https://www.cdc.gov/nchs/data/databriefs/db122.htm'
   },
   {
-    fact: 'Fact: Researchers found that people who drink 2.5 cans of sugary soda daily are three times more likely to be depressed and anxious than those who drink less.',
+    fact: 'Researchers found that people who drink 2.5 cans of sugary soda daily are three times more likely to be depressed and anxious than those who drink less.',
     source: 'Source: O’Connell, Jeff. Sugar Nation: The Hidden Truth behind America’s Deadliest Habit and the Simple Way to Beat It. New York, NY: Hyperion, 2010.'
   }
 ]
@@ -528,30 +528,29 @@ exports.sugarFreeRecipes = [
   }
 ]
 
-exports.generateTip = function(arr) {
+exports.generateTip = function() {
   //encouraging tips
   //reminder tips
-  //sugar recipes
   //sugar facts
-  const pool = reminderTips.length + encouragingTips.length + sugarFacts.length + sugarFreeRecipes.length
-  const random = Math.floor(Math.random()*(pool-4)+1)
-  if (random < reminderTips.length) {
-    return reminderTips[random]
+  //sugar recipes
+  const pool = exports.reminderTips.length + exports.encouragingTips.length + exports.sugarFacts.length + exports.sugarFreeRecipes.length
+  const random = Math.floor(Math.random()*pool)
+  console.log("Random", random)
+  if (random < exports.reminderTips.length) {
+    return 'Daily Tip: ' + exports.reminderTips[random]
   }
-  else if (random < reminderTips.length + encouragingTips.length) {
-    return encouragingTips[random - reminderTips.length]
+  else if (random < exports.reminderTips.length + exports.encouragingTips.length) {
+    return exports.encouragingTips[random - exports.reminderTips.length]
   }
-  else if (random < reminderTips.length + encouragingTips.length + sugarFacts.length) {
-    return [
-      sugarFacts[random - reminderTips.length + encouragingTips.length].fact,
-      sugarFacts[random - reminderTips.length + encouragingTips.length].source
-    ]
+  else if (random < exports.reminderTips.length + exports.encouragingTips.length + exports.sugarFacts.length) {
+    return 'Sugar Fact: '
+     + exports.sugarFacts[random - exports.reminderTips.length - exports.encouragingTips.length].fact
+     + " " + exports.sugarFacts[random - exports.reminderTips.length - exports.encouragingTips.length].source
   }
-  else if (random < reminderTips.length + encouragingTips.length + sugarFacts.length + sugarFreeRecipes.length) {
-    return [
-      sugarFacts[random - reminderTips.length + encouragingTips.length + sugarFacts.length].recipe,
-      sugarFacts[random - reminderTips.length + encouragingTips.length + sugarFacts.length].length
-    ]
+  else if (random < exports.reminderTips.length + exports.encouragingTips.length + exports.sugarFacts.length + exports.sugarFreeRecipes.length) {
+    return 'Sugar Free Recipe: '
+     + exports.sugarFreeRecipes[random - exports.reminderTips.length - exports.encouragingTips.length - exports.sugarFacts.length].recipe
+     + " " + exports.sugarFreeRecipes[random - exports.reminderTips.length - exports.encouragingTips.length - exports.sugarFacts.length].link
   }
   else {
     return ""

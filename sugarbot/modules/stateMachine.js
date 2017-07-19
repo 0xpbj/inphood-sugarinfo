@@ -104,7 +104,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'How to use the favorites feature:',
               new fbTemplate
-              .Video('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/favorites.mp4')
+              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/favorites.gif')
               .get()
             ]
           }
