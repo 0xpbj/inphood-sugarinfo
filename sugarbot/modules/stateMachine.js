@@ -391,7 +391,7 @@ exports.bot = function(request, messageText, userId) {
                           "image_url":"https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/arrows.jpg",
                           "subtitle":"Breakdown of your meals",
                           "default_action": {
-                            "url": 'https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Report.html',
+                            "url": 'https://www.inphood.com/webviews/Report.html',
                             "type": "web_url",
                             "messenger_extensions": true,
                             "webview_height_ratio": "tall",
