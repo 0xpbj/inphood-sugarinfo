@@ -39,9 +39,19 @@ exports.sugarResponse = function(userId, foodName, sugarPercentage) {
                   {
                     "url": "https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/FoodJournalEntry.html",
                     "type":"web_url",
-                    "title":"View Item",
+                    "title":"Edit Item 🛠",
                     "messenger_extensions": true,
                     "webview_height_ratio": "tall"
+                  },
+                  {
+                    "type":"postback",
+                    "title":"Ranom Reward 🎰",
+                    "payload":"reward"
+                  },
+                  {
+                    "type":"postback",
+                    "title":"Set Reminder ⏱",
+                    "payload":"set a reminder"
                   }
                 ]
               }
@@ -125,15 +135,15 @@ exports.addLastItem = function(userId, date) {
               let sugarPercentage = Math.ceil(psugar*100/goalSugar)
               const cleanFoodName = currSugarIntake[lastKey].cleanText;
               return exports.sugarResponse (userId, cleanFoodName, sugarPercentage)
-              .then(() => {
-                return [
-                  constants.generateTip(),
-                  new fbTemplate.Button("Would you like to setup a reminder to track your next meal?")
-                  .addButton('Alright ✅', 'set a reminder')
-                  .addButton('Not now  ❌', 'notime')
-                  .get()
-                ];
-              })
+              // .then(() => {
+              //   return [
+              //     constants.generateTip(),
+              //     new fbTemplate.Button("Would you like to setup a reminder to track your next meal?")
+              //     .addButton('Alright ✅', 'set a reminder')
+              //     .addButton('Not now  ❌', 'notime')
+              //     .get()
+              //   ];
+              // })
             })
           }
         });

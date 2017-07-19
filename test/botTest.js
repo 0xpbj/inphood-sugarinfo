@@ -18,7 +18,7 @@ const testMode = true
 
 http.createServer(function (request, response) {
   console.log('Starting server')
-  let introTip = constants.generateTip(constants.randomAlerts)
+  let introTip = constants.generateTip()
   console.log(introTip)
 }).listen(8080)
 

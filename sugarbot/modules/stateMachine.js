@@ -368,6 +368,9 @@ exports.bot = function(request, messageText, userId) {
           case 'share': {
             return utils.sendShareButton()
           }
+          case 'reward': {
+            return constants.generateTip()
+          }
           case 'report': {
             const wvMsg = {
               uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + process.env.FACEBOOK_BEARER_TOKEN,
