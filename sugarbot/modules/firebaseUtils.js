@@ -21,36 +21,49 @@ exports.sugarResponse = function(userId, foodName, sugarPercentage) {
         'attachment':{
           'type':'template',
           "payload":{
-            "template_type":"generic",
+            "template_type":"list",
             "elements":[
-               {
-                "title": "Added Journal Item:",
+              {
+                "title": foodName,
                 "image_url": "https://d1q0ddz2y0icfw.cloudfront.net/progressBars/" + sugarPercentage + ".png",
-                "subtitle": foodName,
                 "default_action": {
-                  "url": "https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/FoodJournalEntry.html",
+                  "url": "https://www.inphood.com/webviews/FoodJournalEntry.html",
                   "type": "web_url",
                   "messenger_extensions": true,
                   "webview_height_ratio": "tall",
                   "webview_share_button": "show",
-                  "fallback_url": "https://www.inphood.com/"
                 },
                 "buttons":[
                   {
-                    "url": "https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/FoodJournalEntry.html",
-                    "type":"web_url",
-                    "title":"Edit Item 🛠",
+                    "title": "Edit",
+                    "url": "https://www.inphood.com/webviews/FoodJournalEntry.html",
+                    "type": "web_url",
                     "messenger_extensions": true,
-                    "webview_height_ratio": "tall"
-                  },
+                    "webview_height_ratio": "tall",
+                    "webview_share_button": "show",
+                  }
+                ]
+              },
+              {
+                "title": "Tracking Reward",
+                "subtitle": "Tip, fact, recipe, etc.",
+                "image_url": "https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/gift.jpeg",
+                "buttons":[
                   {
+                    "title": "Claim",
                     "type":"postback",
-                    "title":"Ranom Reward 🎰",
                     "payload":"reward"
-                  },
+                  }
+                ]
+              },
+              {
+                "title": "Setup Reminder",
+                "subtitle": "1, 3, 5 hours",
+                "image_url": "https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/reminder.jpeg",
+                "buttons":[
                   {
+                    "title": "Setup",
                     "type":"postback",
-                    "title":"Set Reminder ⏱",
                     "payload":"set a reminder"
                   }
                 ]

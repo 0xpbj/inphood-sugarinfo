@@ -70,16 +70,16 @@ exports.reminderTips = [
 ]
 
 exports.encouragingTips = [
-  "Hoorah! Great job! 🎉 Remember to set realistic goals for diet success",
-  "Awesome! You did it! 💯 Remember forming a habit is the easiest way to do difficult things.",
-  "Hoorah! Great job! 🎉 Remember diet success entails making real lifestyle changes, and that doesn't happen overnight.",
-  "Awesome! You did it! 💯 Remember finding other people with similar goals can greatly improve yours odds of diet success.",
-  "Hoorah! Great job! 🎉 Remember be patient. One of the biggest diet motivation-busters is the dreaded weight loss plateau.",
-  "Awesome! You did it! 💯 Preventive Medicine found that those who kept regular food records lost twice as much weight as those who didn't.",
-  "Hoorah! Great job! 🎉 Remember don't be a perfectionist. Bottom line when you slip up: don't dwell on it. Tomorrow is a new (healthier) day",
-  "Awesome! You did it! 💯 Remember people who have positive expectations and feel confident in their ability to achieve their goals tend to lose more weight",
-  "Hoorah! Great job! 🎉 Remember everyone is bound to give in to temptations. The danger isn't a single splurge but letting it become an excuse for an all-out binge.",
-  "Awesome! You did it! 💯 Remember to reward yourself. Dieting is hard work -- and it's not always a whole lot of fun. Small rewards can provide an incentive to keep going.",
+  "Diet Tip: set realistic goals for diet success",
+  "Diet Tip: forming a habit is the easiest way to do difficult things.",
+  "Diet Tip: success entails making real lifestyle changes, and that doesn't happen overnight.",
+  "Diet Tip: finding other people with similar goals can greatly improve yours odds of diet success.",
+  "Diet Tip: be patient. One of the biggest diet motivation-busters is the dreaded weight loss plateau.",
+  "Diet Tip: preventive Medicine found that those who kept regular food records lost twice as much weight as those who didn't.",
+  "Diet Tip: don't be a perfectionist. Bottom line when you slip up: don't dwell on it. Tomorrow is a new (healthier) day",
+  "Diet Tip: people who have positive expectations and feel confident in their ability to achieve their goals tend to lose more weight",
+  "Diet Tip: everyone is bound to give in to temptations. The danger isn't a single splurge but letting it become an excuse for an all-out binge.",
+  "Diet Tip: remember to reward yourself. Dieting is hard work -- and it's not always a whole lot of fun. Small rewards can provide an incentive to keep going.",
 ]
 
 exports.sugarFacts = [
