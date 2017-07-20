@@ -53,15 +53,21 @@ exports.bot = function(request, messageText, userId) {
               .then(function(snapshot) {
                 let intro = ''
                 if (snapshot.child('first_name').exists()) {
-                  intro = 'Hi ' + snapshot.child('first_name').val() + ', I’m sugarinfoAI! I can help you understand how much sugar you are eating and help you bring it within recommended limits. Would you like that?'
+                  intro = 'Hi ' + snapshot.child('first_name').val() + ', I’m sugarinfoAI!'
                 }
                 else {
-                  intro = 'Hi, I’m sugarinfoAI! I can help you understand how much sugar you are eating and help you bring it within recommended limits. Would you like that?'
+                  intro = 'Hi, I’m sugarinfoAI!'
                 }
-                return new fbTemplate.Button(intro)
-                .addButton('Learn About Sugar', 'sugar information')
-                .addButton('ChatBot Features', 'features')
-                .get()
+                return [
+                  intro,
+                  'I am here to help you understand how much sugar is in your diet.',
+                  new fbTemplate.ChatAction('typing_on').get(),
+                  new fbTemplate.Pause(500).get(),
+                  new fbTemplate.Button('Let\'s get started: ')
+                  .addButton('Learn About Sugar', 'sugar information')
+                  .addButton('ChatBot Features', 'tell me more')
+                  .get()
+                ]
               })
             })
           }
@@ -119,8 +125,7 @@ exports.bot = function(request, messageText, userId) {
           case 'help':
           case 'confused':
           case 'need help':
-          case 'tell me more':
-          case 'features': {
+          case 'tell me more': {
             return [
               'Ok, here are a few helpful animations for you 📚',
               new fbTemplate.List()
@@ -141,11 +146,14 @@ exports.bot = function(request, messageText, userId) {
             ]
           }
           case 'sugar information': {
-            return new fbTemplate.Generic()
+            return [
+              'Remember: sugarinfoAI only tracks processed sugars',
+              new fbTemplate.Generic()
               .addBubble('Natural vs. Processed Sugars', 'fruits, veggies vs HFCP, sugar')
                 .addImage(constants.bucketRoot + '/chatbotimages/fruits.jpg')
                 .addButton('Learn More', 'http://organics.org/natural-vs-processed-sugars/')
               .get()
+            ]
           }
           case '1 hour':
           case 'time1': {
