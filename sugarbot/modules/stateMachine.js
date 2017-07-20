@@ -59,8 +59,8 @@ exports.bot = function(request, messageText, userId) {
                   intro = 'Hi, I’m sugarinfoAI! I can help you understand how much sugar you are eating and help you bring it within recommended limits. Would you like that?'
                 }
                 return new fbTemplate.Button(intro)
-                .addButton('Learn more', 'tell me more')
-                .addButton('Let\'s track', 'start food question')
+                .addButton('Learn More', 'tell me more')
+                .addButton('Bot Features', 'features')
                 .get()
               })
             })
@@ -116,28 +116,38 @@ exports.bot = function(request, messageText, userId) {
               .get()
             ]
           }
-          case 'learn more':
-          case 'need help':
           case 'help':
           case 'confused':
+          case 'need help':
+          case 'features': {
+            'Ok, here are a few helpful animations for you 📚',
+            new fbTemplate.List()
+            .addBubble('Track Meals', 'Learn how to track meals with our chatbot')
+              .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/measure.jpg')
+              .addButton('Learn More', 'track animation')
+            .addBubble('Ingredient Label', 'Find hidden processed sugars')
+              .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/sugar.jpg')
+              .addButton('Learn More', 'label animation')
+            .addBubble('My Favorites', 'Quick add favorite meals')
+              .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/favorite.jpg')
+              .addButton('Learn More', 'favorite animation')
+            .addBubble('Daily Reports', 'Check your daily progress')
+              .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/arrows.jpg')
+              .addButton('Learn More', 'report animation')
+            .addListButton('Chatbot Menu Help', 'chatbot menu animation')
+            .get()
+          }
+          case 'learn more':
           case 'tell me more': {
             return [
-              'Ok, here are a few helpful animations for you 📚',
-              new fbTemplate.List()
-                .addBubble('Track Meals', 'Learn how to track meals with our chatbot')
-                  .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/measure.jpg')
-                  .addButton('Learn More', 'track animation')
-                .addBubble('Ingredient Label', 'Find hidden processed sugars')
-                  .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/sugar.jpg')
-                  .addButton('Learn More', 'label animation')
-                .addBubble('My Favorites', 'Quick add favorite meals')
-                  .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/favorite.jpg')
-                  .addButton('Learn More', 'favorite animation')
-                .addBubble('Daily Reports', 'Check your daily progress')
-                  .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/arrows.jpg')
-                  .addButton('Learn More', 'report animation')
-                .addListButton('Chatbot Menu Help', 'chatbot menu animation')
-                .get()
+              new fbTemplate.Generic()
+                .addBubble('Natural Sugars', 'fruits, veggies, and honey')
+                  .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/fruits.jpg')
+                  .addButton('Learn More', 'http://organics.org/natural-vs-processed-sugars/')
+                .addBubble('Refined Sugars', 'modified, combined or processed')
+                  .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/cakes.jpeg')
+                  .addButton('Learn More', 'http://organics.org/natural-vs-processed-sugars/')
+                .get();
             ]
           }
           case '1 hour':
