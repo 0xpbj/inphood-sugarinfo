@@ -1,5 +1,6 @@
 const Quagga = require('quagga').default;
 const reqProm = require('request-promise')
+const constants = require('./constants.js')
 const sugarUtils = require('./sugarUtils.js')
 const botBuilder = require('claudia-bot-builder');
 const fbTemplate = botBuilder.fbTemplate;
@@ -197,7 +198,7 @@ exports.sendShareButton = function() {
   return new fbTemplate.Generic()
     .addBubble('sugarinfoAI 🕵️ ', 'Find and track (hidden) sugars in your diet')
     .addUrl('https://www.facebook.com/sugarinfoAI/')
-    .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/sugar.jpg')
+    .addImage(constants.bucketRoot + '/chatbotimages/sugar.jpg')
     .addShareButton()
     .get()
 }
@@ -233,7 +234,7 @@ exports.parseMyFavorites = function(favorites, more) {
   console.log('Favorites', favorites, favorites.length)
   let myFavs = new fbTemplate.List()
   myFavs.addBubble('My Favorites Meals', 'Here are your most commonly added meals')
-  .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/favorite.jpg')
+  .addImage(constants.bucketRoot + '/chatbotimages/favorite.jpg')
   for (let object in favorites) {
     let length = Object.keys(favorites[object].date).length
     favArr.push({length, object})
