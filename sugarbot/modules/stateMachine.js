@@ -17,6 +17,10 @@ const firebase = require('firebase')
 const isTestBot = false
 const {Wit} = require('node-wit')
 const witClient = new Wit({accessToken: process.env.WIT_TOKEN})
+const cloudFrontCache = false
+const bucketRoot = cloudFrontCache ?
+  "https://s3-us-west-1.amazonaws.com" :
+  "https://d1q0ddz2y0icfw.cloudfront.net"
 
 exports.bot = function(request, messageText, userId) {
   const tempRef = firebase.database().ref("/global/sugarinfoai/" + userId)
@@ -72,7 +76,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'Here is how you can send us feedback:',
               new fbTemplate
-              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/feedback.gif')
+              .Image(bucketRoot + '/chatbotimages/feedback.gif')
               .get()
             ]
           }
@@ -80,7 +84,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'How to check your consumption report:',
               new fbTemplate
-              .Image('https://s3-us-west-1.amazonaws.com/www.inphood.com/chatbotimages/report.gif')
+              .Image(bucketRoot + '/chatbotimages/report.gif')
               .get()
             ]
           }
@@ -88,7 +92,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'How to analyze ingredients with the chatbot:',
               new fbTemplate
-              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/analyze.gif')
+              .Image(bucketRoot + '/chatbotimages/analyze.gif')
               .get()
             ]
           }
@@ -96,7 +100,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'How to track with the chatbot:',
                new fbTemplate
-              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/tracks.gif')
+              .Image(bucketRoot + '/chatbotimages/tracks.gif')
               .get()
             ]
           }
@@ -104,7 +108,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'How to use the favorites feature:',
               new fbTemplate
-              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/favorites.gif')
+              .Image(bucketRoot + '/chatbotimages/favorites.gif')
               .get()
             ]
           }
@@ -112,7 +116,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'How to use the chatbot menu:',
               new fbTemplate
-              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/chatbotMenu.gif')
+              .Image(bucketRoot + '/chatbotimages/chatbotMenu.gif')
               .get()
             ]
           }
@@ -125,16 +129,16 @@ exports.bot = function(request, messageText, userId) {
               'Ok, here are a few helpful animations for you 📚',
               new fbTemplate.List()
                 .addBubble('Track Meals', 'Learn how to track meals with our chatbot')
-                  .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/measure.jpg')
+                  .addImage(bucketRoot + '/chatbotimages/measure.jpg')
                   .addButton('Learn More', 'track animation')
                 .addBubble('Ingredient Label', 'Find hidden processed sugars')
-                  .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/sugar.jpg')
+                  .addImage(bucketRoot + '/chatbotimages/sugar.jpg')
                   .addButton('Learn More', 'label animation')
                 .addBubble('My Favorites', 'Quick add favorite meals')
-                  .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/favorite.jpg')
+                  .addImage(bucketRoot + '/chatbotimages/favorite.jpg')
                   .addButton('Learn More', 'favorite animation')
                 .addBubble('Daily Reports', 'Check your daily progress')
-                  .addImage('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/arrows.jpg')
+                  .addImage(bucketRoot + '/chatbotimages/arrows.jpg')
                   .addButton('Learn More', 'report animation')
                 .addListButton('Chatbot Menu Help', 'chatbot menu animation')
                 .get()
@@ -214,7 +218,7 @@ exports.bot = function(request, messageText, userId) {
           case 'label': {
             return [
               new fbTemplate
-              .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/upc.jpg')
+              .Image(bucketRoot + '/chatbotimages/upc.jpg')
               .get(),
               "Please send me a photo of the UPC 📷 or type the number manually ⌨️"
             ]
@@ -253,7 +257,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'Great! Tell me what you ate' + mealInfo,
               // new fbTemplate
-              // .Image('https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/upc.jpg')
+              // .Image(bucketRoot + '/chatbotimages/upc.jpg')
               // .get(),
               // 'Remember you can send me a picture of the UPC label 📷 or type the number manually ⌨️ for your convinience.'
             ]
@@ -342,10 +346,10 @@ exports.bot = function(request, messageText, userId) {
                       "elements":[
                          {
                           "title":"Settings",
-                          "image_url":"https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/settings.jpeg",
+                          "image_url": bucketRoot + '/chatbotimages/settings.jpeg',
                           "subtitle":"Weight, sugar, goals",
                           "default_action": {
-                            "url": 'https://s3-us-west-1.amazonaws.com/www.inphood.com/webviews/Settings.html',
+                            "url": bucketRoot + '/webviews/Settings.html',
                             "type": "web_url",
                             "messenger_extensions": true,
                             "webview_height_ratio": "tall",
@@ -388,10 +392,10 @@ exports.bot = function(request, messageText, userId) {
                       "elements":[
                          {
                           "title":"Food Report",
-                          "image_url":"https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/arrows.jpg",
+                          "image_url": bucketRoot + '/chatbotimages/arrows.jpg',
                           "subtitle":"Breakdown of your meals",
                           "default_action": {
-                            "url": 'https://www.inphood.com/webviews/Report.html',
+                            "url": bucketRoot + '/webviews/Report.html',
                             "type": "web_url",
                             "messenger_extensions": true,
                             "webview_height_ratio": "tall",
