@@ -1,3 +1,5 @@
+const constants = require('./constants.js')
+
 var levenshtein = require('fast-levenshtein');
 
 // Sources:
@@ -281,76 +283,76 @@ exports.getGifUrl = function(number) {
     return ''
   }
   else if (number == 3) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_003g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_003g.gif'
   }
   else if (number == 4) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_005g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_005g.gif'
   }
   else if (number == 5) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_005g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_005g.gif'
   }
   else if (number == 6) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_006g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_006g.gif'
   }
   else if (number == 7) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_007g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_007g.gif'
   }
   else if (number == 8) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_008g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_008g.gif'
   }
   else if (number == 9) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_009g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_009g.gif'
   }
   else if (number == 10) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_010g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_010g.gif'
   }
   else if (number == 11) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_011g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_011g.gif'
   }
   else if (number == 12) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_012g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_012g.gif'
   }
   else if (number == 13) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_013g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_013g.gif'
   }
   else if (number == 14) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_014g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_014g.gif'
   }
   else if (number == 15) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_015g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_015g.gif'
   }
   else if (number <= 20) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_020g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_020g.gif'
   }
   else if (number <= 25) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_025g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_025g.gif'
   }
   else if (number <= 30) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_030g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_030g.gif'
   }
   else if (number <= 35) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_035g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_035g.gif'
   }
   else if (number <= 40) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_040g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_040g.gif'
   }
   else if (number <= 45) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_045g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_045g.gif'
   }
   else if (number <= 50) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_050g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_050g.gif'
   }
   else if (number <= 55) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_055g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_055g.gif'
   }
   else if (number <= 60) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_060g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_060g.gif'
   }
   else if (number <= 65) {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/Sugar_065g.gif'
+    return constants.bucketRoot + '/sugargifs/Sugar_065g.gif'
   }
   else {
-    return 'https://d1q0ddz2y0icfw.cloudfront.net/sugargifs/9000.gif'
+    return constants.bucketRoot + '/sugargifs/9000.gif'
   }
 }
 
