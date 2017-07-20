@@ -341,6 +341,8 @@ exports.bot = function(request, messageText, userId) {
           case 'settings': {
             console.log('DEBUG WEBVIEW SETTINGS:')
             console.log('-------------------------------------------------------')
+            const dbgWvImgUrl = constants.bucketRoot + '/chatbotimages/settings.jpeg'
+            const dbgWvUrl = constants.bucketRoot + '/webviews/Settings.html'
             const wvMsg = {
               uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + process.env.FACEBOOK_BEARER_TOKEN,
               json: true,
@@ -357,10 +359,10 @@ exports.bot = function(request, messageText, userId) {
                       "elements":[
                          {
                           "title":"Settings",
-                          "image_url": constants.bucketRoot + '/chatbotimages/settings.jpeg',
+                          "image_url": dbgWvImgUrl,
                           "subtitle":"Weight, sugar, goals",
                           "default_action": {
-                            "url": constants.bucketRoot + '/webviews/Settings.html',
+                            "url": dbgWvUrl,
                             "type": "web_url",
                             "messenger_extensions": true,
                             "webview_height_ratio": "tall",
@@ -387,6 +389,8 @@ exports.bot = function(request, messageText, userId) {
             return constants.generateTip()
           }
           case 'report': {
+            const wvImgUrl = constants.bucketRoot + '/chatbotimages/arrows.jpg'
+            const wvUrl = constants.bucketRoot + '/webviews/Report.html'
             const wvMsg = {
               uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + process.env.FACEBOOK_BEARER_TOKEN,
               json: true,
@@ -403,10 +407,10 @@ exports.bot = function(request, messageText, userId) {
                       "elements":[
                          {
                           "title":"Food Report",
-                          "image_url": constants.bucketRoot + '/chatbotimages/arrows.jpg',
+                          "image_url": wvImgUrl,
                           "subtitle":"Breakdown of your meals",
                           "default_action": {
-                            "url": "https://www.inphood.com/webviews/Report.html",
+                            "url": wvUrl,
                             "type": "web_url",
                             "messenger_extensions": true,
                             "webview_height_ratio": "tall",
