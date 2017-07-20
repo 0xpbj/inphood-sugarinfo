@@ -25,9 +25,9 @@ exports.sugarResponse = function(userId, foodName, sugarPercentage) {
             "elements":[
               {
                 "title": foodName,
-                "image_url": "https://d1q0ddz2y0icfw.cloudfront.net/progressBars/" + sugarPercentage + ".png",
+                "image_url": constants.bucketRoot + '/progressBars/' + sugarPercentage + '.png',
                 "default_action": {
-                  "url": "https://www.inphood.com/webviews/FoodJournalEntry.html",
+                  "url": constants.bucketRoot + '/webviews/FoodJournalEntry.html',
                   "type": "web_url",
                   "messenger_extensions": true,
                   "webview_height_ratio": "tall",
@@ -36,7 +36,7 @@ exports.sugarResponse = function(userId, foodName, sugarPercentage) {
                 "buttons":[
                   {
                     "title": "Edit",
-                    "url": "https://www.inphood.com/webviews/FoodJournalEntry.html",
+                    "url": constants.bucketRoot + '/webviews/FoodJournalEntry.html',
                     "type": "web_url",
                     "messenger_extensions": true,
                     "webview_height_ratio": "tall",
@@ -47,7 +47,7 @@ exports.sugarResponse = function(userId, foodName, sugarPercentage) {
               {
                 "title": "Tracking Reward",
                 "subtitle": "Tip, fact, recipe, etc.",
-                "image_url": "https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/gift.jpeg",
+                "image_url": constants.bucketRoot + '/chatbotimages/gift.jpeg',
                 "buttons":[
                   {
                     "title": "Claim",
@@ -59,7 +59,7 @@ exports.sugarResponse = function(userId, foodName, sugarPercentage) {
               {
                 "title": "Setup Reminder",
                 "subtitle": "1, 3, 5 hours",
-                "image_url": "https://d1q0ddz2y0icfw.cloudfront.net/chatbotimages/reminder.jpeg",
+                "image_url": constants.bucketRoot + '/chatbotimages/reminder.jpeg',
                 "buttons":[
                   {
                     "title": "Setup",
@@ -294,7 +294,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data, fav
           }
           else if (psugar === 0) {
             const roundNSugar = Math.round(nsugar)
-            let reply = (roundNSugar) ? roundNSugar + 'g of natural sugars found.\nCongratulations! 🎉🎉 No refined sugars found!' 
+            let reply = (roundNSugar) ? roundNSugar + 'g of natural sugars found.\nCongratulations! 🎉🎉 No refined sugars found!'
               : 'Congratulations! 🎉🎉 No refined sugars found!'
             return [
               reply,
