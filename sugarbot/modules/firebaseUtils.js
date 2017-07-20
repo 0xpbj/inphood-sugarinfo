@@ -10,7 +10,7 @@ const firebase = require('firebase')
 
 exports.sugarResponse = function(userId, foodName, sugarPercentage) {
   const wvImgUrl = constants.bucketRoot + '/progressBars/' + sugarPercentage + '.png'
-  const wvUrl = constants.bucketRoot + '/webviews/FoodJournalEntry.html'
+  const wvUrl = constants.wvBucketRoot + '/webviews/FoodJournalEntry.html'
   const wvGiftImgUrl = constants.bucketRoot + '/chatbotimages/gift.jpeg'
   const wvReminderImgUrl = constants.bucketRoot + '/chatbotimages/reminder.jpeg'
   const wvMsg = {

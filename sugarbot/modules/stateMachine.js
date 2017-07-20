@@ -342,7 +342,7 @@ exports.bot = function(request, messageText, userId) {
             console.log('DEBUG WEBVIEW SETTINGS:')
             console.log('-------------------------------------------------------')
             const dbgWvImgUrl = constants.bucketRoot + '/chatbotimages/settings.jpeg'
-            const dbgWvUrl = constants.bucketRoot + '/webviews/Settings.html'
+            const dbgWvUrl = constants.wvBucketRoot + '/webviews/Settings.html'
             const wvMsg = {
               uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + process.env.FACEBOOK_BEARER_TOKEN,
               json: true,
@@ -390,7 +390,7 @@ exports.bot = function(request, messageText, userId) {
           }
           case 'report': {
             const wvImgUrl = constants.bucketRoot + '/chatbotimages/arrows.jpg'
-            const wvUrl = constants.bucketRoot + '/webviews/Report.html'
+            const wvUrl = constants.wvBucketRoot + '/webviews/Report.html'
             const wvMsg = {
               uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + process.env.FACEBOOK_BEARER_TOKEN,
               json: true,
