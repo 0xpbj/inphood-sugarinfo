@@ -120,35 +120,35 @@ exports.bot = function(request, messageText, userId) {
           case 'confused':
           case 'need help':
           case 'features': {
-            'Ok, here are a few helpful animations for you 📚',
-            new fbTemplate.List()
-            .addBubble('Track Meals', 'Learn how to track meals with our chatbot')
-              .addImage(bucketRoot + '/chatbotimages/measure.jpg')
-              .addButton('Learn More', 'track animation')
-            .addBubble('Ingredient Label', 'Find hidden processed sugars')
-              .addImage(bucketRoot + '/chatbotimages/sugar.jpg')
-              .addButton('Learn More', 'label animation')
-            .addBubble('My Favorites', 'Quick add favorite meals')
-              .addImage(bucketRoot + '/chatbotimages/favorite.jpg')
-              .addButton('Learn More', 'favorite animation')
-            .addBubble('Daily Reports', 'Check your daily progress')
-              .addImage(bucketRoot + '/chatbotimages/arrows.jpg')
-              .addButton('Learn More', 'report animation')
-            .addListButton('Chatbot Menu Help', 'chatbot menu animation')
-            .get()
+            return [
+              'Ok, here are a few helpful animations for you 📚',
+              new fbTemplate.List()
+              .addBubble('Track Meals', 'Learn how to track meals with our chatbot')
+                .addImage(bucketRoot + '/chatbotimages/measure.jpg')
+                .addButton('Learn More', 'track animation')
+              .addBubble('Ingredient Label', 'Find hidden processed sugars')
+                .addImage(bucketRoot + '/chatbotimages/sugar.jpg')
+                .addButton('Learn More', 'label animation')
+              .addBubble('My Favorites', 'Quick add favorite meals')
+                .addImage(bucketRoot + '/chatbotimages/favorite.jpg')
+                .addButton('Learn More', 'favorite animation')
+              .addBubble('Daily Reports', 'Check your daily progress')
+                .addImage(bucketRoot + '/chatbotimages/arrows.jpg')
+                .addButton('Learn More', 'report animation')
+              .addListButton('Chatbot Menu Help', 'chatbot menu animation')
+              .get()
+            ]
           }
           case 'learn more':
           case 'tell me more': {
-            return [
-              new fbTemplate.Generic()
-                .addBubble('Natural Sugars', 'fruits, veggies, and honey')
-                  .addImage(bucketRoot + '/chatbotimages/fruits.jpg')
-                  .addButton('Learn More', 'http://organics.org/natural-vs-processed-sugars/')
-                .addBubble('Refined Sugars', 'modified, combined or processed')
-                  .addImage(bucketRoot + '/chatbotimages/cakes.jpeg')
-                  .addButton('Learn More', 'http://organics.org/natural-vs-processed-sugars/')
-                .get();
-            ]
+            return new fbTemplate.Generic()
+              .addBubble('Natural Sugars', 'fruits, veggies, and honey')
+                .addImage(bucketRoot + '/chatbotimages/fruits.jpg')
+                .addButton('Learn More', 'http://organics.org/natural-vs-processed-sugars/')
+              .addBubble('Refined Sugars', 'modified, combined or processed')
+                .addImage(bucketRoot + '/chatbotimages/cakes.jpeg')
+                .addButton('Learn More', 'http://organics.org/natural-vs-processed-sugars/')
+              .get()
           }
           case '1 hour':
           case 'time1': {
