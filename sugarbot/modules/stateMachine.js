@@ -17,10 +17,6 @@ const firebase = require('firebase')
 const isTestBot = false
 const {Wit} = require('node-wit')
 const witClient = new Wit({accessToken: process.env.WIT_TOKEN})
-const cloudFrontCache = false
-const bucketRoot = cloudFrontCache ?
-  "https://s3-us-west-1.amazonaws.com" :
-  "https://d1q0ddz2y0icfw.cloudfront.net"
 
 exports.bot = function(request, messageText, userId) {
   const tempRef = firebase.database().ref("/global/sugarinfoai/" + userId)
@@ -76,7 +72,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'Here is how you can send us feedback:',
               new fbTemplate
-              .Image(bucketRoot + '/chatbotimages/feedback.gif')
+              .Image(constants.bucketRoot + '/chatbotimages/feedback.gif')
               .get()
             ]
           }
@@ -84,7 +80,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'How to check your consumption report:',
               new fbTemplate
-              .Image(bucketRoot + '/chatbotimages/report.gif')
+              .Image(constants.bucketRoot + '/chatbotimages/report.gif')
               .get()
             ]
           }
@@ -92,7 +88,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'How to analyze ingredients with the chatbot:',
               new fbTemplate
-              .Image(bucketRoot + '/chatbotimages/analyze.gif')
+              .Image(constants.bucketRoot + '/chatbotimages/analyze.gif')
               .get()
             ]
           }
@@ -100,7 +96,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'How to track with the chatbot:',
                new fbTemplate
-              .Image(bucketRoot + '/chatbotimages/tracks.gif')
+              .Image(constants.bucketRoot + '/chatbotimages/tracks.gif')
               .get()
             ]
           }
@@ -108,7 +104,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'How to use the favorites feature:',
               new fbTemplate
-              .Image(bucketRoot + '/chatbotimages/favorites.gif')
+              .Image(constants.bucketRoot + '/chatbotimages/favorites.gif')
               .get()
             ]
           }
@@ -116,7 +112,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'How to use the chatbot menu:',
               new fbTemplate
-              .Image(bucketRoot + '/chatbotimages/chatbotMenu.gif')
+              .Image(constants.bucketRoot + '/chatbotimages/chatbotMenu.gif')
               .get()
             ]
           }
@@ -228,7 +224,7 @@ exports.bot = function(request, messageText, userId) {
           case 'label': {
             return [
               new fbTemplate
-              .Image(bucketRoot + '/chatbotimages/upc.jpg')
+              .Image(constants.bucketRoot + '/chatbotimages/upc.jpg')
               .get(),
               "Please send me a photo of the UPC 📷 or type the number manually ⌨️"
             ]
@@ -267,7 +263,7 @@ exports.bot = function(request, messageText, userId) {
             return [
               'Great! Tell me what you ate' + mealInfo,
               // new fbTemplate
-              // .Image(bucketRoot + '/chatbotimages/upc.jpg')
+              // .Image(constants.bucketRoot + '/chatbotimages/upc.jpg')
               // .get(),
               // 'Remember you can send me a picture of the UPC label 📷 or type the number manually ⌨️ for your convinience.'
             ]
@@ -356,10 +352,10 @@ exports.bot = function(request, messageText, userId) {
                       "elements":[
                          {
                           "title":"Settings",
-                          "image_url": bucketRoot + '/chatbotimages/settings.jpeg',
+                          "image_url": constants.bucketRoot + '/chatbotimages/settings.jpeg',
                           "subtitle":"Weight, sugar, goals",
                           "default_action": {
-                            "url": bucketRoot + '/webviews/Settings.html',
+                            "url": constants.bucketRoot + '/webviews/Settings.html',
                             "type": "web_url",
                             "messenger_extensions": true,
                             "webview_height_ratio": "tall",
@@ -402,10 +398,10 @@ exports.bot = function(request, messageText, userId) {
                       "elements":[
                          {
                           "title":"Food Report",
-                          "image_url": bucketRoot + '/chatbotimages/arrows.jpg',
+                          "image_url": constants.bucketRoot + '/chatbotimages/arrows.jpg',
                           "subtitle":"Breakdown of your meals",
                           "default_action": {
-                            "url": bucketRoot + '/webviews/Report.html',
+                            "url": constants.bucketRoot + '/webviews/Report.html',
                             "type": "web_url",
                             "messenger_extensions": true,
                             "webview_height_ratio": "tall",

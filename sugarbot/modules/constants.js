@@ -1,4 +1,8 @@
-const sugarUtils = require('./sugarUtils.js')
+const cloudFrontCache = false
+exports.bucketRoot = exports.cloudFrontCache ?
+  "https://s3-us-west-1.amazonaws.com" :
+  "https://d1q0ddz2y0icfw.cloudfront.net"
+
 exports.testUsers = ['1547345815338571', '1322516797796635', '1526909420717220']  // AC, PBJ on sugarinfoAI (and sugarinfoAITest)
 
 exports.featureTips = [
