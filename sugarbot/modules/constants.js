@@ -1,4 +1,4 @@
-const cloudFrontCache = false
+const cloudFrontCache = true
 exports.bucketRoot = exports.cloudFrontCache ?
   "https://d1q0ddz2y0icfw.cloudfront.net" :
   "https://s3-us-west-1.amazonaws.com"
