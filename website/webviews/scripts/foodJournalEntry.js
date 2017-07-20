@@ -3,8 +3,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+// TODO: these should probably be closures / closured
 var tz;
 var sugarIntakeRef;
+var myFoodsRef;
+var myFoodsDict;
 var lastKey;
 
 //
@@ -135,6 +138,22 @@ function handleOnInput(id) {
         sugarIntakeRef.once('value', function(snapshot) {
           updateTotalSugar(snapshot);
         });
+
+        // 4. Update the firebase favorites values, if they exist
+        if (myFoodsDict) {
+          let cleanText = nutritionData.hasOwnProperty('cleanText') ? 
+            nutritionData.cleanText : ''
+          if (cleanText !== '') {
+            // Sanitize the text for firebase--i.e. replace '/' etc. with '_'
+            let sanoText = subSlashes(cleanText)
+            if (sanoText in myFoodsDict) {
+              logIt('Found ' + sanoText + ' in myFoodsDict.')
+              let mfRef = myFoodsRef.child(sanoText)
+              mfRef.child('psugar').set(parseFloat(newPSugarValue))
+              mfRef.child('sugar').set(parseFloat(newTotalSugarValue))
+            }
+          }
+        }
       });
     } else {
       // Handle the multiItemHtml use case
@@ -177,6 +196,23 @@ function handleOnInput(id) {
         sugarAddedField.innerHTML = parseFloat(totalPSugar);
         let sugarTotalField = document.getElementById('sugarTotal');
         sugarTotalField.innerHTML = parseFloat(totalSugar);
+
+        // 5. Update the firebase favorites values, if they exist
+        if (myFoodsDict) {
+          let cleanText = nutritionData.hasOwnProperty('cleanText') ? 
+            nutritionData.cleanText : ''
+          if (cleanText !== '') {
+            // Sanitize the text for firebase--i.e. replace '/' etc. with '_'
+            let sanoText = subSlashes(cleanText)
+            if (sanoText in myFoodsDict) {
+              logIt('Found ' + sanoText + ' in myFoodsDict.')
+              let mfRef = myFoodsRef.child(sanoText)
+              mfRef.child('psugar').set(parseFloat(totalPSugar))
+              mfRef.child('sugar').set(parseFloat(totalSugar))
+              mfRef.child('sugarArr/' + id + '/psugar').set(parseFloat(newPSugarValue))
+            }
+          }
+        }
       });
     }
   }
@@ -436,7 +472,7 @@ function processValuesFromDb(sugarIntakeDict) {
 
     let html = '';
     if (singleItemUseCase) {
-      html = singleItemHtml(foodName, nsugar, psugar, removed, iphoto);
+      html = singleItemHtml(cleanText, nsugar, psugar, removed, iphoto);
     } else {
       // TODO: can probably replace with 'cleanName' from firebase (all over the
       // place)
@@ -456,7 +492,7 @@ function processValuesFromDb(sugarIntakeDict) {
         }
         subIngredients.push(ingredient);
       }
-      html = multiItemHtml(titleFoodName, nsugar, psugar, removed, subIngredients);
+      html = multiItemHtml(cleanText, nsugar, psugar, removed, subIngredients);
     }
     document.getElementById("lastFoodItem").innerHTML=html;
   }
@@ -531,5 +567,13 @@ function initPageValuesFromDb(userRef) {
         return;
       }
     });
+  });
+
+  // 4. Simultaneously get the user's favorite foods:
+  //
+  myFoodsRef = userRef.child('myfoods')
+  myFoodsRef.once('value', function(myFoodsSnapshot) {
+    myFoodsDict = myFoodsSnapshot.val()
+    return
   });
 }
