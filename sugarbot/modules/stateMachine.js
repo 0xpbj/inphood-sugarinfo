@@ -59,8 +59,8 @@ exports.bot = function(request, messageText, userId) {
                   intro = 'Hi, I’m sugarinfoAI! I can help you understand how much sugar you are eating and help you bring it within recommended limits. Would you like that?'
                 }
                 return new fbTemplate.Button(intro)
-                .addButton('Learn More', 'tell me more')
-                .addButton('Bot Features', 'features')
+                .addButton('Learn About Sugar', 'sugar information')
+                .addButton('ChatBot Features', 'features')
                 .get()
               })
             })
@@ -119,6 +119,7 @@ exports.bot = function(request, messageText, userId) {
           case 'help':
           case 'confused':
           case 'need help':
+          case 'tell me more':
           case 'features': {
             return [
               'Ok, here are a few helpful animations for you 📚',
@@ -139,14 +140,10 @@ exports.bot = function(request, messageText, userId) {
               .get()
             ]
           }
-          case 'learn more':
-          case 'tell me more': {
+          case 'sugar information': {
             return new fbTemplate.Generic()
-              .addBubble('Natural Sugars', 'fruits, veggies, and honey')
+              .addBubble('Natural vs. Processed Sugars', 'fruits, veggies vs HFCP, sugar')
                 .addImage(constants.bucketRoot + '/chatbotimages/fruits.jpg')
-                .addButton('Learn More', 'http://organics.org/natural-vs-processed-sugars/')
-              .addBubble('Refined Sugars', 'modified, combined or processed')
-                .addImage(constants.bucketRoot + '/chatbotimages/cakes.jpeg')
                 .addButton('Learn More', 'http://organics.org/natural-vs-processed-sugars/')
               .get()
           }
@@ -401,7 +398,7 @@ exports.bot = function(request, messageText, userId) {
                           "image_url": constants.bucketRoot + '/chatbotimages/arrows.jpg',
                           "subtitle":"Breakdown of your meals",
                           "default_action": {
-                            "url": constants.bucketRoot + '/webviews/Report.html',
+                            "url": "https://www.inphood.com/webviews/Report.html",
                             "type": "web_url",
                             "messenger_extensions": true,
                             "webview_height_ratio": "tall",
