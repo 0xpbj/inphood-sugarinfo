@@ -1,8 +1,6 @@
 const cloudFrontCache = true
-exports.bucketRoot = exports.cloudFrontCache ?
-  "https://www.inphood.com" :
-  "https://s3-us-west-1.amazonaws.com/www.inphood.com"
-
+exports.devBucketRoot = "https://s3-us-west-1.amazonaws.com/www.inphood.com"
+exports.bucketRoot = exports.cloudFrontCache ? "https://www.inphood.com" : devBucketRoot
 
 exports.testUsers = ['1547345815338571', '1322516797796635', '1526909420717220']  // AC, PBJ on sugarinfoAI (and sugarinfoAITest)
 
