@@ -9,6 +9,10 @@ const requestPromise = require('request-promise')
 const firebase = require('firebase')
 
 exports.sugarResponse = function(userId, foodName, sugarPercentage) {
+  const wvImgUrl = constants.bucketRoot + '/progressBars/' + sugarPercentage + '.png'
+  const wvUrl = constants.bucketRoot + '/webviews/FoodJournalEntry.html'
+  const wvGiftImgUrl = constants.bucketRoot + '/chatbotimages/gift.jpeg'
+  const wvReminderImgUrl = constants.bucketRoot + '/chatbotimages/reminder.jpeg'
   const wvMsg = {
     uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=' + process.env.FACEBOOK_BEARER_TOKEN,
     json: true,
@@ -25,9 +29,9 @@ exports.sugarResponse = function(userId, foodName, sugarPercentage) {
             "elements":[
               {
                 "title": foodName,
-                "image_url": constants.bucketRoot + '/progressBars/' + sugarPercentage + '.png',
+                "image_url": wvImgUrl,
                 "default_action": {
-                  "url": constants.bucketRoot + '/webviews/FoodJournalEntry.html',
+                  "url": wvUrl,
                   "type": "web_url",
                   "messenger_extensions": true,
                   "webview_height_ratio": "tall",
@@ -36,7 +40,7 @@ exports.sugarResponse = function(userId, foodName, sugarPercentage) {
                 "buttons":[
                   {
                     "title": "Edit",
-                    "url": constants.bucketRoot + '/webviews/FoodJournalEntry.html',
+                    "url": wvUrl,
                     "type": "web_url",
                     "messenger_extensions": true,
                     "webview_height_ratio": "tall",
@@ -47,7 +51,7 @@ exports.sugarResponse = function(userId, foodName, sugarPercentage) {
               {
                 "title": "Tracking Reward",
                 "subtitle": "Tip, fact, recipe, etc.",
-                "image_url": constants.bucketRoot + '/chatbotimages/gift.jpeg',
+                "image_url": wvGiftImgUrl,
                 "buttons":[
                   {
                     "title": "Claim",
@@ -59,7 +63,7 @@ exports.sugarResponse = function(userId, foodName, sugarPercentage) {
               {
                 "title": "Setup Reminder",
                 "subtitle": "1, 3, 5 hours",
-                "image_url": constants.bucketRoot + '/chatbotimages/reminder.jpeg',
+                "image_url": wvReminderImgUrl,
                 "buttons":[
                   {
                     "title": "Setup",
