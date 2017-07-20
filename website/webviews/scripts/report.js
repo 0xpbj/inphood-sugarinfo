@@ -76,7 +76,7 @@ function getReportHtml(date, snapshot) {
     } else if (progress > 100) {
       const overage = Math.round(progress) - 100
       const mainWidth = Math.round(95 * (100 / Math.round(progress)))
-      const overWidth = 95 - mainWidth + 1
+      const overWidth = 100 - mainWidth
 
       sugarProgressBar += ' \
         <div class="progress-bar progress-bar-success" role="progressbar" style="width: ' + mainWidth + '%; height: ' + progBarHeight + '; line-height: ' + progBarHeight + ';" aria-valuenow="' + mainWidth + '" aria-valuemin="0" aria-valuemax="100"> \
@@ -94,6 +94,20 @@ function getReportHtml(date, snapshot) {
 
 
     sugarConsumptionReport += '<ul class="list-group">'
+
+    sugarConsumptionReport += ' \
+      <li class="list-group-item active justify-content-between"> \
+        <div class="media"> \
+          <div class="media-left"> \
+            <h4 class="media-heading">Total</h4> \
+          </div> \
+          <div class="media-body text-right"> \
+            ' + totalProcessedSugarToday + ' grams sugar \
+          </div> \
+        </div> \
+      </li> \
+      <li class="list-group-item justify-content-between"> \
+      </li>' 
 
     for (let key in sugarConsumptionToday) {
       if (key === 'dailyTotal') {
@@ -202,21 +216,6 @@ function getReportHtml(date, snapshot) {
 
     }
 
-
-    sugarConsumptionReport += ' \
-      <li class="list-group-item justify-content-between"> \
-      </li> \
-  \
-      <li class="list-group-item active justify-content-between"> \
-        <div class="media"> \
-          <div class="media-left"> \
-            <h4 class="media-heading">Total</h4> \
-          </div> \
-          <div class="media-body text-right"> \
-            ' + totalProcessedSugarToday + ' grams sugar \
-          </div> \
-        </div> \
-      </li>'
     sugarConsumptionReport += '</ul>'
   }
 
@@ -240,6 +239,7 @@ function getReportHtml(date, snapshot) {
    \
         ' + sectionSpacer + ' \
         <h4 class="text-left">Sugar Journal</h4> \
+        <span id="avgSugar"></span> \
         <div> \
           <canvas id="sugarHistoryChart"/> \
         </div> \
@@ -255,10 +255,12 @@ function populateGraph(snapshot) {
   logIt('Creating sugarHistoryChart')
   let sugarHistoryChart = ''
   const hasChartData = snapshot.exists() &&
-                       snapshot.child('sugarIntake').exists()
+                       snapshot.child('sugarIntake').exists() 
 
   if (hasChartData) {
     const sugarConsumptionHistory = snapshot.child('sugarIntake').val()
+    const sugarConsumptionGoal = (snapshot.child('preferences/currentGoalSugar').exists()) ?
+      snapshot.child('preferences/currentGoalSugar').val() : undefined
 
     let dataDaySugar = []
     for (let day in sugarConsumptionHistory) {
@@ -278,26 +280,54 @@ function populateGraph(snapshot) {
 
     var labels = []
     var plotData = []
+    var goalData = []
+    let sum = 0
     for (let index in dataDaySugar) {
       let dateSugarDay = dataDaySugar[index]
       labels.push("")
       plotData.push(dateSugarDay.sugarG)
+
+      if (sugarConsumptionGoal) {
+        goalData.push(sugarConsumptionGoal)
+      }
+
+      sum += dateSugarDay.sugarG
+    }
+    let average = Math.ceil(sum / dataDaySugar.length)
+    if (average && !isNaN(average)) {
+      document.getElementById('avgSugar').innerHTML = '<h5 class="text-left">Average Daily Sugar: ' + average + ' grams</h5>'
+    }
+
+    let datasets = [
+      { 
+        label: "Sugar (grams)", 
+        fillColor: "rgba(151,187,205,0.2)", 
+        strokeColor: "rgba(151,187,205,1)", 
+        pointColor: "rgba(151,187,205,1)", 
+        pointStrokeColor: "#fff", 
+        pointHighlightFill: "#fff", 
+        pointHighlightStroke: "rgba(151,187,205,1)", 
+        data: plotData 
+      } 
+    ]
+    if (sugarConsumptionGoal) {
+      datasets.push(
+        { 
+          label: "Sugar Goal (grams)", 
+          fillColor: "rgba(0,187,0,0.0)", 
+          strokeColor: "rgba(0,187,0,1)", 
+          pointColor: "rgba(0,187,0,0.1)", 
+          pointStrokeColor: "rgba(0,187,0,0.0)", 
+          pointHighlightFill: "rgba(0,187,0,0.0)", 
+          pointHighlightStroke: "rgba(0,187,0,0)", 
+          data: goalData 
+        }
+      )
     }
 
     var data = { 
       labels: labels, 
-      datasets: [ 
-        { 
-          label: "Sugar (grams)", 
-          fillColor: "rgba(151,187,205,0.2)", 
-          strokeColor: "rgba(151,187,205,1)", 
-          pointColor: "rgba(151,187,205,1)", 
-          pointStrokeColor: "#fff", 
-          pointHighlightFill: "#fff", 
-          pointHighlightStroke: "rgba(151,187,205,1)", 
-          data: plotData 
-        } 
-      ] 
+      datasets: datasets,
     }; 
 
     var option = { 
