@@ -90,21 +90,24 @@ exports.fdaProcess = function (userId, barcode, date, fulldate) {
         nf_serving_weight_grams,
         brand_name
       } = body
+      let foodSugar = nf_sugars ? Math.round(nf_sugars) : 0
+      let foodFiber = nf_dietary_fiber ? Math.round(nf_dietary_fiber) : 0
+      let foodCarbs = nf_total_carbohydrate ? Math.round(nf_total_carbohydrate) : 0
       let ingredientsSugarsCaps = sugarUtils.capitalizeSugars(body.nf_ingredient_statement)
       let tailStr = nf_serving_size_qty + ' ' + nf_serving_size_unit + ' (' + nf_serving_weight_grams + 'g) serving'
-      let sugarPerServingStr = nf_sugars + 'g sugars in ' + tailStr
-      let fiberPerServingStr = nf_dietary_fiber + 'g fibers in ' + tailStr
-      let carbsPerServingStr = nf_total_carbohydrate + 'g carbs in ' + tailStr
+      let sugarPerServingStr = foodSugar + 'g sugars in ' + tailStr
+      let fiberPerServingStr = foodFiber + 'g fibers in ' + tailStr
+      let carbsPerServingStr = foodCarbs + 'g carbs in ' + tailStr
       console.log('sanity check\n\n\n\n')
       let sugarData = {
-        sugar: nf_sugars,
-        carbs: nf_total_carbohydrate,
-        fiber: nf_dietary_fiber,
-        psugar: nf_sugars,
+        sugar: foodSugar,
+        carbs: foodCarbs,
+        fiber: foodFiber,
+        psugar: foodSugar,
         nsugar: 0,
-        sugarArr: [{nsugar: 0, psugar: nf_sugars}],
-        carbsArr: [nf_total_carbohydrate],
-        fiberArr: [nf_dietary_fiber],
+        sugarArr: [{nsugar: 0, psugar: foodSugar}],
+        carbsArr: [foodCarbs],
+        fiberArr: [foodFiber],
         sugarPerServingStr,
         carbsPerServingStr,
         fiberPerServingStr,

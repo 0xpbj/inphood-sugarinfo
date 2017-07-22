@@ -1,5 +1,5 @@
 const cloudFrontCache = true
-const wvCloudFrontCache = false
+const wvCloudFrontCache = true
 exports.devBucketRoot = "https://s3-us-west-1.amazonaws.com/www.inphood.com"
 exports.bucketRoot = cloudFrontCache ? "https://www.inphood.com" : exports.devBucketRoot
 exports.wvBucketRoot = wvCloudFrontCache ? "https://www.inphood.com" : exports.devBucketRoot

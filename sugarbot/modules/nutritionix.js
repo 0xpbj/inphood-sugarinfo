@@ -76,6 +76,8 @@ exports.getNutritionix = function(messageText, userId, date, fulldate) {
         photo
       } = food
       let foodSugar = nf_sugars ? Math.round(nf_sugars) : 0
+      let foodFiber = nf_dietary_fiber ? Math.round(nf_dietary_fiber) : 0
+      let foodCarbs = nf_total_carbohydrate ? Math.round(nf_total_carbohydrate) : 0
       console.log('*************************')
       console.log(food)
       if (foodSugar === 0) {
@@ -101,12 +103,12 @@ exports.getNutritionix = function(messageText, userId, date, fulldate) {
       else {
         thumb.push('')
       }
-      sugar += nf_sugars
-      carbs += nf_total_carbohydrate
-      fiber += nf_dietary_fiber
+      sugar += foodSugar
+      carbs += foodCarbs
+      fiber += foodFiber
       sugarArr.push({nsugar: nxsugar, psugar: pxsugar})
-      carbsArr.push(nf_total_carbohydrate)
-      fiberArr.push(nf_dietary_fiber)
+      carbsArr.push(foodCarbs)
+      fiberArr.push(foodFiber)
     }
     let sugarPerServingStr = 'That has about ' + psugar + 'g of sugars. Here\'s a breakdown of your meal: \n'
     if (processedSugars !== '') {
