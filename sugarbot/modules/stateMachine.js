@@ -11,7 +11,6 @@ const botBuilder = require('claudia-bot-builder')
 const fbTemplate = botBuilder.fbTemplate
 
 const requestPromise = require('request-promise')
-const sentiment = require('sentiment');
 
 const firebase = require('firebase')
 const isTestBot = false
