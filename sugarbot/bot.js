@@ -3,29 +3,27 @@ const facebookMachine = require('./modules/stateMachine.js')
 const fbTemplate = botBuilder.fbTemplate
 const utils = require('./modules/utils.js')
 const fire = require('./modules/firebaseUtils.js')
-
 const constants = require('./modules/constants.js')
 const firebase = require('firebase')
 if (firebase.apps.length === 0) {
-  firebase.initializeApp({
+  var config = {
     apiKey: process.env.FIREBASE_API_KEY,
     authDomain: process.env.FIREBASE_AUTH_DOMAIN,
     databaseURL: process.env.FIREBASE_DATABASE_URL,
     projectId: process.env.FIREBASE_PROJECT_ID,
-    storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID
-  })
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET
+  }
+  firebase.initializeApp(config);
+  console.log('%%%%%%%%%%%%%%%%%%%%%%%', firebase.app().name)
 }
-
 const bailArr = ['main menu', 'refresh', 'reset', 'start', 'hey', 'menu', '?', 'hi', 'hello', 'back', 'cancel', 'clear', 'exit', 'start over']
 
 module.exports = botBuilder(function (request, originalApiRequest) {
-  // return 'hello world'
   if (request.type === 'facebook') {
+    // return 'hello world'
     console.log('***************************', request)
     console.log('***************************', originalApiRequest)
     const userId = request.originalRequest.sender.id
-    // const userId = '1322516797796635'
     var messageText = request.text ? request.text.toLowerCase() : null
     if (bailArr.indexOf(messageText) > -1) {
       if (firebase.auth().currentUser) {
@@ -54,4 +52,4 @@ module.exports = botBuilder(function (request, originalApiRequest) {
       })
     }
   }
-}, { platforms: ['facebook'] });
+}, { platforms: ['facebook'] })
