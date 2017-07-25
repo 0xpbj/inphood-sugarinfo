@@ -6,21 +6,18 @@ const fire = require('./modules/firebaseUtils.js')
 const constants = require('./modules/constants.js')
 const firebase = require('firebase')
 if (firebase.apps.length === 0) {
-  var config = {
+  firebase.initializeApp({
     apiKey: process.env.FIREBASE_API_KEY,
     authDomain: process.env.FIREBASE_AUTH_DOMAIN,
     databaseURL: process.env.FIREBASE_DATABASE_URL,
     projectId: process.env.FIREBASE_PROJECT_ID,
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET
-  }
-  firebase.initializeApp(config);
-  console.log('%%%%%%%%%%%%%%%%%%%%%%%', firebase.app().name)
+  })
 }
 const bailArr = ['main menu', 'refresh', 'reset', 'start', 'hey', 'menu', '?', 'hi', 'hello', 'back', 'cancel', 'clear', 'exit', 'start over']
 
 module.exports = botBuilder(function (request, originalApiRequest) {
   if (request.type === 'facebook') {
-    // return 'hello world'
     console.log('***************************', request)
     console.log('***************************', originalApiRequest)
     const userId = request.originalRequest.sender.id

@@ -5,8 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "create": "claudia create --region us-west-2 --api-module bot --profile claudia",
-    "update": "claudia update --profile claudia --set-env-from-json ../.env-production",
-    "update-test": "claudia update --profile claudia --config claudia_test.json --set-env-from-json ../.env-test"
+    "update": "claudia update --profile claudia --set-env-from-json ../.env-production --use-local-dependencies",
+    "update-test": "claudia update --profile claudia --config claudia_test.json --set-env-from-json ../.env-test --use-local-dependencies"
   },
   "keywords": [],
   "author": "",
@@ -24,8 +24,7 @@
     "porter-stemmer": "^0.9.1",
     "quagga": "^0.11.6",
     "request": "^2.81.0",
-    "request-promise": "^4.2.1",
-    "sentiment": "^4.0.0"
+    "request-promise": "^4.2.1"
   },
   "description": ""
 }
