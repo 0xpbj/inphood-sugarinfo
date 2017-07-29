@@ -22,12 +22,13 @@ const accessToken = 'EAAJhTtF5K30BABsLODz0w5Af5hvd1SN9TZCU0E9OapZCKuZAOMugO2bNDa
 // Though it may make more sense to set it up as admin/priviledged environment:
 //   - https://firebase.google.com/docs/admin/setup
 //
+// TODO: make it use the .env loader for constants below
 var firebase = require('firebase')
 if (firebase.apps.length === 0) {
   console.log('InitializingApp on firebase with config')
   //firebase.initializeApp(process.env.FIREBASE_CONFIG)
   firebase.initializeApp({
-    apiKey: 'AIzaSyBQTHsQA5GuDG7Ttk17o3LBQfXjn7MtUQ8',
+    apiKey: 'AIzaSyC6q3xNF48k98N-SkJOnkryA8J3ZeYOJPg',
     authDomain: 'inphooddb-e0dfd.firebaseapp.com',
     databaseURL: 'https://inphooddb-e0dfd.firebaseio.com',
     projectId: 'inphooddb-e0dfd',
