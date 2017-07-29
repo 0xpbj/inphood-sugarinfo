@@ -5,6 +5,13 @@ const sugarUtils = require('./sugarUtils.js')
 const botBuilder = require('claudia-bot-builder');
 const fbTemplate = botBuilder.fbTemplate;
 
+// Centralized function to control how we convert string representations of numbers
+// to numbers (useful if we decide to round etc.--presently using ceiling as this
+// is the worst case for amount of sugar):
+exports.stringToNum = function(aNum) {
+  return Math.ceil(aNum)
+}
+
 // Duplicated out of webview FoodJournalEntry:
 // TODO: unify
 // TODO: probably better to move this elsewhere and dynamically update when
@@ -105,36 +112,39 @@ exports.getUsdaReport = function(ndbno) {
       let measure = nutrient.measures[0]
       let eunit = measure.eunit
       if (nutrient.measures.length > 0 && nutrient.nutrient_id === SUGAR_NUTRIENT_ID) {
-        let sugarPerServing = ''
-        sugarPerServing += measure.value + eunit + ' '
-        sugarPerServing += nutrient.name.toLowerCase().replace(/,.*/g, '')
-        sugarPerServing += ' in a '
-        sugarPerServing += measure.qty + ' ' + measure.label
-        sugarPerServing += ' (' + measure.eqv + eunit + ') serving'
-        result.sugarPerServingStr = sugarPerServing
-        result.sugarPerServing = measure.value
+        let sugarPerServingStr = ''
+        sugarPerServingStr += measure.value + eunit + ' '
+        sugarPerServingStr += nutrient.name.toLowerCase().replace(/,.*/g, '')
+        sugarPerServingStr += ' in a '
+        sugarPerServingStr += measure.qty + ' ' + measure.label
+        sugarPerServingStr += ' (' + measure.eqv + eunit + ') serving'
+        result.sugarPerServingStr = sugarPerServingStr
+
+        result.sugarPerServing = exports.stringToNum(measure.value)
         console.log('Sugar block')
       }
       else if (nutrient.measures.length > 0 && nutrient.nutrient_id === CARBS_NUTRIENT_ID) {
-        let carbsPerServing = ''
-        carbsPerServing += measure.value + eunit + ' '
-        carbsPerServing += nutrient.name.toLowerCase().replace(/,.*/g, '')
-        carbsPerServing += ' in a '
-        carbsPerServing += measure.qty + ' ' + measure.label
-        carbsPerServing += ' (' + measure.eqv + eunit + ') serving'
-        result.carbsPerServingStr = carbsPerServing
-        result.carbsPerServing = measure.value
+        let carbsPerServingStr = ''
+        carbsPerServingStr += measure.value + eunit + ' '
+        carbsPerServingStr += nutrient.name.toLowerCase().replace(/,.*/g, '')
+        carbsPerServingStr += ' in a '
+        carbsPerServingStr += measure.qty + ' ' + measure.label
+        carbsPerServingStr += ' (' + measure.eqv + eunit + ') serving'
+        result.carbsPerServingStr = carbsPerServingStr
+
+        result.carbsPerServing = exports.stringToNum(measure.value)
         console.log('Carbs block')
       }
       else if (nutrient.measures.length > 0 && nutrient.nutrient_id === FIBER_NUTRIENT_ID) {
-        let fiberPerServing = ''
-        fiberPerServing += measure.value + eunit + ' '
-        fiberPerServing += nutrient.name.toLowerCase().replace(/,.*/g, '')
-        fiberPerServing += ' in a '
-        fiberPerServing += measure.qty + ' ' + measure.label
-        fiberPerServing += ' (' + measure.eqv + eunit + ') serving'
-        result.fiberPerServingStr = fiberPerServing
-        result.fiberPerServing = measure.value
+        let fiberPerServingStr = ''
+        fiberPerServingStr += measure.value + eunit + ' '
+        fiberPerServingStr += nutrient.name.toLowerCase().replace(/,.*/g, '')
+        fiberPerServingStr += ' in a '
+        fiberPerServingStr += measure.qty + ' ' + measure.label
+        fiberPerServingStr += ' (' + measure.eqv + eunit + ') serving'
+        result.fiberPerServingStr = fiberPerServingStr
+        
+        result.fiberPerServing = exports.stringToNum(measure.value)
         console.log('Fiber block')
       }
     }
