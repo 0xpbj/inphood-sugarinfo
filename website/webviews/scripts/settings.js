@@ -113,7 +113,7 @@ function getSwitch(id, description, initialValue) {
 ////////////////////////////////////////////////////////////////////////////////
 
 function getMainForm(sugarLimit=36, goalWeight=150, currentWeight=150, nightlySummary=true) {
-  const goalSugarHtml = getEditableField('currentGoalSugar', 'Daily Sugar Limit (grams)', sugarLimit)
+  const goalSugarHtml = getEditableField('currentGoalSugar', 'Daily Sugar Limit (grams) *', sugarLimit)
   const goalWeightHtml = getEditableField('currentGoalWeight', 'Body Weight (pounds)', goalWeight, 30, 700);
   const currentWeightHtml = getEditableField('currentWeight', 'Current Body Weight (pounds)', currentWeight, 30, 700);
   const nightlySummaryHtml = getSwitch('nightlySummary', 'Nightly Journal', nightlySummary);
@@ -127,6 +127,12 @@ function getMainForm(sugarLimit=36, goalWeight=150, currentWeight=150, nightlySu
           ' + goalSugarHtml + ' \
           ' + goalWeightHtml + ' \
         </div> \
+        <p style="padding:5px"> \
+          * The American Heart Association (AHA) recommends limiting added sugars you consume daily \
+          to no more than 25 grams for most women and 36 grams for most men.\
+          <a href="http://www.heart.org/HEARTORG/HealthyLiving/HealthyEating/Nutrition/Added-Sugars_UCM_305858_Article.jsp"> \
+          Read more on AHA\'s website.</a> \
+        </p> \
         <div style="height:20px"></div> \
         <h4>My Data</h4> \
         <div style="border: 1px solid #000000; border-radius: 10px; padding: 10px 10px 0px"> \

@@ -255,6 +255,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data, fav
           if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && roundSugar >= 3) {
             return [
               'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
+              roundSugar + 'g of sugar found',
               'Sugar Visualization: 🍪🍭🍩🍫',
               new fbTemplate
               .Image(sugarUtils.getGifUrl(roundSugar))
@@ -267,6 +268,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data, fav
           }
           else if (roundSugar > 2) {
             return [
+              roundSugar + 'g of sugar found',
               'Sugar Visualization: 🍪🍭🍩🍫',
               new fbTemplate
               .Image(sugarUtils.getGifUrl(roundSugar))

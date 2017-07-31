@@ -40,8 +40,11 @@ window.extAsyncInit = function() {
 function initAndAuthDb() {
   logIt('initAndAuthDb');
   logIt('-------------------------------');
+  // old keys:
+  //    apiKey: 'AIzaSyBQTHsQA5GuDG7Ttk17o3LBQfXjn7MtUQ8',
+  //
   firebase.initializeApp({
-    apiKey: 'AIzaSyBQTHsQA5GuDG7Ttk17o3LBQfXjn7MtUQ8',
+    apiKey: 'AIzaSyC6q3xNF48k98N-SkJOnkryA8J3ZeYOJPg',
     authDomain: 'inphooddb-e0dfd.firebaseapp.com',
     databaseURL: 'https://inphooddb-e0dfd.firebaseio.com',
   });

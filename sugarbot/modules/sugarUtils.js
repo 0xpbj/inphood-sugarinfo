@@ -279,6 +279,8 @@ exports.getSugar = function(anIngredient) {
 }
 
 exports.getGifUrl = function(number) {
+  console.log('getGifUrl: number = ' + number)
+  
   if (number < 3) {
     return ''
   }
