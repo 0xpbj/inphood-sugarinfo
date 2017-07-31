@@ -64,7 +64,7 @@ function getEditableField(id, description, initialValue, min=0, max=100) {
   let html = ' \
     <div class="form-group"> \
       <div class="row""> \
-        <div class="col-xs-5"> \
+        <div class="col-xs-5" style="padding-right:5px"> \
           <input id="' + id + '"  \
                  class="form-control text-right" \
                  style="font-size:16px" \
@@ -74,7 +74,7 @@ function getEditableField(id, description, initialValue, min=0, max=100) {
                  min="' + min + '" \
                  max="' + max + '"/> \
         </div> \
-        <div class="col-xs-7"> \
+        <div class="col-xs-7" style="padding-left:5px"> \
           <label class="control-label" style="font-size:16px">' + description + '</label> \
         </div> \
       </div> \
@@ -113,7 +113,7 @@ function getSwitch(id, description, initialValue) {
 ////////////////////////////////////////////////////////////////////////////////
 
 function getMainForm(sugarLimit=36, goalWeight=150, currentWeight=150, nightlySummary=true) {
-  const goalSugarHtml = getEditableField('currentGoalSugar', 'Daily Sugar Limit (grams) *', sugarLimit)
+  const goalSugarHtml = getEditableField('currentGoalSugar', 'Daily Sugar* (grams)', sugarLimit)
   const goalWeightHtml = getEditableField('currentGoalWeight', 'Body Weight (pounds)', goalWeight, 30, 700);
   const currentWeightHtml = getEditableField('currentWeight', 'Current Body Weight (pounds)', currentWeight, 30, 700);
   const nightlySummaryHtml = getSwitch('nightlySummary', 'Nightly Journal', nightlySummary);
@@ -128,10 +128,11 @@ function getMainForm(sugarLimit=36, goalWeight=150, currentWeight=150, nightlySu
           ' + goalWeightHtml + ' \
         </div> \
         <p style="padding:5px"> \
-          * The American Heart Association (AHA) recommends limiting added sugars you consume daily \
-          to no more than 25 grams for most women and 36 grams for most men.\
+          * The \
           <a href="http://www.heart.org/HEARTORG/HealthyLiving/HealthyEating/Nutrition/Added-Sugars_UCM_305858_Article.jsp"> \
-          Read more on AHA\'s website.</a> \
+            American Heart Association \
+          </a> \
+          recommends limiting added sugars consumed daily to 25 grams for most women and 36 grams for most men.\
         </p> \
         <div style="height:20px"></div> \
         <h4>My Data</h4> \
