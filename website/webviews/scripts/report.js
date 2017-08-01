@@ -14,6 +14,10 @@ function getDailyProcessedSugar(dailyTotalObj) {
     dailyTotalObj.psugar : dailyTotalObj.sugar;
 }
 
+function getColorBlock(aColor) {
+  return ' \
+    <span style="border: 1px solid ' + aColor + '; background-color: ' + aColor + '">&nbsp;&nbsp;&nbsp</span>&nbsp;'
+}
 
 function getReportHtml(date, snapshot) {
   
@@ -243,6 +247,7 @@ function getReportHtml(date, snapshot) {
         <div> \
           <canvas id="sugarHistoryChart"/> \
         </div> \
+        <span id="legend"></span> \
    \
         ' + sectionSpacer + ' \
         <h4 class="text-left">Sugar History</h4> \
@@ -262,7 +267,11 @@ function populateGraph(snapshot) {
     const sugarConsumptionGoal = (snapshot.child('preferences/currentGoalSugar').exists()) ?
       snapshot.child('preferences/currentGoalSugar').val() : undefined
 
+    const preferencesWeightHistory = (snapshot.child('preferences').exists()) ?
+      snapshot.child('preferences').val() : undefined
+
     let dataDaySugar = []
+    let dataDayWeight = []
     for (let day in sugarConsumptionHistory) {
       const dateMs = Date.parse(day)
       const dailyTotal = sugarConsumptionHistory[day].dailyTotal
@@ -272,6 +281,11 @@ function populateGraph(snapshot) {
       }
       const sugarG = getDailyProcessedSugar(dailyTotal);
       dataDaySugar.push({dateMs: dateMs, sugarG: sugarG, dayString: day})
+
+      if (day in preferencesWeightHistory) {
+        const weightLb = preferencesWeightHistory[day]
+        dataDayWeight.push({dateMs: dateMs, weightLb: parseFloat(weightLb.weight), dayString: day})
+      }
     }
 
     dataDaySugar.sort(function(a, b) {
@@ -298,6 +312,69 @@ function populateGraph(snapshot) {
       document.getElementById('avgSugar').innerHTML = '<h5 class="text-left">Average Daily Sugar: ' + average + ' grams</h5>'
     }
 
+    let weightData = []
+    if (dataDayWeight.length > 0) {
+      // Sort the weight data in time and then perform interpolation to 
+      // make it work with our graph:
+      //
+      //   LIMITATION: assumes fewer weight data points than sugar ones
+      //
+      dataDayWeight.sort(function(a, b) {
+        return a.dateMs - b.dateMs
+      })
+      //   This loop moves the indexes of sugar data and weight data together
+      //   to fill in values for weight that may not have been entered on that
+      //   day -- it is a chart limitation we're working around. We also discard
+      //   extra weight values that are not in the sugar data (i.e. a day where
+      //   weight was logged, but sugar was not).
+      let sugarIndex = 0
+      let sugarLength = dataDaySugar.length
+      let weightIndex = 0
+      let weightLength = dataDayWeight.length
+      while (sugarIndex < sugarLength) {
+        let dateSugarDay = dataDaySugar[sugarIndex]
+        const dateMs = dataDaySugar[sugarIndex].dateMs
+
+        let dateWeightDay = dataDayWeight[weightIndex]
+        const weightDateMs = dataDayWeight[weightIndex].dateMs
+        const weight = dateWeightDay.weightLb
+
+        weightData.push(weight)
+
+        sugarIndex++
+        // Advance the weight index when the sugar data was collected after or
+        // at the same time as the weight data
+        if (dateMs >= weightDateMs) {
+          if (weightIndex < weightLength - 1) {
+            weightIndex++
+          }
+        }
+      }
+    }
+
+    if (true) {
+      let dailySugarCB = getColorBlock("rgba(151,187,205,1)")
+      let sugarGoalCB = getColorBlock("rgba(0,187,0,1)")
+      let weightCB = getColorBlock("rgba(187,187,187,1)")
+      let legendText = ' \
+        <p class="text-left" style="margin-top:0px"> \
+          ' + dailySugarCB + 'Daily Sugar(g)'
+
+      if (sugarConsumptionGoal) {
+        legendText += '&nbsp;&nbsp; \
+          ' + sugarGoalCB  + 'Sugar Goal(g)'
+      }
+
+      if (weightData.length > 0) {
+        legendText += '&nbsp;&nbsp; \
+          ' + weightCB + 'Body Weight(lb)'
+      }
+
+      legendText += '<p>'
+
+      document.getElementById('legend').innerHTML = legendText
+    }
+
     let datasets = [
       { 
         label: "Sugar (grams)", 
@@ -308,7 +385,17 @@ function populateGraph(snapshot) {
         pointHighlightFill: "#fff", 
         pointHighlightStroke: "rgba(151,187,205,1)", 
         data: plotData 
-      } 
+      },
+//      { 
+//        label: "Average Sugar (grams)", 
+//        fillColor: "rgba(0,0,205,0.0)", 
+//        strokeColor: "rgba(0,0,205,1)", 
+//        pointColor: "rgba(0,0,205,0.1)", 
+//        pointStrokeColor: "rgba(0,0,205,0.0)", 
+//        pointHighlightFill: "rgba(0,0,205,0.0)", 
+//        pointHighlightStroke: "rgba(0,0,205,0.0)", 
+//        data: avgPlotData
+//      },
     ]
     if (sugarConsumptionGoal) {
       datasets.push(
@@ -321,6 +408,20 @@ function populateGraph(snapshot) {
           pointHighlightFill: "rgba(0,187,0,0.0)", 
           pointHighlightStroke: "rgba(0,187,0,0)", 
           data: goalData 
+        }
+      )
+    }
+    if (weightData.length > 0) {
+      datasets.push(
+        { 
+          label: "Weight (pounds)", 
+          fillColor: "rgba(187,187,187,0.0)", 
+          strokeColor: "rgba(187,187,187,1)", 
+          pointColor: "rgba(187,187,187,0.1)", 
+          pointStrokeColor: "rgba(187,187,187,0.0)", 
+          pointHighlightFill: "rgba(187,187,187,0.0)", 
+          pointHighlightStroke: "rgba(187,187,187,0)", 
+          data: weightData 
         }
       )
     }
