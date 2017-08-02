@@ -284,7 +284,10 @@ function populateGraph(snapshot) {
 
       if (day in preferencesWeightHistory) {
         const weightLb = preferencesWeightHistory[day]
-        dataDayWeight.push({dateMs: dateMs, weightLb: parseFloat(weightLb.weight), dayString: day})
+        if (weightLb.hasOwnProperty('weight')) {
+          const weight = parseFloat(weightLb.weight)
+          dataDayWeight.push({dateMs: dateMs, weightLb: weight, dayString: day})
+        }
       }
     }
 
@@ -336,7 +339,7 @@ function populateGraph(snapshot) {
         const dateMs = dataDaySugar[sugarIndex].dateMs
 
         let dateWeightDay = dataDayWeight[weightIndex]
-        const weightDateMs = dataDayWeight[weightIndex].dateMs
+        const weightDateMs = dateWeightDay.dateMs
         const weight = dateWeightDay.weightLb
 
         weightData.push(weight)
@@ -374,6 +377,14 @@ function populateGraph(snapshot) {
 
       document.getElementById('legend').innerHTML = legendText
     }
+
+    // Debug o/p for datasets:
+//    logIt('plotData length: ' + plotData.length)
+//    logIt('goalData length: ' + goalData.length)
+//    logIt('weightData length: ' + weightData.length)
+//    for (let index = 0; index < weightData.length; index++) {
+//      logIt('weightData[' + index + '] = ' + weightData[index])
+//    }
 
     let datasets = [
       { 
