@@ -281,7 +281,7 @@ function dequeue_notifications() {
 
           if (notificationType === 'reminder') {
             send_notification(userId)
-          } 
+          }
           else if (notificationType === 'report') {
             queueReportJob(userId)
           }
@@ -381,9 +381,10 @@ function scheduleTracking() {
     for (let userId in sugarInfoAI) {
       const currentTimeUTC = Date.now()
       if (testMode && !constants.testUsers.includes(userId)) {
+        console.log('testMode is on--skipping user: ' + userId)
         continue
       }
-      console.log(userId)
+      console.log('  processing userId: ' + userId)
       const userSugarInfoAI = sugarInfoAI[userId]
       if ('sugarIntake' in userSugarInfoAI &&
           'profile' in userSugarInfoAI &&
@@ -395,7 +396,7 @@ function scheduleTracking() {
         .once('value')
         .then(dataSnapshot => {
           if (!dataSnapshot.child('/sugarIntake/' + userDate).exists()) {
-            console.log('User ' + userId + ' has not logged breakfast (' +
+            console.log('  User ' + userId + ' has not logged breakfast (' +
                         userDate + '). Scheduling a breakfast notification.')
             if (userTimeObj.hour === 10) {
               return firebase.database().ref('/global/sugarinfoai/' + userId + '/trackingNotifications/' + userDate).update({
@@ -406,9 +407,9 @@ function scheduleTracking() {
               })
             }
           }
-          else if (dataSnapshot.child('/sugarIntake/' + userDate).numChildren() < 2 
+          else if (dataSnapshot.child('/sugarIntake/' + userDate).numChildren() < 2
                     && !dataSnapshot.child('/trackingNotifications/' + userDate + '/breakfast').exists()) {
-            console.log('User ' + userId + ' has not logged lunch (' +
+            console.log('  User ' + userId + ' has not logged lunch (' +
                         userDate + '). Scheduling a lunch notification.')
             if (userTimeObj.hour === 15) {
               return firebase.database().ref('/global/sugarinfoai/' + userId + '/trackingNotifications/' + userDate).update({
@@ -422,7 +423,7 @@ function scheduleTracking() {
           else if (dataSnapshot.child('/sugarIntake/' + userDate).numChildren() < 3
                     && (!dataSnapshot.child('/trackingNotifications/' + userDate + '/lunch').exists()
                     || !dataSnapshot.child('/trackingNotifications/' + userDate + '/breakfast').exists())) {
-            console.log('User ' + userId + ' has not logged dinner (' +
+            console.log('  User ' + userId + ' has not logged dinner (' +
                         userDate + '). Scheduling a dinner notification.')
             if (userTimeObj.hour === 20) {
               return firebase.database().ref('/global/sugarinfoai/' + userId + '/trackingNotifications/' + userDate).update({
@@ -434,11 +435,11 @@ function scheduleTracking() {
             }
           }
           else {
-            console.log('Nothing to say....')
+            console.log('  Nothing to say....')
           }
         })
         .catch(error => {
-          console.log('Error: ', error)
+          console.log('  Error: ', error)
         })
       }
     }
