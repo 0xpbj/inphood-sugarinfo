@@ -4,7 +4,8 @@ exports.devBucketRoot = "https://s3-us-west-1.amazonaws.com/www.inphood.com"
 exports.bucketRoot = cloudFrontCache ? "https://www.inphood.com" : exports.devBucketRoot
 exports.wvBucketRoot = wvCloudFrontCache ? "https://www.inphood.com" : exports.devBucketRoot
 
-exports.testUsers = ['1547345815338571', '1322516797796635', '1526909420717220']  // AC, PBJ on sugarinfoAI (and sugarinfoAITest)
+exports.testUsers = ['1547345815338571', '1322516797796635', '1526909420717220', '1477027879058879']  // AC, PBJ on sugarinfoAI (and sugarinfoAITest)
+exports.testbotUsers = ['1526909420717220', '1477027879058879']  // PBJ, AC on sugarinfoAI (and sugarinfoAITest)
 
 exports.featureTips = [
   "",

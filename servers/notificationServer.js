@@ -376,6 +376,7 @@ function scheduleTracking() {
   console.log('scheduleTracking')
   const dbSugarInfo = firebase.database().ref('/global/sugarinfoai/')
   const dbNotQueue = dbSugarInfo.child('notification_queue')
+
   return dbSugarInfo.once('value', function(snapshot) {
     const sugarInfoAI = snapshot.val()
     for (let userId in sugarInfoAI) {
@@ -392,55 +393,51 @@ function scheduleTracking() {
         const timeZone = userSugarInfoAI.profile.timezone
         const userTimeObj = timeUtils.getUserTimeObj(currentTimeUTC, timeZone)
         const userDate = timeUtils.getUserDateString(currentTimeUTC, timeZone)
-        return firebase.database().ref('/global/sugarinfoai/' + userId)
-        .once('value')
-        .then(dataSnapshot => {
-          if (!dataSnapshot.child('/sugarIntake/' + userDate).exists()) {
-            console.log('  User ' + userId + ' has not logged breakfast (' +
-                        userDate + '). Scheduling a breakfast notification.')
-            if (userTimeObj.hour === 10) {
-              return firebase.database().ref('/global/sugarinfoai/' + userId + '/trackingNotifications/' + userDate).update({
-                breakfast: Date.now()
-              })
-              .then(() => {
-                queue_notification(dbNotQueue, currentTimeUTC, 0, userId, 'trackingBreakfast')
-              })
-            }
+
+        if (!userSugarInfoAI.sugarIntake.hasOwnProperty(userDate)) {
+          console.log('  User ' + userId + ' has not logged breakfast (' +
+                      userDate + ').')
+          if (userTimeObj.hour === 10) {
+            console.log('   Scheduling a breakfast notification.')
+            const dbTrackRef = dbSugarInfo.child(userId + '/trackingNotifications/' + userDate + '/breakfast')
+            dbTrackRef.set(Date.now())
+            queue_notification(dbNotQueue, currentTimeUTC, 0, userId, 'trackingBreakfast')
+          } else {
+            console.log('  Not scheduling breakfast notification (userHour must be 10, = ' + userTimeObj.hour + ')')
           }
-          else if (dataSnapshot.child('/sugarIntake/' + userDate).numChildren() < 2
-                    && !dataSnapshot.child('/trackingNotifications/' + userDate + '/breakfast').exists()) {
-            console.log('  User ' + userId + ' has not logged lunch (' +
-                        userDate + '). Scheduling a lunch notification.')
-            if (userTimeObj.hour === 15) {
-              return firebase.database().ref('/global/sugarinfoai/' + userId + '/trackingNotifications/' + userDate).update({
-                lunch: Date.now()
-              })
-              .then(() => {
-                queue_notification(dbNotQueue, currentTimeUTC, 0, userId, 'trackingLunch')
-              })
-            }
+        }
+        else if ((Object.keys(userSugarInfoAI.sugarIntake[userDate]).length < 2) &&
+                 !(userSugarInfoAI.trackingNotifications.hasOwnProperty(userDate) &&
+                   userSugarInfoAI.trackingNotifications[userDate].hasOwnProperty('breakfast'))) {
+          console.log('  User ' + userId + ' has not logged lunch (' +
+                      userDate + ').')
+          if (userTimeObj.hour === 15) {
+            console.log('  Scheduling a lunch notification.')
+            const dbTrackRef = dbSugarInfo.child(userId + '/trackingNotifications/' + userDate + '/lunch')
+            dbTrackRef.set(Date.now())
+            queue_notification(dbNotQueue, currentTimeUTC, 0, userId, 'trackingLunch')
+          } else {
+            console.log('  Not scheduling lunch notification (userHour must be 15, = ' + userTimeObj.hour + ')')
           }
-          else if (dataSnapshot.child('/sugarIntake/' + userDate).numChildren() < 3
-                    && (!dataSnapshot.child('/trackingNotifications/' + userDate + '/lunch').exists()
-                    || !dataSnapshot.child('/trackingNotifications/' + userDate + '/breakfast').exists())) {
-            console.log('  User ' + userId + ' has not logged dinner (' +
-                        userDate + '). Scheduling a dinner notification.')
-            if (userTimeObj.hour === 20) {
-              return firebase.database().ref('/global/sugarinfoai/' + userId + '/trackingNotifications/' + userDate).update({
-                dinner: Date.now()
-              })
-              .then(() => {
-                queue_notification(dbNotQueue, currentTimeUTC, 0, userId, 'trackingDinner')
-              })
-            }
+        }
+        else if ((Object.keys(userSugarInfoAI.sugarIntake[userDate]).length < 3) &&
+                 !(userSugarInfoAI.trackingNotifications.hasOwnProperty(userDate) &&
+                   (userSugarInfoAI.trackingNotifications[userDate].hasOwnProperty('breakfast') ||
+                    userSugarInfoAI.trackingNotifications[userDate].hasOwnProperty('lunch')))) {
+          console.log('  User ' + userId + ' has not logged dinner (' +
+                      userDate + ').')
+          if (userTimeObj.hour === 20) {
+            console.log('  Scheduling a dinner notification.')
+            const dbTrackRef = dbSugarInfo.child(userId + '/trackingNotifications/' + userDate + '/dinner')
+            dbTrackRef.set(Date.now())
+            queue_notification(dbNotQueue, currentTimeUTC, 0, userId, 'trackingDinner')
+          } else {
+            console.log('  Not scheduling dinner notification (userHour must be 20, = ' + userTimeObj.hour + ')')
           }
-          else {
-            console.log('  Nothing to say....')
-          }
-        })
-        .catch(error => {
-          console.log('  Error: ', error)
-        })
+        }
+        else {
+          console.log('  Nothing to say....')
+        }
       }
     }
   })
