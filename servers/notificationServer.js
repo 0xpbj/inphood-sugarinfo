@@ -394,6 +394,15 @@ function scheduleTracking() {
         const userTimeObj = timeUtils.getUserTimeObj(currentTimeUTC, timeZone)
         const userDate = timeUtils.getUserDateString(currentTimeUTC, timeZone)
 
+        // Skip this user if they didn't track yesterday either (b/c we would have sent
+        // them a notification already yesterday and don't want to be irritating):
+        const yesterdayTimeUTC = currentTimeUTC - (1000 * 60 * 60 * 24)
+        const yesterdayUserDate = timeUtils.getUserDateString(yesterdayTimeUTC, timeZone)
+        if (!userSugarInfoAI.sugarIntake.hasOwnProperty(yesterdayUserDate)) {
+          console.log('  skipping userId (didn\'t track yest.): ' + userId)
+          continue
+        }
+
         if (!userSugarInfoAI.sugarIntake.hasOwnProperty(userDate)) {
           console.log('  User ' + userId + ' has not logged breakfast (' +
                       userDate + ').')
