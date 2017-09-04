@@ -1,6 +1,8 @@
-const utils = require('./../utils.js')
+const constants = require('./../constants.js')
 const fire = require('./../firebaseUtils.js')
+const nutrition = require ('./../nutritionix.js')
 const timeUtils = require('./../timeUtils.js')
+const utils = require('./../utils.js')
 
 const botBuilder = require('claudia-bot-builder')
 const fbTemplate = botBuilder.fbTemplate
@@ -8,9 +10,20 @@ const fbTemplate = botBuilder.fbTemplate
 exports.processWit = function(data,
                               messageText, userId,
                               favorites, timezone, name, timestamp, date) {
-  // console.log('In sevenDayWitProcessing:')
+  const featureString = data.entities.features ?
+                        data.entities.features[0].value : data._text
 
-  return 'My name is sugarinfoAI. Nice to meet you ' + name
+  console.log('Seven day challenge conversation module.')
+  console.log('  ' + featurString)
+
+  switch (featureString) {
+    case '': {
+      return ''
+    }
+    default: {
+      return nutrition.getNutritionix(messageText, userId, date, timestamp)
+    }
+  }
   // Day 1:
   // Start out by saying hello and briefly giving the value prop.
   // Then get right to tracking day 1.

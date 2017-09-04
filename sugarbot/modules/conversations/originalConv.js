@@ -1,14 +1,16 @@
-const utils = require('./../utils.js')
-const fire = require('./../firebaseUtils.js')
-const timeUtils = require('./../timeUtils.js')
-
 const constants = require('./../constants.js')
+const fire = require('./../firebaseUtils.js')
+const nutrition = require ('./../nutritionix.js')
+const timeUtils = require('./../timeUtils.js')
+const utils = require('./../utils.js')
 
 const requestPromise = require('request-promise')
 const botBuilder = require('claudia-bot-builder')
 const fbTemplate = botBuilder.fbTemplate
 
 const firebase = require('firebase')
+
+
 
 exports.processWit = function(data,
                               messageText, userId,

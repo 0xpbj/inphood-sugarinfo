@@ -89,12 +89,12 @@ exports.getUsdaReport = function(ndbno) {
     error: undefined,
     ingredients: undefined,
     ingredientsSugarsCaps: undefined,
-    sugarPerServing: undefined,
-    carbsPerServing: undefined,
-    fiberPerServing: undefined,
-    sugarPerServingStr: undefined,
-    carbsPerServingStr: undefined,
-    fiberPerServingStr: undefined
+    sugarPerServing: 0,
+    carbsPerServing: 0,
+    fiberPerServing: 0,
+    sugarPerServingStr: '',
+    carbsPerServingStr: '',
+    fiberPerServingStr: ''
   }
 
   const SUGAR_NUTRIENT_ID = '269'
@@ -143,7 +143,7 @@ exports.getUsdaReport = function(ndbno) {
         fiberPerServingStr += measure.qty + ' ' + measure.label
         fiberPerServingStr += ' (' + measure.eqv + eunit + ') serving'
         result.fiberPerServingStr = fiberPerServingStr
-        
+
         result.fiberPerServing = exports.stringToNum(measure.value)
         console.log('Fiber block')
       }
