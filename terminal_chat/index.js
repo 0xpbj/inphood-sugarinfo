@@ -61,7 +61,7 @@ function handlePrompt(err, result) {
     // Proxy the user's input to our message text processor (that uses Wit etc.)
     //
 
-    return mtp.msgTxtProcessor(messageText, userId,
+    return mtp.msgTxtProcessor(firebase, messageText, userId,
                         favorites, timezone, name, timestamp, date)
     .then((result) => {
       console.log(result)
