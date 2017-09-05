@@ -5,7 +5,6 @@ const sugarUtils = require('./sugarUtils.js')
 const fire = require('./firebaseUtils.js')
 const wolf = require('./wolframUtils.js')
 const names = require('./foodNames.js')
-const firebase = require('firebase')
 
 function cleanQuestion(messageText) {
   return messageText.replace('sugar', '')
@@ -22,7 +21,7 @@ function randomUmame() {
   return arr[number]
 }
 
-exports.getNutritionix = function(messageText, userId, date, fulldate) {
+exports.getNutritionix = function(firebase, messageText, userId, date, fulldate) {
   const url = 'https://trackapi.nutritionix.com/v2/natural/nutrients'
   const request = require('request-promise')
   const cleanText = cleanQuestion(messageText)
@@ -37,8 +36,8 @@ exports.getNutritionix = function(messageText, userId, date, fulldate) {
     },
     resolveWithFullResponse: true,
     headers: {
-      'Content-Type': "application/json", 
-      'x-app-id': process.env.NUTRITIONIX_APP_ID, 
+      'Content-Type': "application/json",
+      'x-app-id': process.env.NUTRITIONIX_APP_ID,
       'x-app-key': process.env.NUTRITIONIX_API_KEY
     }
   }
@@ -62,17 +61,17 @@ exports.getNutritionix = function(messageText, userId, date, fulldate) {
       let nxsugar = 0
       let pxsugar = 0
       const {
-        upc, 
-        nf_sugars, 
+        upc,
+        nf_sugars,
         nf_total_carbohydrate,
         nf_dietary_fiber,
-        nix_brand_name, 
-        nix_brand_id, 
-        nf_ingredient_statement, 
-        food_name, 
-        serving_qty, 
-        serving_unit, 
-        meal_type, 
+        nix_brand_name,
+        nix_brand_id,
+        nf_ingredient_statement,
+        food_name,
+        serving_qty,
+        serving_unit,
+        meal_type,
         photo
       } = food
       let foodSugar = nf_sugars ? Math.round(nf_sugars) : 0
@@ -140,7 +139,7 @@ exports.getNutritionix = function(messageText, userId, date, fulldate) {
       photo: thumb,
       ingredientsSugarsCaps: 'unknown'
     }
-    return fire.addSugarToFirebase(userId, date, fulldate, '', sugarData)
+    return fire.addSugarToFirebase(firebase, userId, date, fulldate, '', sugarData)
   })
   .catch(error => {
     // return [

@@ -8,11 +8,7 @@ const requestPromise = require('request-promise')
 const botBuilder = require('claudia-bot-builder')
 const fbTemplate = botBuilder.fbTemplate
 
-const firebase = require('firebase')
-
-
-
-exports.processWit = function(data,
+exports.processWit = function(firebase, data,
                               messageText, userId,
                               favorites, timezone, name, timestamp, date) {
   console.log('Yay, got Wit.ai response: ' + JSON.stringify(data));
@@ -21,7 +17,7 @@ exports.processWit = function(data,
   console.log('FEATURE STRING', featureString)
   switch (featureString) {
     case 'start': {
-      return fire.trackUserProfile(userId)
+      return fire.trackUserProfile(firebase, userId)
       .then(() => {
         return firebase.database().ref("/global/sugarinfoai/" + userId + "/profile/").once("value")
         .then(function(snapshot) {
@@ -273,7 +269,7 @@ exports.processWit = function(data,
       return 'Food description or UPC Label photo, the choice is yours'
     }
     case 'nutrition': {
-      return fire.findMyFavorites(messageText, userId, date, timestamp)
+      return fire.findMyFavorites(firebase, messageText, userId, date, timestamp)
     }
     case 'recipe': {
       return utils.todaysSugarRecipe(timestamp)
@@ -302,7 +298,7 @@ exports.processWit = function(data,
 
       // 2. Get their current sugarIntake dict for today's date.
       //
-      return fire.addLastItem(userId, date)
+      return fire.addLastItem(firebase, userId, date)
     }
     case 'set a reminder': {
       return utils.sendReminder()
@@ -404,7 +400,7 @@ exports.processWit = function(data,
       return requestPromise(wvMsg)
     }
     default: {
-      return nutrition.getNutritionix(messageText, userId, date, timestamp)
+      return nutrition.getNutritionix(firebase, messageText, userId, date, timestamp)
     }
   }
 }

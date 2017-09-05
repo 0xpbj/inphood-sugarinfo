@@ -5,9 +5,7 @@ const sugarUtils = require('./sugarUtils.js')
 const fbTemplate = botBuilder.fbTemplate;
 const nutrition = require ('./nutritionix.js')
 
-const firebase = require('firebase')
-
-exports.fdaProcess = function (userId, barcode, date, fulldate) {
+exports.fdaProcess = function (firebase, userId, barcode, date, fulldate) {
   console.log('FDA Process', userId, barcode)
   const frequest = require('request-promise')
   let fdaOptions = {
@@ -32,8 +30,8 @@ exports.fdaProcess = function (userId, barcode, date, fulldate) {
     return report.then(fdaResponse => {
       console.log('FDA RESPONSE', fdaResponse)
       const {
-        error, 
-        sugarPerServing, 
+        error,
+        sugarPerServing,
         carbsPerServing,
         fiberPerServing,
         sugarPerServingStr,
@@ -59,7 +57,7 @@ exports.fdaProcess = function (userId, barcode, date, fulldate) {
           carbsArr: [carbsPerServing],
           fiberArr: [fiberPerServing],
         }
-        return fire.addSugarToFirebase(userId, date, fulldate, barcode, sugarData)
+        return fire.addSugarToFirebase(firebase, userId, date, fulldate, barcode, sugarData)
       }
       else if (error) {
         throw 'fda response was undefined'
@@ -116,7 +114,7 @@ exports.fdaProcess = function (userId, barcode, date, fulldate) {
         ingredientsSugarsCaps,
         photo: [''],
       }
-      return fire.addSugarToFirebase(userId, date, fulldate, barcode, sugarData)
+      return fire.addSugarToFirebase(firebase, userId, date, fulldate, barcode, sugarData)
     })
     .catch(ferror => {
       console.log('final fallback on firebase', ferror)
@@ -145,7 +143,7 @@ exports.fdaProcess = function (userId, barcode, date, fulldate) {
             ingredientsSugarsCaps: '',
             photo: []
           }
-          return fire.addSugarToFirebase(userId, date, fulldate, barcode, sugarData)
+          return fire.addSugarToFirebase(firebase, userId, date, fulldate, barcode, sugarData)
         }
         else {
           return [
@@ -164,7 +162,7 @@ exports.fdaProcess = function (userId, barcode, date, fulldate) {
   })
 }
 
-exports.processLabelImage = function(url, userId, date, timestamp) {
+exports.processLabelImage = function(firebase, url, userId, date, timestamp) {
   let encoding = 'base64'
   var fbOptions = {
     encoding: encoding,
@@ -192,7 +190,7 @@ exports.processLabelImage = function(url, userId, date, timestamp) {
       src: barcode // or 'data:image/jpg;base64,' + data
     })
     .then(response => {
-      return exports.fdaProcess(userId, response, date, timestamp)
+      return exports.fdaProcess(firebase, userId, response, date, timestamp)
     })
     .catch(() => {
       return "I couldn't read that barcode. Try taking another picture or manually enter the barcode"

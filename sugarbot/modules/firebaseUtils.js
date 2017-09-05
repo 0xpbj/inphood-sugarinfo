@@ -6,21 +6,6 @@ const constants = require('./constants.js')
 const nutrition = require ('./nutritionix.js')
 
 const requestPromise = require('request-promise')
-const firebase = require('firebase')
-
-// Workaround for firbase undefined problem when running terminal_chat development
-// environment:
-// if (firebase.apps.length === 0) {
-//   console.log('Initializaing firebase app for terminal_chat ...')
-//   firebase.initializeApp({
-//     apiKey: process.env.FIREBASE_API_KEY,
-//     authDomain: process.env.FIREBASE_AUTH_DOMAIN,
-//     databaseURL: process.env.FIREBASE_DATABASE_URL,
-//     projectId: process.env.FIREBASE_PROJECT_ID,
-//     storageBucket: process.env.FIREBASE_STORAGE_BUCKET
-//   })
-//   console.log('  success.')
-// }
 
 exports.sugarResponse = function(userId, foodName, sugarPercentage) {
   const wvImgUrl = constants.bucketRoot + '/progressBars/' + sugarPercentage + '.png'
@@ -106,7 +91,7 @@ function subSlashes( str ) {
   return ''
 }
 
-exports.addLastItem = function(userId, date) {
+exports.addLastItem = function(firebase, userId, date) {
   const currSugarIntakeRef = firebase.database().ref(
     "/global/sugarinfoai/" + userId + "/sugarIntake/" + date);
   console.log('Trying to access ' + currSugarIntakeRef.toString());
@@ -186,7 +171,7 @@ exports.addLastItem = function(userId, date) {
   });
 }
 
-exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data, favorite = false) {
+exports.addSugarToFirebase = function(firebase, userId, date, fulldate, barcode, data, favorite = false) {
   var userRef = firebase.database().ref("/global/sugarinfoai/" + userId)
   return userRef.once("value")
   .then(function(snapshot) {
@@ -262,7 +247,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data, fav
         return userRef.child('/sugarIntake/' + date + '/dailyTotal/').update({ nsugar: newNSugar, psugar: newPSugar })
         .then(() => {
           if (favorite) {
-            return exports.addLastItem(userId, date)
+            return exports.addLastItem(firebase, userId, date)
           }
           const sugarPercentage = Math.ceil(psugar*100/goalSugar)
           const roundSugar = Math.round(psugar)
@@ -333,7 +318,7 @@ exports.addSugarToFirebase = function(userId, date, fulldate, barcode, data, fav
   })
 }
 
-exports.findMyFavorites = function(favoriteMeal, userId, date, fulldate) {
+exports.findMyFavorites = function(firebase, favoriteMeal, userId, date, fulldate) {
   const cleanFavMeal = subSlashes(favoriteMeal);
   console.log('findMyFavorites:')
   console.log(firebase.apps)
@@ -342,10 +327,10 @@ exports.findMyFavorites = function(favoriteMeal, userId, date, fulldate) {
   .then(function(snapshot) {
     const favorite = true
     if (snapshot.exists()) {
-      return exports.addSugarToFirebase(userId, date, fulldate, '', snapshot.val(), favorite)
+      return exports.addSugarToFirebase(firebase, userId, date, fulldate, '', snapshot.val(), favorite)
     }
     else {
-      return nutrition.getNutritionix(favoriteMeal, userId, date, fulldate)
+      return nutrition.getNutritionix(firebase, favoriteMeal, userId, date, fulldate)
     }
   })
   .catch(error => {
@@ -353,7 +338,7 @@ exports.findMyFavorites = function(favoriteMeal, userId, date, fulldate) {
   })
 }
 
-exports.trackUserProfile = function(userId) {
+exports.trackUserProfile = function(firebase, userId) {
   var fbOptions = {
     uri: 'https://graph.facebook.com/v2.6/' + userId,
     method: 'GET',

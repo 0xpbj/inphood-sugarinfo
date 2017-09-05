@@ -4,9 +4,7 @@ const constants = require('./constants.js')
 
 const mtp = require('./msgTxtProcessor.js')
 
-const firebase = require('firebase')
-
-exports.bot = function(request, messageText, userId) {
+exports.bot = function(firebase, request, messageText, userId) {
   const tempRef = firebase.database().ref("/global/sugarinfoai/" + userId)
   return tempRef.once("value")
   .then(function(snapshot) {
@@ -23,13 +21,13 @@ exports.bot = function(request, messageText, userId) {
     const date = timeUtils.getUserDateString(timestamp, timezone)
     var messageAttachments = (request.originalRequest && request.originalRequest.message) ? request.originalRequest.message.attachments : null
     if (messageText && !isNaN(messageText)) {
-      return image.fdaProcess(userId, messageText, date, timestamp)
+      return image.fdaProcess(firebase, userId, messageText, date, timestamp)
     } else if (messageText) {
-      return mtp.msgTxtProcessor(messageText, userId,
+      return mtp.msgTxtProcessor(firebase, messageText, userId,
                                  favorites, timezone, name, timestamp, date)
     } else if (messageAttachments) {
       const {url} = messageAttachments[0].payload
-      return image.processLabelImage(url, userId, date, timestamp)
+      return image.processLabelImage(firebase, url, userId, date, timestamp)
     }
   })
 }

@@ -7,21 +7,40 @@ const utils = require('./../utils.js')
 const botBuilder = require('claudia-bot-builder')
 const fbTemplate = botBuilder.fbTemplate
 
-exports.processWit = function(data,
+exports.processWit = function(firebase, data,
                               messageText, userId,
                               favorites, timezone, name, timestamp, date) {
   const featureString = data.entities.features ?
                         data.entities.features[0].value : data._text
 
   console.log('Seven day challenge conversation module.')
-  console.log('  ' + featurString)
+  console.log('  ' + featureString)
 
   switch (featureString) {
-    case '': {
-      return ''
-    }
-    default: {
-      return nutrition.getNutritionix(messageText, userId, date, timestamp)
+    case 'start': {
+      return fire.trackUserProfile(firebase, userId)
+      .then(() => {
+        return firebase.database().ref("/global/sugarinfoai/" + userId + "/profile/").once("value")
+        .then(function(snapshot) {
+          let intro = ''
+          if (snapshot.child('first_name').exists()) {
+            intro = 'Hi ' + snapshot.child('first_name').val() + ', I’m sugarinfoAI!'
+          }
+          else {
+            intro = 'Hi, I’m sugarinfoAI!'
+          }
+          return [
+            intro,
+            'I am here to help you understand how much sugar is in your diet.',
+            new fbTemplate.ChatAction('typing_on').get(),
+            new fbTemplate.Pause(500).get(),
+            new fbTemplate.Button('Let\'s get started: ')
+            .addButton('Learn About Sugar', 'sugar information')
+            .addButton('ChatBot Features', 'tell me more')
+            .get()
+          ]
+        })
+      })
     }
   }
   // Day 1:

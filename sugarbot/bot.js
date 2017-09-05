@@ -4,6 +4,7 @@ const fbTemplate = botBuilder.fbTemplate
 const utils = require('./modules/utils.js')
 const fire = require('./modules/firebaseUtils.js')
 const constants = require('./modules/constants.js')
+
 const firebase = require('firebase')
 if (firebase.apps.length === 0) {
   firebase.initializeApp({
@@ -38,11 +39,11 @@ module.exports = botBuilder(function (request, originalApiRequest) {
     }
     else {
       if (firebase.auth().currentUser) {
-        return facebookMachine.bot(request, messageText, userId)
+        return facebookMachine.bot(firebase, request, messageText, userId)
       }
       return firebase.auth().signInAnonymously()
       .then(() => {
-        return facebookMachine.bot(request, messageText, userId)
+        return facebookMachine.bot(firebase, request, messageText, userId)
       })
       .catch(error => {
         console.log('Login Error', error)
