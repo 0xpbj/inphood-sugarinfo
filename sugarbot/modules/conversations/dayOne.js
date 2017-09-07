@@ -20,15 +20,15 @@ function getState(lastState, featureString, messageText, lastMealEvent) {
   console.log('getState: lastState='+lastState+', featureString='+featureString+', lastMealEvent='+lastMealEvent)
   switch (lastState) {
     case '000': {
-      if (messageText === state000[0]) {
+      if (messageText.toLowerCase() === state000[0].toLowerCase()) {
         return '001'
-      } else if (messageText === state000[1]) {
+      } else if (messageText.toLowerCase() === state000[1].toLowerCase()) {
         return '002'
       }
       return '000'
     }
     case '001': {
-      if (messageText === state001[0]) {
+      if (messageText.toLowerCase() === state001[0].toLowerCase()) {
         return '002'
       }
     }
@@ -120,27 +120,32 @@ exports.processWit = function(firebase, data,
   const lastStateRef = sevenDayRef.child('lastState')
   const lastMealEventRef = sevenDayRef.child('lastMealEvent')
 
-  if (featureString === 'start') {
+  if (featureString === 'start' || messageText === 'demo reset') {
     // STATE 000:
     return fire.trackUserProfile(firebase, userId)
     .then(() => {
       return profileRef.once("value")
       .then(function(snapshot) {
         lastStateRef.set('000')
+        lastMealEventRef.set('')
 
         const userName = valIfExistsOr(snapshot, 'first_name', '')
 
-        const intro1 = "Hi" + userName + ", I’m sugarinfoAI."
+        const intro1 = "Hi " + userName + ", I’m sugarinfoAI.\n"
         const intro2 = "I have a 7-day challenge to lower your risk of " +
                        "heart attack and type 2 diabetes."
         const buttons = "(" + state000[0] + ") | (" + state000[1] + ")"
 
         // TODO: when we get this dialog right, insert delays and chat actions
-        return [
-          intro1,
-          intro2,
-          buttons
-        ]
+        // return [
+        //   intro1,
+        //   intro2,
+        //   buttons
+        // ]
+        return new fbTemplate.Button(intro1+intro2)
+            .addButton(state000[0], state000[0])
+            .addButton(state000[1], state000[1])
+            .get()
       })
     })
   } else {
@@ -155,24 +160,31 @@ exports.processWit = function(firebase, data,
       switch (state) {
         case '000': {
           const buttons = "(" + state000[0] + ") | (" + state000[1] + ")"
-          return [
-            "I didn't understand you're response. Please try one of these buttons:",
-            buttons
-          ]
+          // return [
+          //   "I didn't understand you're response. Please try one of these buttons:",
+          //   buttons
+          // ]
+          return new fbTemplate.Button("I didn't understand you're response. Please try one of these buttons:")
+            .addButton(state000[0], state000[0])
+            .addButton(state000[1], state000[1])
+            .get()
         }
         case '001': {
           const buttons = "(" + state001[0] + ")"
-          return [
-            "{TODO: more information}",
-            buttons
-          ]
+          // return [
+          //   "{TODO: more information}",
+          //   buttons
+          // ]
+          return new fbTemplate.Button("When you tell me what you've eaten, I'll tell you approximately how much added sugar is in it.")
+            .addButton(state000[1], state000[1])
+            .get()
         }
         case '002': {
           const mealEvent = calculateMealEvent(timezone)
           lastMealEventRef.set(mealEvent)
           console.log('Determined mealEvent = ' + mealEvent)
 
-          const prompt = "Tell us about your " + mealEvent +
+          const prompt = "Tell me about your " + mealEvent +
                          " ? (e.g. caesar salad, coffee with cream)"
           return [prompt]
         }
