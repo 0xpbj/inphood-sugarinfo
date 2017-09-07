@@ -171,7 +171,7 @@ exports.addLastItem = function(firebase, userId, date) {
   });
 }
 
-exports.addSugarToFirebase = function(firebase, userId, date, fulldate, barcode, data, favorite = false) {
+exports.addSugarToFirebaseWOpts = function(firebase, userId, date, fulldate, barcode, data, favorite, autoAdd, progressBar, visualization, messages = []) {
   var userRef = firebase.database().ref("/global/sugarinfoai/" + userId)
   return userRef.once("value")
   .then(function(snapshot) {
@@ -211,7 +211,6 @@ exports.addSugarToFirebase = function(firebase, userId, date, fulldate, barcode,
       ingredientsSugarsCaps,
       timestamp: fulldate,
     })
-    const goalWeight = snapshot.child('/preferences/currentGoalWeight').val()
     let goalSugar = snapshot.child('/preferences/currentGoalSugar').val()
     let val = snapshot.child('/sugarIntake/' + date + '/dailyTotal/').val()
     if (!val)
@@ -252,62 +251,107 @@ exports.addSugarToFirebase = function(firebase, userId, date, fulldate, barcode,
           const sugarPercentage = Math.ceil(psugar*100/goalSugar)
           const roundSugar = Math.round(psugar)
           if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && roundSugar >= 3) {
-            return [
+            let retArr = [
               'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
-              roundSugar + 'g of sugar found',
-              'Sugar Visualization: 🍪🍭🍩🍫',
-              new fbTemplate
-              .Image(sugarUtils.getGifUrl(roundSugar))
-              .get(),
-              new fbTemplate.Button("Would you like to add the item to your journal?")
-              .addButton('Add Item ✅', 'add last item')
-              .addButton('Ignore Item ❌', 'ignore last item')
-              .get()
-            ]
+              roundSugar + 'g of sugar found']
+            if (visualization) {
+              retArr.push('Sugar Visualization: 🍪🍭🍩🍫')
+              retArr.push(new fbTemplate.Image(sugarUtils.getGifUrl(roundSugar)).get())
+            }
+            if (!autoAdd) {
+              retArr.push(new fbTemplate.Button("Would you like to add the item to your journal?")
+                              .addButton('Add Item ✅', 'add last item')
+                              .addButton('Ignore Item ❌', 'ignore last item')
+                              .get())
+            } else {
+              exports.addLastItem(firebase, userId, date)
+            }
+            if (messages.length > 0) {
+              for (let message of messages) {
+                retArr.push(message)
+              }
+            }
+            return retArr
           }
           else if (roundSugar > 2) {
-            return [
-              roundSugar + 'g of sugar found',
-              'Sugar Visualization: 🍪🍭🍩🍫',
-              new fbTemplate
-              .Image(sugarUtils.getGifUrl(roundSugar))
-              .get(),
-              new fbTemplate.Button("Would you like to add the item to your journal?")
-              .addButton('Add Item ✅', 'add last item')
-              .addButton('Ignore Item ❌', 'ignore last item')
-              .get()
-            ]
+            let retArr = [
+              roundSugar + 'g of sugar found']
+            if (visualization) {
+              retArr.push('Sugar Visualization: 🍪🍭🍩🍫')
+              retArr.push(new fbTemplate.Image(sugarUtils.getGifUrl(roundSugar)).get())
+            }
+            if (!autoAdd) {
+              retArr.push(new fbTemplate.Button("Would you like to add the item to your journal?")
+                              .addButton('Add Item ✅', 'add last item')
+                              .addButton('Ignore Item ❌', 'ignore last item')
+                              .get())
+            } else {
+              exports.addLastItem(firebase, userId, date)
+            }
+            if (messages.length > 0) {
+              for (let message of messages) {
+                retArr.push(message)
+              }
+            }
+            return retArr
           }
           else if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && roundSugar > 0) {
-            return [
+            let retArr = [
               'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
-              roundSugar + 'g of sugar found',
-              new fbTemplate.Button("Would you like to add the item to your journal?")
-              .addButton('Add Item ✅', 'add last item')
-              .addButton('Ignore Item ❌', 'ignore last item')
-              .get()
+              roundSugar + 'g of sugar found'
             ]
+            if (!autoAdd) {
+              retArr.push(new fbTemplate.Button("Would you like to add the item to your journal?")
+                          .addButton('Add Item ✅', 'add last item')
+                          .addButton('Ignore Item ❌', 'ignore last item')
+                          .get())
+            } else {
+               exports.addLastItem(firebase, userId, date)
+            }
+            if (messages.length > 0) {
+              for (let message of messages) {
+                retArr.push(message)
+              }
+            }
+            return retArr
           }
           else if (roundSugar > 0) {
-            return [
-              roundSugar + 'g of natural sugars found',
-              new fbTemplate.Button("Would you like to add the item to your journal?")
-              .addButton('Add Item ✅', 'add last item')
-              .addButton('Ignore Item ❌', 'ignore last item')
-              .get()
-            ]
+            let retArr = [roundSugar + 'g of sugars found']
+            if (!autoAdd) {
+              retArr.push(new fbTemplate.Button("Would you like to add the item to your journal?")
+                              .addButton('Add Item ✅', 'add last item')
+                              .addButton('Ignore Item ❌', 'ignore last item')
+                              .get())
+            } else {
+              exports.addLastItem(firebase, userId, date)
+            }
+            if (messages.length > 0) {
+              for (let message of messages) {
+                retArr.push(message)
+              }
+            }
+            return retArr
           }
           else if (psugar === 0) {
             const roundNSugar = Math.round(nsugar)
             let reply = (roundNSugar) ? roundNSugar + 'g of natural sugars found.\nCongratulations! 🎉🎉 No refined sugars found!'
               : 'Congratulations! 🎉🎉 No refined sugars found!'
-            return [
-              reply,
-              new fbTemplate.Button("Would you like to add the item to your journal?")
-              .addButton('Add Item ✅', 'add last item')
-              .addButton('Ignore Item ❌', 'ignore last item')
-              .get()
-            ]
+
+            let retArr = [reply]
+            if (!autoAdd) {
+              retArr.push(new fbTemplate.Button("Would you like to add the item to your journal?")
+                              .addButton('Add Item ✅', 'add last item')
+                              .addButton('Ignore Item ❌', 'ignore last item')
+                              .get())
+            } else {
+              exports.addLastItem(firebase, userId, date)
+            }
+            if (messages.length > 0) {
+              for (let message of messages) {
+                retArr.push(message)
+              }
+            }
+            return retArr
           }
         })
       })
@@ -316,6 +360,14 @@ exports.addSugarToFirebase = function(firebase, userId, date, fulldate, barcode,
   .catch((error) => {
     console.log('Error', error)
   })
+}
+
+exports.addSugarToFirebase = function(firebase, userId, date, fulldate, barcode, data, favorite = false) {
+  const favoriteArg = favorite
+  const autoAdd = false
+  const progressBar = true
+  const visualization = true
+  return addSugarToFirebaseWOpts(firebase, userId, date, fulldate, barcode, data, favoriteArg, autoAdd, progressBar, visualization)
 }
 
 exports.findMyFavorites = function(firebase, favoriteMeal, userId, date, fulldate) {

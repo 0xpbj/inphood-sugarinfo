@@ -21,7 +21,7 @@ function randomUmame() {
   return arr[number]
 }
 
-exports.getNutritionix = function(firebase, messageText, userId, date, fulldate) {
+exports.getNutritionixWOpts = function(firebase, messageText, userId, date, fulldate, autoAdd, progressBar, visualization, messages = []) {
   const url = 'https://trackapi.nutritionix.com/v2/natural/nutrients'
   const request = require('request-promise')
   const cleanText = cleanQuestion(messageText)
@@ -31,7 +31,7 @@ exports.getNutritionix = function(firebase, messageText, userId, date, fulldate)
     method: 'POST',
     body: {
       "query": cleanText,
-      //fix this to be based on user timezone
+      //TODO: fix this to be based on user timezone
       "timezone": "US/Western"
     },
     resolveWithFullResponse: true,
@@ -139,7 +139,8 @@ exports.getNutritionix = function(firebase, messageText, userId, date, fulldate)
       photo: thumb,
       ingredientsSugarsCaps: 'unknown'
     }
-    return fire.addSugarToFirebase(firebase, userId, date, fulldate, '', sugarData)
+    const favorites = false
+    return fire.addSugarToFirebaseWOpts(firebase, userId, date, fulldate, '', sugarData, favorites, autoAdd, progressBar, visualization, messages)
   })
   .catch(error => {
     // return [
@@ -147,4 +148,11 @@ exports.getNutritionix = function(firebase, messageText, userId, date, fulldate)
     // ]
     return wolf.getWolfram(messageText, userId)
   })
+}
+
+exports.getNutritionix = function(firebase, messageText, userId, date, fulldate) {
+  const autoAdd = false
+  const progressBar = true
+  const visualization = true
+  return exports.getNutritionixWOpts(firebase, messageText, userId, date, fulldate, autoAdd, progressBar, visualization)
 }
