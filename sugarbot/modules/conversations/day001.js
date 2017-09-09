@@ -7,12 +7,31 @@ const utils = require('./../utils.js')
 const botBuilder = require('claudia-bot-builder')
 const fbTemplate = botBuilder.fbTemplate
 
-const mealEvents = ['breakfast', 'lunch', 'dinner', 'snack']
+const currDay = 1
+const nextDay = currDay + 1
 
 const state000 = ['Tell me more', 'Start the challenge']
 const state001 = ['Start the challenge']
 
 const investment01 = "So, I'm curious--what are the reasons you're doing this challenge?"
+
+// TODO: AC finish this (under construction)
+//
+// function scheduleReminder(firebase, timeMs, notificationType, userId, message) {
+//   const dbSugarInfo = firebase.database().ref('/global/sugarinfoai')
+//   const dbNotQueue = dbSugarInfo.child('notification_queue')
+//
+//   // Check to see if there is an entry where we are writing to in the notification_queue
+//   // If so, check the next ms.
+//   // When we find an entry, write the notificationType, userId, and message to
+//   // that location.
+//
+//   dbNotQueue.child(timeMs).update({
+//     notificationType: "message",
+//     userId: userId,
+//     message: message
+//   })
+// }
 
 // Calculate the state transition given the last state and
 // user input.
@@ -34,8 +53,8 @@ function getState(lastState, featureString, messageText, lastMealEvent) {
     }
     case '002': {
       switch (lastMealEvent) {
-        case mealEvents[0]: return '003'
-        case mealEvents[1]: return '007'
+        case utils.mealEvents[0]: return '003'
+        case utils.mealEvents[1]: return '007'
         default: return '009'
       }
     }
@@ -83,23 +102,6 @@ function getState(lastState, featureString, messageText, lastMealEvent) {
   }
 }
 
-function calculateMealEvent(timezone) {
-  const userTime = timeUtils.getUserTimeObj(Date.now(), timezone)
-  const {hour} = userTime
-  console.log('calculateMealEvent:')
-  console.log('  userTime: '+userTime)
-  console.log('  hour: '+hour)
-  console.log('  timezone: '+timezone)
-  if (hour > 4 && hour < 12) {
-    return mealEvents[0]
-  } else if (hour >= 12 && hour <= 17) {
-    return mealEvents[1]
-  } else if (hour > 17 && hour < 21) {
-    return mealEvents[2]
-  }
-  return mealEvents[3]
-}
-
 function valIfExistsOr(snapshot, childPath, valIfUndefined = undefined) {
   if (snapshot.child(childPath).exists()) {
     return snapshot.child(childPath).val()
@@ -113,11 +115,12 @@ exports.processWit = function(firebase, data,
   const featureString = data.entities.features ?
                         data.entities.features[0].value : data._text
 
-  console.log('Conversation dayOne: ' + featureString)
+  console.log('Conversation day001: ' + featureString)
 
   const profileRef = firebase.database().ref("/global/sugarinfoai/" + userId + "/profile/")
   const sevenDayRef = profileRef.child('sevenDayChallenge')
   const lastStateRef = sevenDayRef.child('lastState')
+  const dayRef = sevenDayRef.child('day')
   const lastMealEventRef = sevenDayRef.child('lastMealEvent')
 
   if (featureString === 'start' || messageText === 'demo reset') {
@@ -127,6 +130,7 @@ exports.processWit = function(firebase, data,
       return profileRef.once("value")
       .then(function(snapshot) {
         lastStateRef.set('000')
+        dayRef.set(1)
         lastMealEventRef.set('')
 
         const userName = valIfExistsOr(snapshot, 'first_name', '')
@@ -175,12 +179,15 @@ exports.processWit = function(firebase, data,
           //   "{TODO: more information}",
           //   buttons
           // ]
-          return new fbTemplate.Button("When you tell me what you've eaten, I'll tell you approximately how much added sugar is in it.")
+          return new fbTemplate.Button(
+            "When you tell me what you've eaten, I'll tell you approximately " +
+            "how much added sugar is in it. We'll learn the average daily sugar " +
+            "that you consume and work to lower it, if necessary.")
             .addButton(state000[1], state000[1])
             .get()
         }
         case '002': {
-          const mealEvent = calculateMealEvent(timezone)
+          const mealEvent = utils.calculateMealEvent(timezone)
           lastMealEventRef.set(mealEvent)
           console.log('Determined mealEvent = ' + mealEvent)
 
@@ -236,6 +243,7 @@ exports.processWit = function(firebase, data,
           const autoAdd = true
           const progressBar = false
           const visualization = false
+          dayRef.set(nextDay)
           return nutrition.getNutritionixWOpts(
                       firebase, messageText, userId, date, timestamp,
                       autoAdd, progressBar, visualization, messages)
@@ -281,7 +289,9 @@ exports.processWit = function(firebase, data,
           // TODO: set reminder
           const divider = ' '
           const fakeReminder = '(simulated notification) Next day breakfast question?'
+          dayRef.set(nextDay)
           return ["Thanks! I'll keep that in mind. Great job today!",
+                  "I'll talk to you tomorrow.",
                   divider,
                   fakeReminder]
         }

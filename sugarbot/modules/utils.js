@@ -12,6 +12,25 @@ exports.stringToNum = function(aNum) {
   return Math.ceil(aNum)
 }
 
+exports.mealEvents = ['breakfast', 'lunch', 'dinner', 'snack']
+
+exports.calculateMealEvent = function(timezone) {
+  const userTime = timeUtils.getUserTimeObj(Date.now(), timezone)
+  const {hour} = userTime
+  console.log('calculateMealEvent:')
+  console.log('  userTime: '+userTime)
+  console.log('  hour: '+hour)
+  console.log('  timezone: '+timezone)
+  if (hour > 4 && hour < 12) {
+    return exports.mealEvents[0]
+  } else if (hour >= 12 && hour <= 17) {
+    return exports.mealEvents[1]
+  } else if (hour > 17 && hour < 21) {
+    return mealEvents[2]
+  }
+  return exports.mealEvents[3]
+}
+
 // Duplicated out of webview FoodJournalEntry:
 // TODO: unify
 // TODO: probably better to move this elsewhere and dynamically update when

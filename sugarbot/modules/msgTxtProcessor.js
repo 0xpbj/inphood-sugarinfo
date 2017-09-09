@@ -6,7 +6,7 @@ const witClient = new Wit({accessToken: process.env.WIT_TOKEN})
 
 const oc = require('./conversations/originalConv.js')
 const sdc = require('./conversations/sevenDayConv.js')
-const dO = require('./conversations/dayOne.js')
+const day000 = require('./conversations/day001.js')
 
 exports.msgTxtProcessor = function(firebase, messageText, userId,
                                    favorites, timezone, name, timestamp, date) {
@@ -16,11 +16,13 @@ exports.msgTxtProcessor = function(firebase, messageText, userId,
   .then((data) => {
     console.log('Processing Wit.ai data...')
     const newConv = false
-    if (newConv && userId === constants.testUsers[1]) {
+    const AC = 0
+    const PBJ = 1
+    if (newConv && userId === constants.testUsers[AC]) {
       console.log('  with day 1 / 7 challenge conversation module.')
-      return dO.processWit(firebase, data,
-                           messageText, userId,
-                           favorites, timezone, name, timestamp, date)
+      return day000.processWit(firebase, data,
+                               messageText, userId,
+                               favorites, timezone, name, timestamp, date)
       // console.log('  with seven day challenge conversation module.')
       // return sdc.processWit(firebase, data,
       //                       messageText, userId,

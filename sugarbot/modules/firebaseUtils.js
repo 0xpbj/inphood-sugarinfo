@@ -91,7 +91,7 @@ function subSlashes( str ) {
   return ''
 }
 
-exports.addLastItem = function(firebase, userId, date) {
+exports.addLastItem = function(firebase, userId, date, noOutput = false) {
   const currSugarIntakeRef = firebase.database().ref(
     "/global/sugarinfoai/" + userId + "/sugarIntake/" + date);
   console.log('Trying to access ' + currSugarIntakeRef.toString());
@@ -138,6 +138,10 @@ exports.addLastItem = function(firebase, userId, date) {
         const dailyTotalRef = firebase.database().ref(
           "/global/sugarinfoai/" + userId + "/sugarIntake/" + date + "/dailyTotal");
         utils.updateTotalSugar(updatedSugarIntakeSnapshot, dailyTotalRef);
+        if (noOutput) {
+          return ''
+        }
+        // TODO: these two Firebase reads should be done in parallel and handled in an 'all then statement'
         return dailyTotalRef.once("value")
         .then(function(dailyTotalSnapShot) {
           const dailyTotalDict = dailyTotalSnapShot.val();
@@ -151,15 +155,6 @@ exports.addLastItem = function(firebase, userId, date) {
               let sugarPercentage = Math.ceil(psugar*100/goalSugar)
               const cleanFoodName = currSugarIntake[lastKey].cleanText;
               return exports.sugarResponse (userId, cleanFoodName, sugarPercentage)
-              // .then(() => {
-              //   return [
-              //     constants.generateTip(),
-              //     new fbTemplate.Button("Would you like to setup a reminder to track your next meal?")
-              //     .addButton('Alright ✅', 'set a reminder')
-              //     .addButton('Not now  ❌', 'notime')
-              //     .get()
-              //   ];
-              // })
             })
           }
         });
@@ -245,7 +240,7 @@ exports.addSugarToFirebaseWOpts = function(firebase, userId, date, fulldate, bar
       .then(() => {
         return userRef.child('/sugarIntake/' + date + '/dailyTotal/').update({ nsugar: newNSugar, psugar: newPSugar })
         .then(() => {
-          if (favorite) {
+          if (favorite && !autoAdd) {
             return exports.addLastItem(firebase, userId, date)
           }
           const sugarPercentage = Math.ceil(psugar*100/goalSugar)
@@ -264,7 +259,8 @@ exports.addSugarToFirebaseWOpts = function(firebase, userId, date, fulldate, bar
                               .addButton('Ignore Item ❌', 'ignore last item')
                               .get())
             } else {
-              exports.addLastItem(firebase, userId, date)
+              const noOutput = true
+              exports.addLastItem(firebase, userId, date, noOutput)
             }
             if (messages.length > 0) {
               for (let message of messages) {
@@ -286,7 +282,8 @@ exports.addSugarToFirebaseWOpts = function(firebase, userId, date, fulldate, bar
                               .addButton('Ignore Item ❌', 'ignore last item')
                               .get())
             } else {
-              exports.addLastItem(firebase, userId, date)
+              const noOutput = true
+              exports.addLastItem(firebase, userId, date, noOutput)
             }
             if (messages.length > 0) {
               for (let message of messages) {
@@ -306,7 +303,8 @@ exports.addSugarToFirebaseWOpts = function(firebase, userId, date, fulldate, bar
                           .addButton('Ignore Item ❌', 'ignore last item')
                           .get())
             } else {
-               exports.addLastItem(firebase, userId, date)
+              const noOutput = true
+              exports.addLastItem(firebase, userId, date, noOutput)
             }
             if (messages.length > 0) {
               for (let message of messages) {
@@ -323,7 +321,8 @@ exports.addSugarToFirebaseWOpts = function(firebase, userId, date, fulldate, bar
                               .addButton('Ignore Item ❌', 'ignore last item')
                               .get())
             } else {
-              exports.addLastItem(firebase, userId, date)
+              const noOutput = true
+              exports.addLastItem(firebase, userId, date, noOutput)
             }
             if (messages.length > 0) {
               for (let message of messages) {
@@ -344,7 +343,8 @@ exports.addSugarToFirebaseWOpts = function(firebase, userId, date, fulldate, bar
                               .addButton('Ignore Item ❌', 'ignore last item')
                               .get())
             } else {
-              exports.addLastItem(firebase, userId, date)
+              const noOutput = true
+              exports.addLastItem(firebase, userId, date, noOutput)
             }
             if (messages.length > 0) {
               for (let message of messages) {
