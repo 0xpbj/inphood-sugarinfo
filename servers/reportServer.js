@@ -41,19 +41,59 @@ function processReportRequest(request) {
                 request.reportType + ' report at ' + request.userTimeStamp)
 
     const dbUserId = firebase.database().ref("/global/sugarinfoai/" + request.userId)
-    return dbUserId.once('value')
-    .then(function(userSnapshot) {
-      const userTimeZone = userSnapshot.child('/profile/timezone').val()
-      const firstName = userSnapshot.child('/profile/first_name').val()
-      const date = timeUtils.getUserDateString(request.userTimeStamp, userTimeZone)
-      return dailyReportUtils.writeReportToS3(date, request.userId, userSnapshot)
-      .then(result => {
-        const dateTime = date + ' ' +
-          timeUtils.getUserTimeString(request.userTimeStamp, userTimeZone)
-        return requestPromise(
-          wvUtils.getReportWebView(request.userId, firstName, dateTime, result))
-      })
-    })
+    const wvImgUrl = constants.bucketRoot + '/chatbotimages/arrows.jpg'
+    const wvUrl = constants.wvBucketRoot + '/webviews/Report.html'
+    const wvMsg = {
+      uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=EAAJhTtF5K30BAGso9zC5s2mtqvhT6hOIZCLealXsZBT6sFRV1v8mZBA4go2aTny0UGQWO5UVUvbmyxVZBXJHaeiVcTFgC6CTrsAIJxaYVieZCRmcOE9RNiSwZCN8oT6v6OZBi0F9jz1ay0gkl4XhAfvXdRYNnz4ETmfwKuTwyWYCQZDZD',
+      json: true,
+      method: 'POST',
+      body: {
+        'recipient':{
+          'id': request.userId
+        },
+        'message':{
+          'attachment':{
+            'type':'template',
+            "payload":{
+              "template_type":"generic",
+              "elements":[
+                 {
+                  "title":"Food Report",
+                  "image_url": wvImgUrl,
+                  "subtitle":"Breakdown of your meals",
+                  "default_action": {
+                    "url": wvUrl,
+                    "type": "web_url",
+                    "messenger_extensions": true,
+                    "webview_height_ratio": "tall",
+                    "webview_share_button": "hide",
+                    "fallback_url": "https://www.inphood.com/"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      resolveWithFullResponse: true,
+      headers: {
+        'Content-Type': "application/json"
+      }
+    }
+    return requestPromise(wvMsg)
+    // return dbUserId.once('value')
+    // .then(function(userSnapshot) {
+    //   const userTimeZone = userSnapshot.child('/profile/timezone').val()
+    //   const firstName = userSnapshot.child('/profile/first_name').val()
+    //   const date = timeUtils.getUserDateString(request.userTimeStamp, userTimeZone)
+    //   return dailyReportUtils.writeReportToS3(date, request.userId, userSnapshot)
+    //   .then(result => {
+    //     const dateTime = date + ' ' +
+    //       timeUtils.getUserTimeString(request.userTimeStamp, userTimeZone)
+    //     return requestPromise(
+    //       wvUtils.getReportWebView(request.userId, firstName, dateTime, result))
+    //   })
+    // })
   }
 }
 
