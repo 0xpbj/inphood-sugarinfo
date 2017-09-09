@@ -15,7 +15,7 @@ exports.msgTxtProcessor = function(firebase, messageText, userId,
   return witClient.message(messageText, {})
   .then((data) => {
     console.log('Processing Wit.ai data...')
-    const newConv = true
+    const newConv = false
     if (newConv && userId === constants.testUsers[1]) {
       console.log('  with day 1 / 7 challenge conversation module.')
       return dO.processWit(firebase, data,

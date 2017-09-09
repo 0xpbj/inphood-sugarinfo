@@ -367,7 +367,7 @@ exports.addSugarToFirebase = function(firebase, userId, date, fulldate, barcode,
   const autoAdd = false
   const progressBar = true
   const visualization = true
-  return addSugarToFirebaseWOpts(firebase, userId, date, fulldate, barcode, data, favoriteArg, autoAdd, progressBar, visualization)
+  return exports.addSugarToFirebaseWOpts(firebase, userId, date, fulldate, barcode, data, favoriteArg, autoAdd, progressBar, visualization)
 }
 
 exports.findMyFavorites = function(firebase, favoriteMeal, userId, date, fulldate) {

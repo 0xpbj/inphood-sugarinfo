@@ -8,6 +8,25 @@ const requestPromise = require('request-promise')
 const botBuilder = require('claudia-bot-builder')
 const fbTemplate = botBuilder.fbTemplate
 
+const mealEvents = ['breakfast', 'lunch', 'dinner', 'snack']
+
+function calculateMealEvent(timezone) {
+  const userTime = timeUtils.getUserTimeObj(Date.now(), timezone)
+  const {hour} = userTime
+  console.log('calculateMealEvent:')
+  console.log('  userTime: '+userTime)
+  console.log('  hour: '+hour)
+  console.log('  timezone: '+timezone)
+  if (hour > 4 && hour < 12) {
+    return mealEvents[0]
+  } else if (hour >= 12 && hour <= 17) {
+    return mealEvents[1]
+  } else if (hour > 17 && hour < 21) {
+    return mealEvents[2]
+  }
+  return mealEvents[3]
+}
+
 exports.processWit = function(firebase, data,
                               messageText, userId,
                               favorites, timezone, name, timestamp, date) {
@@ -34,8 +53,9 @@ exports.processWit = function(firebase, data,
             new fbTemplate.ChatAction('typing_on').get(),
             new fbTemplate.Pause(500).get(),
             new fbTemplate.Button('Let\'s get started: ')
-            .addButton('Learn About Sugar', 'sugar information')
+            .addButton('Start Tracking!', 'start tracking!')
             .addButton('ChatBot Features', 'tell me more')
+            .addButton('Learn About Sugar', 'sugar information')
             .get()
           ]
         })
@@ -91,6 +111,14 @@ exports.processWit = function(firebase, data,
         .Image(constants.bucketRoot + '/chatbotimages/chatbotMenu.gif')
         .get()
       ]
+    }
+    case 'tracking': {
+      const mealEvent = calculateMealEvent(timezone)
+      console.log('Determined mealEvent = ' + mealEvent)
+
+      const prompt = "Tell me about your " + mealEvent +
+                     " ? (e.g. caesar salad, coffee with cream)"
+      return [prompt]
     }
     case 'help':
     case 'confused':
