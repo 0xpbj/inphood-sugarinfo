@@ -35,6 +35,20 @@ window.extAsyncInit = function() {
       console.log(errorMessage);
     }
   );
+  // logIt('%%%%%%%%%%%%%%%%%%%%%%%% getContext called');
+  // MessengerExtensions.getContext('669941103143805', 
+  //   function success(result){
+  //     logIt('  success thread context = ');
+  //     logIt(result.thread_type)
+  //     logIt(result.tid)
+  //     logIt(result.psid)
+  //     initAndAuthDb();
+  //     initValuesFromDb(result.psid);
+  //   },
+  //   function error(result){
+  //     logIt('  error = ' + result);
+  //   }
+  // );
 }
 
 function initAndAuthDb() {
