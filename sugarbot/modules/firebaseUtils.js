@@ -166,7 +166,7 @@ exports.addLastItem = function(firebase, userId, date, noOutput = false) {
   });
 }
 
-exports.addSugarToFirebaseWOpts = function(firebase, userId, date, fulldate, barcode, data, favorite, autoAdd, progressBar, visualization, messages = []) {
+exports.addSugarToFirebaseWOpts = function(firebase, userId, date, fulldate, barcode, data, favorite, autoAdd, progressBar, visualization, messages = [], delayMessages = false) {
   var userRef = firebase.database().ref("/global/sugarinfoai/" + userId)
   return userRef.once("value")
   .then(function(snapshot) {
@@ -263,6 +263,11 @@ exports.addSugarToFirebaseWOpts = function(firebase, userId, date, fulldate, bar
               exports.addLastItem(firebase, userId, date, noOutput)
             }
             if (messages.length > 0) {
+              if (delayMessages) {
+                const tenSeconds = 10 * 1000
+                retArr.push(new fbTemplate.ChatAction('typing_on').get())
+                retArr.push(new fbTemplate.Pause(tenSeconds).get())
+              }
               for (let message of messages) {
                 retArr.push(message)
               }

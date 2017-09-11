@@ -21,7 +21,7 @@ function randomUmame() {
   return arr[number]
 }
 
-exports.getNutritionixWOpts = function(firebase, messageText, userId, date, fulldate, autoAdd, progressBar, visualization, messages = []) {
+exports.getNutritionixWOpts = function(firebase, messageText, userId, date, fulldate, autoAdd, progressBar, visualization, messages = [], delayMessages = false) {
   const url = 'https://trackapi.nutritionix.com/v2/natural/nutrients'
   const request = require('request-promise')
   const cleanText = cleanQuestion(messageText)
@@ -140,7 +140,7 @@ exports.getNutritionixWOpts = function(firebase, messageText, userId, date, full
       ingredientsSugarsCaps: 'unknown'
     }
     const favorites = false
-    return fire.addSugarToFirebaseWOpts(firebase, userId, date, fulldate, '', sugarData, favorites, autoAdd, progressBar, visualization, messages)
+    return fire.addSugarToFirebaseWOpts(firebase, userId, date, fulldate, '', sugarData, favorites, autoAdd, progressBar, visualization, messages, delayMessages)
   })
   .catch(error => {
     // return [

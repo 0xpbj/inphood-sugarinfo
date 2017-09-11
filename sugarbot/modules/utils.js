@@ -2,6 +2,7 @@ const Quagga = require('quagga').default;
 const reqProm = require('request-promise')
 const constants = require('./constants.js')
 const sugarUtils = require('./sugarUtils.js')
+const timeUtils = require('./timeUtils.js')
 const botBuilder = require('claudia-bot-builder');
 const fbTemplate = botBuilder.fbTemplate;
 

@@ -5,8 +5,14 @@ const {Wit} = require('node-wit')
 const witClient = new Wit({accessToken: process.env.WIT_TOKEN})
 
 const oc = require('./conversations/originalConv.js')
-const sdc = require('./conversations/sevenDayConv.js')
-const day000 = require('./conversations/day001.js')
+const sdc = require('./conversations/sevenDayClient.js')
+
+function valIfExistsOr(snapshot, childPath, valIfUndefined = undefined) {
+  if (snapshot.child(childPath).exists()) {
+    return snapshot.child(childPath).val()
+  }
+  return valIfUndefined
+}
 
 exports.msgTxtProcessor = function(firebase, messageText, userId,
                                    favorites, timezone, name, timestamp, date) {
@@ -15,18 +21,17 @@ exports.msgTxtProcessor = function(firebase, messageText, userId,
   return witClient.message(messageText, {})
   .then((data) => {
     console.log('Processing Wit.ai data...')
-    const newConv = false
+    const newConv = true
     const AC = 0
-    const PBJ = 1
-    if (newConv && userId === constants.testUsers[AC]) {
-      console.log('  with day 1 / 7 challenge conversation module.')
-      return day000.processWit(firebase, data,
-                               messageText, userId,
-                               favorites, timezone, name, timestamp, date)
-      // console.log('  with seven day challenge conversation module.')
-      // return sdc.processWit(firebase, data,
-      //                       messageText, userId,
-      //                       favorites, timezone, name, timestamp, date)
+    const BJ = 1
+    if (newConv && userId === constants.testUsers[BJ]) {
+      const profileRef = firebase.database().ref("/global/sugarinfoai/" + userId + "/profile/")
+      return profileRef.once("value")
+      .then(function(snapshot) {
+        return sdc.processWit(firebase, snapshot, data,
+                                 messageText, userId,
+                                 favorites, timezone, name, timestamp, date)
+      })
     } else {
       console.log('  with original conversation module.')
       return oc.processWit(firebase, data,

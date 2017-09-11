@@ -18,7 +18,9 @@ const mtp = require('../sugarbot/modules/msgTxtProcessor.js')
 
 
 let messageText = undefined
-const userId = constants.testUsers[0]
+const AC = 0
+const BJ = 1
+const userId = constants.testUsers[BJ]
 
 // If undefined, these will be defined in initPrompt
 //
