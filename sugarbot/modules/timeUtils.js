@@ -87,8 +87,11 @@ function getDateTimeInTZ(timeStampMs, timeZone) {
 
 exports.getUserTimeObj = function(timeStampMs, userTimeZone) {
   let userTime = getDateTimeInTZ(timeStampMs, userTimeZone)
-  
+
   return {
+    month: userTime.getUTCMonth() + 1,
+    day: userTime.getUTCDate(),
+    year: userTime.getUTCFullYear(),
     hour: userTime.getUTCHours(),
     minute: userTime.getUTCMinutes(),
     seconds: userTime.getUTCSeconds()

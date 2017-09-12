@@ -22,9 +22,9 @@ exports.msgTxtProcessor = function(firebase, messageText, userId,
   .then((data) => {
     console.log('Processing Wit.ai data...')
     const newConv = true
-    const AC = 0
-    const BJ = 1
-    if (newConv && userId === constants.testUsers[BJ]) {
+    // const AC = 0
+    // const BJ = 1
+    if (newConv && constants.testUsers.includes(userId)) {
       const profileRef = firebase.database().ref("/global/sugarinfoai/" + userId + "/profile/")
       return profileRef.once("value")
       .then(function(snapshot) {
