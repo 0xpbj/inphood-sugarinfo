@@ -78,25 +78,39 @@ exports.processWit = function(firebase, snapshot, data,
     .then(() => {
       return profileRef.once("value")
       .then(function(npSnapshot) {
+        //
+        // if user restarts conversation by hitting 'get started'
+        //
         const userName = valIfExistsOr(npSnapshot, 'first_name', '')
-        const intro =
-          "Hi " + userName + ", I’m sugarinfoAI.\n" +
-          "I have a 7-day challenge to lower your risk of " +
-          "heart attack and type 2 diabetes."
-        const description =
-          "When you tell me what you've eaten, I'll tell you approximately " +
-          "how much added sugar is in it. We'll learn the average daily sugar " +
-          "that you consume and work to lower it, if necessary."
-        return [intro,
-                new fbTemplate.ChatAction('typing_on').get(),
-                new fbTemplate.Pause(threeSeconds).get(),
-                new fbTemplate.Button(description)
-                    .addButton(startChallengeButton, startChallengeButton)
-                    .get()
-               ]
+        // if (npSnapshot.child('challenge').val() === 'in progress') {
+        //   return [
+        //     'Welcome back to the 7-day challenge ' + userName,
+        //     getInitTriggerQuestion(mealEvent)
+        //   ]
+        // }
+        return profileRef.update({challenge: 'in progress'})
+        .then(() => {
+          const intro =
+            "Hi " + userName + ", I’m sugarinfoAI.\n" +
+            "I have a 7-day challenge to lower your risk of " +
+            "heart attack and type 2 diabetes."
+          const description =
+            "When you tell me what you've eaten, I'll tell you approximately " +
+            "how much added sugar is in it. We'll learn the average daily sugar " +
+            "that you consume and work to lower it, if necessary."
+          return [
+            intro,
+            new fbTemplate.ChatAction('typing_on').get(),
+            new fbTemplate.Pause(threeSeconds).get(),
+            new fbTemplate.Button(description)
+            .addButton(startChallengeButton, startChallengeButton)
+            .get()
+          ]
+        })
       })
     })
-  } else {
+  }
+  else {
     //
     // Handle other user actions, for example:
     //   1. user answers a question that we trigger
@@ -151,19 +165,26 @@ exports.processWit = function(firebase, snapshot, data,
           case 'action': {
             updateChallengeData(sevenDayChalRef,
                                 {phase: 'action', nextPhase: 'reward'})
-
+            //
             // Thoughts (TODO): the values below fed into nutritionix, will
             //                  probably need to come from firebase because
             //                  at various points in the flow, the values will
             //                  change to add more functionality. The change
             //                  will be initiated by the server.
-            const autoAdd = false
+            // day1: sugar metric
+            // day2: sugar metric + sugar facts 2x
+            // day3: sugar metric + progress bar (b,d), facts (l)
+            // day4: sugar metric + progress bar + fact (b, d), visual (l)
+            // day5: sugar metric + progress bar + sugar visual (b, d), fact (l)
+            // day6: sugar metric + visuals, fact (l)
+            // day7: sugar metric + progress bar + recipe (b), facts (l), visual (d)
             const progressBar = false
             const visualization = false
+            const challengeDay = sdSnapshot.child('day').val()
             const messages = []
-            return nutrition.getNutritionixWOpts(
-                        firebase, messageText, userId, date, timestamp,
-                        autoAdd, progressBar, visualization, messages)
+            return nutrition.getNutritionix(
+                        firebase, messageText, userId, 
+                        date, timestamp)
           }
           case 'reward': {
             // TODO: we need to see if the nutritionix result was okay (to do that

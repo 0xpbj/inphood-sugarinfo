@@ -27,7 +27,7 @@ exports.calculateMealEvent = function(timezone) {
   } else if (hour >= 12 && hour <= 17) {
     return exports.mealEvents[1]
   } else if (hour > 17 && hour < 21) {
-    return mealEvents[2]
+    return exports.mealEvents[2]
   }
   return exports.mealEvents[3]
 }
@@ -199,9 +199,11 @@ exports.otherOptions = function(option) {
   }
 }
 
-exports.randomSugarFacts = function() {
+exports.randomSugarFacts = function(flag = false) {
   const data = sugarUtils.getSugarFact()
   console.log('Random sugar fact', data)
+  if (flag)
+    return data
   return [
     new fbTemplate.ChatAction('typing_on').get(),
     new fbTemplate.Pause(100).get(),
@@ -210,12 +212,14 @@ exports.randomSugarFacts = function() {
   ]
 }
 
-exports.todaysSugarRecipe = function(dateVal) {
+exports.todaysSugarRecipe = function(dateVal, flag = false) {
   const date = new Date(dateVal)
   const message = "Here's your daily sugar free recipe for " + date.toDateString()
   const data = sugarUtils.getSugarRecipe(date)
   console.log('Datevalue', date)
   console.log('Todays sugar recipe', data)
+  if (flag)
+    return data
   return [
     new fbTemplate.ChatAction('typing_on').get(),
     new fbTemplate.Pause(100).get(),

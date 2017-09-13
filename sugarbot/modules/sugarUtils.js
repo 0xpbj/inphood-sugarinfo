@@ -358,7 +358,7 @@ exports.getGifUrl = function(number) {
   }
 }
 
-exports.getSugarFact=function() {
+exports.getSugarFact = function() {
   const number = Math.floor(Math.random()*(66-1+1)+1);
   switch (number) {
     case 1:
