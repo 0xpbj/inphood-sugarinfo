@@ -193,7 +193,6 @@ exports.processWit = function(firebase, data,
     // case 'report': {
     //   console.log('REPORT ------------------------------------------------')
     //   const reportRequest = {
-    //     reportType: 'dailySummary',
     //     userId: userId,
     //     userTimeStamp: timestamp
     //   }

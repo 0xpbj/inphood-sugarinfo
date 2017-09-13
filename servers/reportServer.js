@@ -4,7 +4,6 @@ const schedule = require('node-schedule')
 const requestPromise = require('request-promise')
 
 const constants = require('../sugarbot/modules/constants.js')
-const timeUtils = require('../sugarbot/modules/timeUtils.js')
 const wvUtils = require('./webviewUtils.js')
 const dailyReportUtils = require('./reportUtils.js')
 
@@ -28,73 +27,55 @@ if (firebase.apps.length === 0) {
   })
 }
 
-// app.get('/', function (req, res) {
-//   res.send('Hello World!')
-// })
-
-
 function processReportRequest(request) {
-  if (request.reportType || request.userId) {
-    const machineTime = new Date()
-    console.log('current time: ' + machineTime.toString())
-    console.log('  ' + request.userId + ' requested a ' +
-                request.reportType + ' report at ' + request.userTimeStamp)
+  if (!request.userId) {
+    return
+  }
+  const machineTime = new Date()
+  console.log('current time: ' + machineTime.toString())
+  console.log('  ' + request.userId + ' requested a report at ' +
+              request.userTimeStamp)
 
-    const dbUserId = firebase.database().ref("/global/sugarinfoai/" + request.userId)
-    const wvImgUrl = constants.bucketRoot + '/chatbotimages/arrows.jpg'
-    const wvUrl = constants.wvBucketRoot + '/webviews/Report.html'
-    const wvMsg = {
-      uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=EAAJhTtF5K30BAGso9zC5s2mtqvhT6hOIZCLealXsZBT6sFRV1v8mZBA4go2aTny0UGQWO5UVUvbmyxVZBXJHaeiVcTFgC6CTrsAIJxaYVieZCRmcOE9RNiSwZCN8oT6v6OZBi0F9jz1ay0gkl4XhAfvXdRYNnz4ETmfwKuTwyWYCQZDZD',
-      json: true,
-      method: 'POST',
-      body: {
-        'recipient':{
-          'id': request.userId
-        },
-        'message':{
-          'attachment':{
-            'type':'template',
-            "payload":{
-              "template_type":"generic",
-              "elements":[
-                 {
-                  "title":"Food Report",
-                  "image_url": wvImgUrl,
-                  "subtitle":"Breakdown of your meals",
-                  "default_action": {
-                    "url": wvUrl,
-                    "type": "web_url",
-                    "messenger_extensions": true,
-                    "webview_height_ratio": "tall",
-                    "webview_share_button": "hide",
-                    "fallback_url": "https://www.inphood.com/"
-                  }
+  const wvImgUrl = constants.bucketRoot + '/chatbotimages/arrows.jpg'
+  const wvUrl = constants.wvBucketRoot + '/webviews/Report.html'
+  const wvMsg = {
+    uri: 'https://graph.facebook.com/v2.6/me/messages?access_token=EAAJhTtF5K30BAGso9zC5s2mtqvhT6hOIZCLealXsZBT6sFRV1v8mZBA4go2aTny0UGQWO5UVUvbmyxVZBXJHaeiVcTFgC6CTrsAIJxaYVieZCRmcOE9RNiSwZCN8oT6v6OZBi0F9jz1ay0gkl4XhAfvXdRYNnz4ETmfwKuTwyWYCQZDZD',
+    json: true,
+    method: 'POST',
+    body: {
+      'recipient':{
+        'id': request.userId
+      },
+      'message':{
+        'attachment':{
+          'type':'template',
+          "payload":{
+            "template_type":"generic",
+            "elements":[
+               {
+                "title":"Food Report",
+                "image_url": wvImgUrl,
+                "subtitle":"Breakdown of your meals",
+                "default_action": {
+                  "url": wvUrl,
+                  "type": "web_url",
+                  "messenger_extensions": true,
+                  "webview_height_ratio": "tall",
+                  "webview_share_button": "hide",
+                  "fallback_url": "https://www.inphood.com/"
                 }
-              ]
-            }
+              }
+            ]
           }
         }
-      },
-      resolveWithFullResponse: true,
-      headers: {
-        'Content-Type': "application/json"
       }
+    },
+    resolveWithFullResponse: true,
+    headers: {
+      'Content-Type': "application/json"
     }
-    return requestPromise(wvMsg)
-    // return dbUserId.once('value')
-    // .then(function(userSnapshot) {
-    //   const userTimeZone = userSnapshot.child('/profile/timezone').val()
-    //   const firstName = userSnapshot.child('/profile/first_name').val()
-    //   const date = timeUtils.getUserDateString(request.userTimeStamp, userTimeZone)
-    //   return dailyReportUtils.writeReportToS3(date, request.userId, userSnapshot)
-    //   .then(result => {
-    //     const dateTime = date + ' ' +
-    //       timeUtils.getUserTimeString(request.userTimeStamp, userTimeZone)
-    //     return requestPromise(
-    //       wvUtils.getReportWebView(request.userId, firstName, dateTime, result))
-    //   })
-    // })
   }
+  return requestPromise(wvMsg)
 }
 
 function processPreExistingReportRequests(reportRequests) {
@@ -115,8 +96,7 @@ function processPreExistingReportRequests(reportRequests) {
     if ((timestampUtc - userTimeStamp) > 5 * 60 * 1000) {
       // Skip sending a report if the request is older than 5 minutes:
       console.log('Skipping report request ' + key)
-      console.log('  [ ' + reportRequest.reportType +
-                  ' user: ' + userId +
+      console.log('  [ user: ' + userId +
                   ' (' + userTimeStamp + 'ms) ]')
       console.log('  It was sent more than 5 minutes ago.')
     } else {
@@ -125,8 +105,7 @@ function processPreExistingReportRequests(reportRequests) {
       // minute window:
       if (!reportsSentToUserIds.includes(userId)) {
         console.log('Sending report request ' + key)
-        console.log('  [ ' + reportRequest.reportType +
-                    ' user: ' + userId +
+        console.log('  [ user: ' + userId +
                     ' (' + userTimeStamp + 'ms) ]')
 
         processReportRequest(reportRequest)
