@@ -1,39 +1,186 @@
 exports.rewards = {
   //fact, bar, visual, recipe
   1: {
-    breakfast:  [false, false, false, false],
-    lunch:  [false, false, false, false],
-    dinner: [false, false, false, false]
+    breakfast: {
+      fact: false,
+      bar: false,
+      visual: false,
+      recipe: false
+    },
+    lunch: {
+      fact: false,
+      bar: false,
+      visual: false,
+      recipe: false
+    },
+    dinner: {
+      fact: false,
+      bar: false,
+      visual: false,
+      recipe: false
+    },
+    snack: {
+      fact: false,
+      bar: false,
+      visual: false,
+      recipe: false
+    }
   },
   2: {
-    breakfast:  [true, false, false, false],
-    lunch:  [false, false, false, false],
-    dinner: [true, false, false, false]
+    breakfast: {
+      fact: true,
+      bar: false,
+      visual: false,
+      recipe: false
+    },
+    lunch: {
+      fact: false,
+      bar: false,
+      visual: false,
+      recipe: false
+    },
+    dinner: {
+      fact: true,
+      bar: false,
+      visual: false,
+      recipe: false
+    },
+    snack: {
+      fact: true,
+      bar: false,
+      visual: false,
+      recipe: false
+    }
   },
   3: {
-    breakfast:  [false, true, false, false],
-    lunch:  [true, false, false, false],
-    dinner: [false, true, false, false]
+    breakfast: {
+      fact: false,
+      bar: true,
+      visual: false,
+      recipe: false
+    },
+    lunch: {
+      fact: true,
+      bar: false,
+      visual: false,
+      recipe: false
+    },
+    dinner: {
+      fact: false,
+      bar: true,
+      visual: false,
+      recipe: false
+    },
+    snack: {
+      fact: false,
+      bar: true,
+      visual: false,
+      recipe: false
+    }
   },
   4: {
-    breakfast:  [true, true, false, false],
-    lunch:  [true, false, true, false],
-    dinner: [false, true, true, false]
+    breakfast: {
+      fact: true,
+      bar: true,
+      visual: false,
+      recipe: false
+    },
+    lunch: {
+      fact: true,
+      bar: false,
+      visual: true,
+      recipe: false
+    },
+    dinner: {
+      fact: false,
+      bar: true,
+      visual: true,
+      recipe: false
+    },
+    snack: {
+      fact: true,
+      bar: true,
+      visual: false,
+      recipe: false
+    }
   },
   5: {
-    breakfast:  [false, true, true, false],
-    lunch:  [true, true, false, false],
-    dinner: [false, true, true, false]
+    breakfast: {
+      fact: false,
+      bar: true,
+      visual: true,
+      recipe: false
+    },
+    lunch: {
+      fact: true,
+      bar: true,
+      visual: false,
+      recipe: false
+    },
+    dinner: {
+      fact: false,
+      bar: true,
+      visual: true,
+      recipe: false
+    },
+    snack: {
+      fact: false,
+      bar: true,
+      visual: true,
+      recipe: false
+    }
   },
   6: {
-    breakfast:  [true, false, true, false],
-    lunch:  [false, false, true, false],
-    dinner: [false, true, true, false]
+    breakfast: {
+      fact: true,
+      bar: false,
+      visual: true,
+      recipe: false
+    },
+    lunch: {
+      fact: false,
+      bar: false,
+      visual: true,
+      recipe: false
+    },
+    dinner: {
+      fact: false,
+      bar: true,
+      visual: true,
+      recipe: false
+    },
+    snack: {
+      fact: true,
+      bar: false,
+      visual: true,
+      recipe: false
+    }
   },
   7: {
-    breakfast:  [false, true, false, true],
-    lunch:  [true, true, false, false],
-    dinner: [false, true, true, false]
+    breakfast: {
+      fact: false,
+      bar: true,
+      visual: false,
+      recipe: true
+    },
+    lunch: {
+      fact: true,
+      bar: true,
+      visual: false,
+      recipe: false
+    },
+    dinner: {
+      fact: false,
+      bar: true,
+      visual: true,
+      recipe: false
+    },
+    snack: {
+      fact: false,
+      bar: true,
+      visual: false,
+      recipe: true
+    }
   }
 }
 

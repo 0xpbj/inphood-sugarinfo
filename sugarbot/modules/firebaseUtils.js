@@ -101,15 +101,15 @@ exports.addLastItemChallenge = function(firebase, userId, date) {
     const rewardOptions = hookedConstants.rewards[challengeDay][challengeMeal]
     let userResponse = ''
     //sugar fact
-    if (rewardOptions[0]) {
+    if (rewardOptions['fact']) {
       userResponse += utils.randomSugarFacts().data + '\n' + utils.randomSugarFacts().source
     }
     //sugar free recipe
-    if (rewardOptions[3]) {
+    if (rewardOptions['recipe']) {
       userResponse += utils.todaysSugarRecipe(date).recipe + ': ' + utils.todaysSugarRecipe(date).link
     }
     //progress bar logic
-    if (!rewardOptions[1]) {
+    if (!rewardOptions['bar']) {
       const userRef = firebase.database().ref(
         "/global/sugarinfoai/" + userId);
       return userRef.once("value")
@@ -292,14 +292,15 @@ exports.addSugarToFirebase = function(firebase, userId, date, fulldate, barcode,
             }
             const challengeDay = snapshot.child('day').val()
             const challengeMeal = snapshot.child('context').val()
-            const rewardOptions = hookedConstants.rewards[challengeDay][challengeMeal]
+            const rewardData = hookedConstants.rewards[challengeDay]
+            const rewardOptions = rewardData[challengeMeal]
             const sugarPercentage = Math.ceil(psugar*100/goalSugar)
             const roundSugar = Math.round(psugar)
             if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && roundSugar >= 3) {
               let retArr = [
                 'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
                 roundSugar + 'g of sugar found']
-              if (rewardOptions[2]) {
+              if (rewardOptions['visual']) {
                 retArr.push('Sugar Visualization: 🍪🍭🍩🍫')
                 retArr.push(new fbTemplate.Image(sugarUtils.getGifUrl(roundSugar)).get())
               }
@@ -312,7 +313,8 @@ exports.addSugarToFirebase = function(firebase, userId, date, fulldate, barcode,
             else if (roundSugar > 2) {
               let retArr = [
                 roundSugar + 'g of sugar found']
-              if (rewardOptions[2]) {
+              console.log('reward options', rewardOptions)
+              if (rewardOptions['visual']) {
                 retArr.push('Sugar Visualization: 🍪🍭🍩🍫')
                 retArr.push(new fbTemplate.Image(sugarUtils.getGifUrl(roundSugar)).get())
               }
