@@ -1,4 +1,5 @@
 const constants = require('./../constants.js')
+const hookedConstants = require('./../hookedConstants.js')
 const fire = require('./../firebaseUtils.js')
 const nutrition = require ('./../nutritionix.js')
 const timeUtils = require('./../timeUtils.js')
@@ -192,8 +193,8 @@ exports.processWit = function(firebase, snapshot, data,
             //       done indicating success or failure)
             //       That status should push us into the default processing case
             //       or another one to handle unexpected input.
-            const investmentQuestion = "So, I'm curious, what are the reasons" +
-                                       " you are doing this sugar challenge?"
+            const challengeDay = sdSnapshot.child('day').val()
+            const investmentQuestion = hookedConstants.investmentQuestions[challengeDay]
             switch (featureString) {
               case 'ignore last item': {
                 // TODO: if the user ignores adding an item, should we give them
@@ -232,11 +233,16 @@ exports.processWit = function(firebase, snapshot, data,
           }
           case 'invest': {
             // Store the user's response in firebase
+            const challengeDay = sdSnapshot.child('day').val()
             updateChallengeData(sevenDayChalRef,
                                 {phase: 'invest',
                                  nextPhase: 'action',
                                  context: getNextMealEvent(mealEvent),
-                                 investmentResponse: messageText})
+                                 investmentResponse: {
+                                    challengeDay,
+                                    messageText
+                                  }
+                                })
 
             const goodbyeResp = "I'll talk to you again " +
                                 getNextMealEventRespSuffix(mealEvent) + "!"

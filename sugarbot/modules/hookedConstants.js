@@ -184,7 +184,8 @@ exports.rewards = {
   }
 }
 
-exports.investments = [
+exports.investmentQuestions = [
+  "",
   "What are the reasons you are doing this challenge?",
   "What are some common foods that you have cravings for?",
   "Here's your daily sugar intake: #. How much would you like to reduce it by?",
