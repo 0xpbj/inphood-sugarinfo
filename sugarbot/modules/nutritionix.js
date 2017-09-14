@@ -139,8 +139,8 @@ exports.getNutritionix = function(firebase, messageText, userId, date, fulldate)
       photo: thumb,
       ingredientsSugarsCaps: 'unknown'
     }
-    const favorites = false
-    return fire.addSugarToFirebase(firebase, userId, date, fulldate, '', sugarData, favorites)
+    const favorite = false
+    return fire.addSugarToFirebase(firebase, userId, date, fulldate, '', sugarData, favorite)
   })
   .catch(error => {
     // return [

@@ -260,6 +260,7 @@ exports.addSugarToFirebase = function(firebase, userId, date, fulldate, barcode,
     const newNSugar = parseInt(val.nsugar) + parseInt(nsugar)
     const newPSugar = parseInt(val.psugar) + parseInt(psugar)
     let cleanPath = subSlashes(cleanText)
+    const challenge = (snapshot.child("profile/challenge").val() === 'in progress')
     return userRef.child('/myfoods/' + cleanPath).update({
       photo,
       sugar,
@@ -284,23 +285,23 @@ exports.addSugarToFirebase = function(firebase, userId, date, fulldate, barcode,
       .then(() => {
         return userRef.child('/sugarIntake/' + date + '/dailyTotal/').update({ nsugar: newNSugar, psugar: newPSugar })
         .then(() => {
+          if (favorite) {
+            return exports.addLastItem(firebase, userId, date)
+          }
           const objRef = firebase.database().ref('/global/sugarinfoai/sevenDayChallenge/' + userId)
           return objRef.once("value")
           .then(function(snapshot) {
-            if (favorite) {
-              return exports.addLastItem(firebase, userId, date)
-            }
             const challengeDay = snapshot.child('day').val()
             const challengeMeal = snapshot.child('context').val()
-            const rewardData = hookedConstants.rewards[challengeDay]
-            const rewardOptions = rewardData[challengeMeal]
+            const rewardData = challenge ? hookedConstants.rewards[challengeDay] : null
+            const rewardOptions = challenge ? rewardData[challengeMeal] : null
             const sugarPercentage = Math.ceil(psugar*100/goalSugar)
             const roundSugar = Math.round(psugar)
             if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && roundSugar >= 3) {
               let retArr = [
                 'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
                 roundSugar + 'g of sugar found']
-              if (rewardOptions['visual']) {
+              if ((challenge && rewardOptions['visual']) || !challenge) {
                 retArr.push('Sugar Visualization: 🍪🍭🍩🍫')
                 retArr.push(new fbTemplate.Image(sugarUtils.getGifUrl(roundSugar)).get())
               }
@@ -314,7 +315,7 @@ exports.addSugarToFirebase = function(firebase, userId, date, fulldate, barcode,
               let retArr = [
                 roundSugar + 'g of sugar found']
               console.log('reward options', rewardOptions)
-              if (rewardOptions['visual']) {
+              if ((challenge && rewardOptions['visual']) || !challenge) {
                 retArr.push('Sugar Visualization: 🍪🍭🍩🍫')
                 retArr.push(new fbTemplate.Image(sugarUtils.getGifUrl(roundSugar)).get())
               }
