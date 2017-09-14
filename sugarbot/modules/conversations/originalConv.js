@@ -94,7 +94,7 @@ exports.processWit = function(firebase, data,
       ]
     }
     case 'tracking': {
-      const mealEvent = exports.calculateMealEvent(timezone)
+      const mealEvent = utils.calculateMealEvent(timezone)
       console.log('Determined mealEvent = ' + mealEvent)
 
       const prompt = "Tell me about your " + mealEvent +
