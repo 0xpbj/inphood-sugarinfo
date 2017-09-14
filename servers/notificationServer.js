@@ -459,6 +459,8 @@ app.listen(3000, function () {
   //
   return firebase.auth().signInAnonymously()
   .then(() => {
+    console.log('Signed in to Firebase.')
+
     // Start our cron like task here that sends notifications
     const notificationJob = schedule.scheduleJob('0 * * * * *', dequeue_notifications)
 
@@ -477,6 +479,8 @@ app.listen(3000, function () {
     // TODO: add logic here to detect reminders that are very old and schedule
     //       them appropriately as done in the report server.
     return dbReminders.on('child_added', function(snapshot, prevChildKey) {
+      console.log('Child added to reminders in Firebase')
+
       // Get the key and snapshot value and do the following:
       // 1. schedule a notification to occur at the specified time.
       //    -- do this by inserting it into a firebase notification_queue containing:

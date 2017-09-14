@@ -4,8 +4,6 @@ const schedule = require('node-schedule')
 const requestPromise = require('request-promise')
 
 const constants = require('../sugarbot/modules/constants.js')
-const wvUtils = require('./webviewUtils.js')
-const dailyReportUtils = require('./reportUtils.js')
 
 // Setting this up as standard firebase client:
 //   - https://firebase.google.com/docs/web/setup
