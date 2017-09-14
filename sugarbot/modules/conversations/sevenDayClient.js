@@ -275,12 +275,13 @@ exports.processWit = function(firebase, data,
                 // TODO: if the user ignores adding an item, should we give them
                 //       a chance to track another item? (afterall, we're trying
                 //       to get them to track all three meals)
-                updateChallengeData(sevenDayChalRef,
-                                    {phase: 'reward', nextPhase: 'invest'})
-                return ['Ok, no problem',
-                        new fbTemplate.ChatAction('typing_on').get(),
-                        new fbTemplate.Pause(threeSeconds).get(),
-                        investmentQuestion]
+                // updateChallengeData(sevenDayChalRef,
+                //                     {phase: 'reward', nextPhase: 'invest'})
+                return [
+                        new fbTemplate.Button("Ok, would you like to track something else?")
+                        .addButton('Yes ✅', 'start food question')
+                        .get() 
+                       ]
               }
               case 'add last item': {
                 // TODO: we need to update the challenge data to indicate that
