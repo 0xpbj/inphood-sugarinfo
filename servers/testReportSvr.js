@@ -70,7 +70,7 @@ app.listen(3000, function () {
 
     const AC = 0
     const BJ = 1
-    const userId = constants.testUsers[BJ]
+    const userId = constants.testUsers[AC]
 
     console.log('queing report for user ' + userId)
     queueReportJob(userId)

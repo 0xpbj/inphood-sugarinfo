@@ -165,7 +165,7 @@ exports.addLastItem = function(firebase, userId, date) {
     // 4. Set the removed key to true on the most recent item and messages
     //    the user that we've deleted their entry.
     //
-    const lastFoodRef = userRef.child("/sugarIntake/" + date + lastKey);
+    const lastFoodRef = userRef.child("/sugarIntake/" + date + '/' + lastKey);
     const lastFoodRemovedRef = lastFoodRef.child('removed');
     lastFoodRemovedRef.set(false);
     // This next promise is purposely concurrent to the return etc. below (i.e.
