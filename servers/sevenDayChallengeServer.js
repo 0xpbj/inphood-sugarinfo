@@ -124,7 +124,6 @@ function queueReportJob(userId) {
   console.log('Requesting report for userId: ' + userId)
   console.log('------------------------------------------------')
   const reportRequest = {
-    reportType: 'dailySummary',
     userId: userId,
     userTimeStamp: Date.now()
   }
