@@ -21,7 +21,7 @@ exports.msgTxtProcessor = function(firebase, messageText, userId,
   return witClient.message(messageText, {})
   .then((data) => {
     console.log('Processing Wit.ai data...')
-    const newConv = true
+    const newConv = false
     const AC = 0
     const BJ = 1
     if (newConv && (userId === constants.testUsers[BJ])) {
