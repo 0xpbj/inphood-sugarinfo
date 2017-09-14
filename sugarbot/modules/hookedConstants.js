@@ -192,5 +192,6 @@ exports.investmentQuestions = [
   "When do you find your dietary goals get derailed?",
   "Share chatbot with your friends and help them learn about sugar.",
   "What is your favorite part of this challenge?",
+  "Like our Facebook page, to help us spread the word.",
   "Let's share the final report on Facebook wall."
 ]

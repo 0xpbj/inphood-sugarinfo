@@ -54,7 +54,7 @@ function getNextMealEventRespSuffix(mealEvent) {
          ((mealEvent === utils.mealEvents[2]) ? ', tomorrow' : '')
 }
 
-exports.processWit = function(firebase, snapshot, data,
+exports.processWit = function(firebase, data,
                               messageText, userId,
                               favorites, timezone, name, timestamp, date) {
   const startChallengeButton = 'Start the challenge'

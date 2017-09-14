@@ -24,14 +24,22 @@ exports.msgTxtProcessor = function(firebase, messageText, userId,
     const newConv = false
     const AC = 0
     const BJ = 1
-    if (newConv && (userId === constants.testUsers[BJ])) {
+    if (userId === constants.testUsers[BJ]) {
     // if (newConv && constants.testUsers.includes(userId)) {
       const profileRef = firebase.database().ref("/global/sugarinfoai/" + userId + "/profile/")
       return profileRef.once("value")
       .then(function(snapshot) {
-        return sdc.processWit(firebase, snapshot, data,
-                                 messageText, userId,
-                                 favorites, timezone, name, timestamp, date)
+        const challenge = snapshot.child('challenge').val()
+        if (challenge === 'in progress') {
+          return sdc.processWit(firebase, data,
+                                   messageText, userId,
+                                   favorites, timezone, name, timestamp, date)
+        }
+        else {
+          return oc.processWit(firebase, data,
+                           messageText, userId,
+                           favorites, timezone, name, timestamp, date)
+        }
       })
     } else {
       console.log('  with original conversation module.')

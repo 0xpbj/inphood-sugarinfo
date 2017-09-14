@@ -62,7 +62,13 @@ function handlePrompt(err, result) {
     //
     // Proxy the user's input to our message text processor (that uses Wit etc.)
     //
-
+    const userRef = firebase.database().ref("/global/sugarinfoai/" + userId)
+    if (messageText === 'start7') {
+      userRef.child('profile').update({challenge: 'in progress'})
+    }
+    else if (messageText === 'stop7') {
+      userRef.child('profile').update({challenge: 'stopped'})
+    }
     return mtp.msgTxtProcessor(firebase, messageText, userId,
                         favorites, timezone, name, timestamp, date)
     .then((result) => {
