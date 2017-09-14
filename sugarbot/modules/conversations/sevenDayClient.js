@@ -30,6 +30,25 @@ function initChallengeData(dbPath, userTime, mealEvent) {
   updateChallengeData(dbPath, sevenDayChalData)
 }
 
+function getInitialGreeting(userName, messageDelay, buttonName) {
+  const intro =
+    "Hi " + userName + ", I’m sugarinfoAI.\n" +
+    "I have a 7-day challenge to lower your risk of " +
+    "heart attack and type 2 diabetes."
+  const description =
+    "When you tell me what you've eaten, I'll tell you approximately " +
+    "how much added sugar is in it. We'll learn the average daily sugar " +
+    "that you consume and work to lower it, if necessary."
+  return [
+    intro,
+    new fbTemplate.ChatAction('typing_on').get(),
+    new fbTemplate.Pause(messageDelay).get(),
+    new fbTemplate.Button(description)
+    .addButton(buttonName, buttonName)
+    .get()
+  ]
+}
+
 function getInitTriggerQuestion(mealEvent) {
   if (mealEvent !== utils.mealEvents[3]) {
     return 'Tell me what you ate for ' + mealEvent +
@@ -68,7 +87,7 @@ exports.processWit = function(firebase, data,
   const profileRef = sugarinfoRef.child(userId + "/profile")
   const sevenDayChalRef = sugarinfoRef.child("sevenDayChallenge/" + userId)
 
-  const mealEvent = utils.calculateMealEvent(timezone)
+  let mealEvent = utils.calculateMealEvent(timezone)
   const userTime = timeUtils.getUserTimeObj(Date.now(), timezone)
 
   if (featureString === 'start') {
@@ -89,25 +108,8 @@ exports.processWit = function(firebase, data,
         //     getInitTriggerQuestion(mealEvent)
         //   ]
         // }
-        return profileRef.update({challenge: 'in progress'})
-        .then(() => {
-          const intro =
-            "Hi " + userName + ", I’m sugarinfoAI.\n" +
-            "I have a 7-day challenge to lower your risk of " +
-            "heart attack and type 2 diabetes."
-          const description =
-            "When you tell me what you've eaten, I'll tell you approximately " +
-            "how much added sugar is in it. We'll learn the average daily sugar " +
-            "that you consume and work to lower it, if necessary."
-          return [
-            intro,
-            new fbTemplate.ChatAction('typing_on').get(),
-            new fbTemplate.Pause(threeSeconds).get(),
-            new fbTemplate.Button(description)
-            .addButton(startChallengeButton, startChallengeButton)
-            .get()
-          ]
-        })
+        profileRef.update({challenge: 'in progress'})
+        return getInitialGreeting(userName, threeSeconds, startChallengeButton)
       })
     })
   }
@@ -135,6 +137,79 @@ exports.processWit = function(firebase, data,
     return sevenDayChalRef.once("value")
     .then(function(sdSnapshot) {
       console.log('read from sevenDayChalRef')
+
+      let meAdv = valIfExistsOr(sdSnapshot, 'dbg/mealEventAdvance')
+      if (meAdv === 'sequential') {
+        mealEvent = valIfExistsOr(sdSnapshot, 'context')
+      }
+
+      // AC's debug / server simulation bot function:
+      switch(messageText.toLowerCase()) {
+        case 'd-incday': {
+          // Increment the current day in the challenge manually
+          const currDay = valIfExistsOr(sdSnapshot, 'day')
+          const incrDay = currDay + 1
+          updateChallengeData(sevenDayChalRef, {day: incrDay})
+          return 'dbg: incremented day to ' + incrDay
+        }
+        case 'ds-meadv' : {
+          // Toggles the meal event advance mode. Under normal circumstances,
+          // the current/next meal event determination depends on the current time.
+          // This toggles between that and a mode where it just goes sequentially
+          // to the next meal event automatically.
+          let newMeAdv = 'time'
+          if (meAdv === 'time') {
+            newMeAdv = 'sequential'
+          }
+          updateChallengeData(sevenDayChalRef, {dbg: {mealEventAdvance: newMeAdv}})
+          return 'dbg: meal adance mode ' + newMeAdv
+        }
+        case 'ds-calcday': {
+          // Updates the current day in the challenge
+          //   (simulates a cron job in the server that calculates user time at
+          //    *:01 daily and then determines the user's challenge day by
+          //    subtracting the date day)
+          const startDateDay = valIfExistsOr(sdSnapshot, 'startTime/day')
+          const currDateDay = userTime.day
+          // Now that we have both date days, calculate the current day of the
+          // challenge:
+          const currDay = 1 + currDateDay - startDateDay
+          updateChallengeData(sevenDayChalRef, {day: currDay})
+          return 'dbg: updated current day to ' + currDay + ' (based on calc.)'
+        }
+        case 'ds-trigger': {
+          // Outputs the next trigger question expected from the server
+          //  (actual server code would look at context to see if it matches
+          //   the trigger statement it's about to send--this is in case a user
+          //   entered data before the trigger question arrived so we wouldn't
+          //   ask them to track breakfast if they did already, e.g.:
+          //   if (mealEvent === context) {
+          //     // ask the trigger
+          //   } else {
+          //     // otherwise skip to next trigger time
+          //   }
+          const context = valIfExistsOr(sdSnapshot, 'context')
+          switch(context) {
+            case utils.mealEvents[0]: {
+              return "Good morning! I hope you had a good breakfast. What did you eat?" +
+                     " (e.g. bacon and eggs)"
+            }
+            case utils.mealEvents[1]: {
+              return "Good afternoon! I was so busy, I skipped lunch 😐--what did you eat?"
+            }
+            case utils.mealEvents[2]: {
+              return "Nice to see you back again. What did you eat for dinner?"
+            }
+            default: {
+              return 'dbg: no trigger for context=' + context
+            }
+          }
+        }
+        default: {
+          // No-op (go to regular bot function)
+        }
+      }
+      // Regular bot function:
       if (messageText.toLowerCase() === startChallengeButton.toLowerCase()) {
         console.log('  initializing user\'s seven day challenge data')
         //
@@ -184,7 +259,7 @@ exports.processWit = function(firebase, data,
             const challengeDay = sdSnapshot.child('day').val()
             const messages = []
             return nutrition.getNutritionix(
-                        firebase, messageText, userId, 
+                        firebase, messageText, userId,
                         date, timestamp)
           }
           case 'reward': {

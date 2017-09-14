@@ -21,24 +21,19 @@ exports.msgTxtProcessor = function(firebase, messageText, userId,
   return witClient.message(messageText, {})
   .then((data) => {
     console.log('Processing Wit.ai data...')
-    const newConv = false
-    const AC = 0
-    const BJ = 1
-    if (userId === constants.testUsers[BJ]) {
-    // if (newConv && constants.testUsers.includes(userId)) {
+    if (constants.testUsers.includes(userId)) {
       const profileRef = firebase.database().ref("/global/sugarinfoai/" + userId + "/profile/")
       return profileRef.once("value")
       .then(function(snapshot) {
         const challenge = snapshot.child('challenge').val()
         if (challenge === 'in progress') {
           return sdc.processWit(firebase, data,
-                                   messageText, userId,
-                                   favorites, timezone, name, timestamp, date)
-        }
-        else {
+                                messageText, userId,
+                                favorites, timezone, name, timestamp, date)
+        } else {
           return oc.processWit(firebase, data,
-                           messageText, userId,
-                           favorites, timezone, name, timestamp, date)
+                               messageText, userId,
+                               favorites, timezone, name, timestamp, date)
         }
       })
     } else {

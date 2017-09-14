@@ -16,12 +16,14 @@ exports.bot = function(firebase, request, messageText, userId) {
     //   console.log('SETTING BACK TIME FOR AC LOGGING')
     //   timestamp = timestamp - 1000 * 60 * 60 * 24
     // }
-    // if (messageText === 'start7') {
-    //   userRef.child('profile').update({challenge: 'in progress'})
-    // }
-    // else if (messageText === 'stop7') {
-    //   userRef.child('profile').update({challenge: 'stopped'})
-    // }
+    if (messageText.toLowerCase() === 'd-start7') {
+      userRef.child('profile').update({challenge: 'in progress'})
+      return 'Challenge in progress.'
+    }
+    else if (messageText.toLowerCase() === 'd-stop7') {
+      userRef.child('profile').update({challenge: 'stopped'})
+      return 'Challenge stopped.'
+    }
     const date = timeUtils.getUserDateString(timestamp, timezone)
     var messageAttachments = (request.originalRequest && request.originalRequest.message) ? request.originalRequest.message.attachments : null
     if (messageText && !isNaN(messageText)) {
