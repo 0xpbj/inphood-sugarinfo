@@ -146,6 +146,10 @@ exports.getNutritionix = function(firebase, messageText, userId, date, fulldate)
     // return [
     //   "We couldn\'t match any of your foods",
     // ]
-    return wolf.getWolfram(messageText, userId)
+    return firebase.database().ref("/global/sugarinfoai/sevenDayChallenge/" + userId)
+    .update({phase: 'action', nextPhase: 'reward'})
+    .then(() => {
+      return wolf.getWolfram(messageText, userId)
+    })
   })
 }
