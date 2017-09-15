@@ -184,6 +184,18 @@ exports.rewards = {
   }
 }
 
+exports.sugarVideoContent = [
+  "",
+  "https://www.youtube.com/watch?v=lEXBxijQREo", // TedEd: How sugar affects the brain - Nicole Avena
+  "https://www.youtube.com/watch?v=y789MRv7KLI", // VoX: Let’s face it — American breakfast is really dessert
+  "https://www.youtube.com/watch?v=9rWjb7t8cfo", // CollegeHumor: Low-Fat Foods Are Making You Fatter
+  "https://www.youtube.com/watch?v=Yda8RtOcVFU", // Sugar is killing us
+  "https://www.youtube.com/watch?v=eXTiiz99p9o", // Vox: The science is in: Exercise isn’t the best way to lose weight
+  "https://www.youtube.com/watch?v=EkJnOWGCejQ", // Business Insider: What fruits and vegetables looked like before we domesticated them
+  "https://www.youtube.com/watch?v=ChOdhpdO0Vk", // Uninterrupted: How LeBron's Diet Changes His Game | TROPHIES
+  "https://vimeo.com/217841404", // Coke Habit
+]
+
 exports.investmentArr = [
   [""],
   ["What are the reasons you are doing this challenge?", "alert", "mood"],
