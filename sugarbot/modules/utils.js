@@ -250,7 +250,7 @@ exports.trackMood = function() {
   .addButton('🙂', 'positive mood')
   .addButton('😐', 'neutral mood')
   .addButton('🙁', 'negative mood')
-  .addButton('Not now  ❌', 'not now mood')
+//   .addButton('Not now  ❌', 'not now mood')
   .get();
 }
 
@@ -259,7 +259,7 @@ exports.trackAlertness = function() {
   .addButton('😳', 'very alert')
   .addButton('😐', 'typical alertness')
   .addButton('😴', 'drowsy')
-  .addButton('Not now  ❌', 'not now alertness')
+//   .addButton('Not now  ❌', 'not now alertness')
   .get();
 }
 

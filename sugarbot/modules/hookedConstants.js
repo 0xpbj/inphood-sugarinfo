@@ -184,14 +184,14 @@ exports.rewards = {
   }
 }
 
-exports.investmentQuestions = [
-  "",
-  "What are the reasons you are doing this challenge?",
-  "What are some common foods that you have cravings for?",
-  "Here's your daily sugar intake: #. How much would you like to reduce it by?",
-  "When do you find your dietary goals get derailed?",
-  "Share chatbot with your friends and help them learn about sugar.",
-  "What is your favorite part of this challenge?",
-  "Like our Facebook page, to help us spread the word.",
-  "Let's share the final report on Facebook wall."
+exports.investmentArr = [
+  [""],
+  ["What are the reasons you are doing this challenge?", "alert", "mood"],
+  ["What are some common foods that you have cravings for?", "alert", "mood"],
+  ["Here's your daily sugar intake: #. How much would you like to reduce it by?", "alert", "mood"],
+  ["When do you find your dietary goals get derailed?", "alert", "mood"],
+  ["Share chatbot with your friends and help them learn about sugar.", "alert", "mood"],
+  ["What is your favorite part of this challenge?", "alert", "mood"],
+  ["Like our Facebook page, to help us spread the word.", "alert", "mood"],
+  ["Let's share the final report on Facebook wall.", "alert", "mood"]
 ]

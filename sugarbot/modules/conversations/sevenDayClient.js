@@ -137,7 +137,6 @@ exports.processWit = function(firebase, data,
     return sevenDayChalRef.once("value")
     .then(function(sdSnapshot) {
       console.log('read from sevenDayChalRef')
-
       let meAdv = valIfExistsOr(sdSnapshot, 'dbg/mealEventAdvance')
       if (meAdv === 'sequential') {
         mealEvent = valIfExistsOr(sdSnapshot, 'context')
@@ -219,7 +218,12 @@ exports.processWit = function(firebase, data,
         //
         initChallengeData(sevenDayChalRef, userTime, mealEvent)
         return getInitTriggerQuestion(mealEvent)
-      } else {
+      }
+      // if user ignores item and wants to track something else
+      else if (messageText.toLowerCase() === 'describe food') {
+        return 'Great! Tell me what you would like to track.'
+      }
+      else {
         console.log('  in regular processing')
         //
         // Regular operation happens here. Processing is determined by
@@ -241,7 +245,6 @@ exports.processWit = function(firebase, data,
           case 'action': {
             updateChallengeData(sevenDayChalRef,
                                 {phase: 'action', nextPhase: 'reward'})
-            //
             // Thoughts (TODO): the values below fed into nutritionix, will
             //                  probably need to come from firebase because
             //                  at various points in the flow, the values will
@@ -254,10 +257,7 @@ exports.processWit = function(firebase, data,
             // day5: sugar metric + progress bar + sugar visual (b, d), fact (l)
             // day6: sugar metric + visuals, fact (l)
             // day7: sugar metric + progress bar + recipe (b), facts (l), visual (d)
-            const progressBar = false
-            const visualization = false
-            const challengeDay = sdSnapshot.child('day').val()
-            const messages = []
+            console.log('+++++++++++++++++++++++++++Am I in action?')
             return nutrition.getNutritionix(
                         firebase, messageText, userId,
                         date, timestamp)
@@ -269,17 +269,21 @@ exports.processWit = function(firebase, data,
             //       That status should push us into the default processing case
             //       or another one to handle unexpected input.
             const challengeDay = sdSnapshot.child('day').val()
-            const investmentQuestion = hookedConstants.investmentQuestions[challengeDay]
+            let iRes = sdSnapshot.child('investmentResponse/day' + challengeDay + '/context').val()
+            if (!iRes)
+              iRes = 0
+            const investmentArr = hookedConstants.investmentArr[challengeDay]
+            const investmentQuestion = investmentArr[iRes]
             switch (featureString) {
               case 'ignore last item': {
                 // TODO: if the user ignores adding an item, should we give them
                 //       a chance to track another item? (afterall, we're trying
                 //       to get them to track all three meals)
-                // updateChallengeData(sevenDayChalRef,
-                //                     {phase: 'reward', nextPhase: 'invest'})
+                updateChallengeData(sevenDayChalRef,
+                                    {phase: 'trigger', nextPhase: 'action'})
                 return [
                         new fbTemplate.Button("Ok, would you like to track something else?")
-                        .addButton('Yes ✅', 'start food question')
+                        .addButton('Yes ✅', 'describe food')
                         .get() 
                        ]
               }
@@ -293,7 +297,17 @@ exports.processWit = function(firebase, data,
                 // Add the last item, but hide the response.
                 const noResponse = true
                 fire.addLastItem(firebase, userId, date, noResponse)
-
+                if (investmentQuestion === 'alert') {
+                  return utils.trackAlertness()
+                }
+                else if (investmentQuestion === 'mood') {
+                  return utils.trackMood()
+                }
+                // else {
+                //   const goodbyeResp = "Great, I'll talk to you again " +
+                //                 getNextMealEventRespSuffix(mealEvent) + "!"
+                //   return goodbyeResp
+                // }
                 return ['Done!',
                         new fbTemplate.ChatAction('typing_on').get(),
                         new fbTemplate.Pause(threeSeconds).get(),
@@ -310,16 +324,20 @@ exports.processWit = function(firebase, data,
           case 'invest': {
             // Store the user's response in firebase
             const challengeDay = sdSnapshot.child('day').val()
+            let iRes = sdSnapshot.child('investmentResponse/day' + challengeDay + '/context').val()
+            if (!iRes)
+              iRes = 0
             updateChallengeData(sevenDayChalRef,
                                 {phase: 'invest',
                                  nextPhase: 'action',
-                                 context: getNextMealEvent(mealEvent),
-                                 investmentResponse: {
-                                    challengeDay,
-                                    messageText
-                                  }
+                                 context: getNextMealEvent(mealEvent)
                                 })
-
+            sevenDayChalRef.child('investmentResponse/day' + challengeDay).update({
+              context: iRes + 1
+            })
+            sevenDayChalRef.child('investmentResponse/day' + challengeDay + '/' + iRes).update({
+              messageText,
+            })
             const goodbyeResp = "I'll talk to you again " +
                                 getNextMealEventRespSuffix(mealEvent) + "!"
             return ["Thanks for sharing that with me. I'll keep it " +

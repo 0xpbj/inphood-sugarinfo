@@ -118,8 +118,6 @@ exports.addLastItemChallenge = function(firebase, userId, date) {
         return exports.getYourSugarNumbers(firebase, userId, date, currSugarIntake)
         .then((sugarPercentage) => {
           const wvImgUrl = constants.bucketRoot + '/progressBars/' + sugarPercentage + '.png'
-          console.log('userResponse', userResponse)
-          console.log('bar url', wvImgUrl)
           return [
             userResponse,
             new fbTemplate.Image(wvImgUrl).get()
