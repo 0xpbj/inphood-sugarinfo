@@ -34,19 +34,18 @@ function initChallengeData(userId, dbProfilePath, userTime, mealEvent) {
 
 function getInitialGreeting(userName, messageDelay, buttonName) {
   const intro =
-    "Hi " + userName + ", I’m sugarinfoAI.\n" +
+    "Hi " + userName + ", I’m sugarinfoAI 👨‍💻.\n" +
     "I have a 7-day challenge to lower your risk of " +
-    "heart attack and type 2 diabetes."
+    "heart attack 💔 and type 2 diabetes 💉."
   const description =
-    "When you tell me what you've eaten, I'll tell you approximately " +
-    "how much added sugar is in it. We'll learn the average daily sugar " +
-    "that you consume and work to lower it, if necessary."
+    "We'll track your average daily sugar " +
+    "and work to lower it, if necessary."
   return [
     intro,
     new fbTemplate.ChatAction('typing_on').get(),
     new fbTemplate.Pause(messageDelay).get(),
     new fbTemplate.Button(description)
-    .addButton(buttonName, buttonName)
+    .addButton(buttonName + '🏆🏅🏆', buttonName)
     .get()
   ]
 }
@@ -78,7 +77,7 @@ function getNextMealEventRespSuffix(mealEvent) {
 exports.processWit = function(firebase, data,
                               messageText, userId,
                               favorites, timezone, name, timestamp, date) {
-  const startChallengeButton = 'Start the challenge'
+  const startChallengeButton = 'Start Challenge'
   const threeSeconds = 3 * 1000
   const featureString = data.entities.features ?
                         data.entities.features[0].value : data._text
