@@ -129,6 +129,7 @@ const foodNames = [
   "spaghetti squash",
   "tat soi",
   "tomato",
+  "tomatillo",
   "tuber",
   "jicama",
   "jerusalem artichok",

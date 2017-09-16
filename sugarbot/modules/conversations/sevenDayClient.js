@@ -15,11 +15,7 @@ function valIfExistsOr(snapshot, childPath, valIfUndefined = undefined) {
   return valIfUndefined
 }
 
-function updateChallengeData(dbPath, keyValueDict) {
-  dbPath.update(keyValueDict)
-}
-
-function initChallengeData(dbPath, userTime, mealEvent) {
+function initChallengeData(userId, dbProfilePath, userTime, mealEvent) {
   const sevenDayChalData = {
     startTime: userTime,
     day: 1,
@@ -27,7 +23,13 @@ function initChallengeData(dbPath, userTime, mealEvent) {
     phase: 'trigger',
     nextPhase: 'action'
   }
-  updateChallengeData(dbPath, sevenDayChalData)
+  utils.updateChallengeData(userId, sevenDayChalData)
+
+  // Copy in the user's profile data. Do it asynchronously to prevent delays/
+  // blocking.
+  dbProfilePath.once('value', function(profileSnapshot) {
+    utils.updateChallengeData(userId, {profile: profileSnapshot.val()})
+  })
 }
 
 function getInitialGreeting(userName, messageDelay, buttonName) {
@@ -148,7 +150,7 @@ exports.processWit = function(firebase, data,
           // Increment the current day in the challenge manually
           const currDay = valIfExistsOr(sdSnapshot, 'day')
           const incrDay = currDay + 1
-          updateChallengeData(sevenDayChalRef, {day: incrDay})
+          utils.updateChallengeData(userId, {day: incrDay})
           return 'dbg: incremented day to ' + incrDay
         }
         case 'ds-meadv' : {
@@ -160,7 +162,7 @@ exports.processWit = function(firebase, data,
           if (meAdv === 'time') {
             newMeAdv = 'sequential'
           }
-          updateChallengeData(sevenDayChalRef, {dbg: {mealEventAdvance: newMeAdv}})
+          utils.updateChallengeData(userId, {dbg: {mealEventAdvance: newMeAdv}})
           return 'dbg: meal adance mode ' + newMeAdv
         }
         case 'ds-calcday': {
@@ -173,7 +175,7 @@ exports.processWit = function(firebase, data,
           // Now that we have both date days, calculate the current day of the
           // challenge:
           const currDay = 1 + currDateDay - startDateDay
-          updateChallengeData(sevenDayChalRef, {day: currDay})
+          utils.updateChallengeData(userId, {day: currDay})
           return 'dbg: updated current day to ' + currDay + ' (based on calc.)'
         }
         case 'ds-trigger': {
@@ -216,7 +218,7 @@ exports.processWit = function(firebase, data,
         //   The trigger question will come from Lambda instead of the server for
         //   this special case.
         //
-        initChallengeData(sevenDayChalRef, userTime, mealEvent)
+        initChallengeData(userId, profileRef, userTime, mealEvent)
         return getInitTriggerQuestion(mealEvent)
       }
       // if user ignores item and wants to track something else
@@ -243,8 +245,8 @@ exports.processWit = function(firebase, data,
         let phase = valIfExistsOr(sdSnapshot, 'nextPhase')
         switch (phase) {
           case 'action': {
-            updateChallengeData(sevenDayChalRef,
-                                {phase: 'action', nextPhase: 'reward'})
+            utils.updateChallengeData(
+              userId, {phase: 'action', nextPhase: 'reward'})
             // Thoughts (TODO): the values below fed into nutritionix, will
             //                  probably need to come from firebase because
             //                  at various points in the flow, the values will
@@ -279,20 +281,19 @@ exports.processWit = function(firebase, data,
                 // TODO: if the user ignores adding an item, should we give them
                 //       a chance to track another item? (afterall, we're trying
                 //       to get them to track all three meals)
-                updateChallengeData(sevenDayChalRef,
-                                    {phase: 'trigger', nextPhase: 'action'})
-                return [
-                        new fbTemplate.Button("Ok, would you like to track something else?")
+                utils.updateChallengeData(
+                  userId, {phase: 'trigger', nextPhase: 'action'})
+
+                return [new fbTemplate.Button("Ok, would you like to track something else?")
                         .addButton('Yes ✅', 'describe food')
-                        .get() 
-                       ]
+                        .get()]
               }
               case 'add last item': {
                 // TODO: we need to update the challenge data to indicate that
                 //       one of the three key contexts is complete (as regards
                 //       tracking).
-                updateChallengeData(sevenDayChalRef,
-                                    {phase: 'reward', nextPhase: 'invest'})
+                utils.updateChallengeData(
+                  userId, {phase: 'reward', nextPhase: 'invest'})
 
                 // Add the last item, but hide the response.
                 const noResponse = true
@@ -327,11 +328,11 @@ exports.processWit = function(firebase, data,
             let iRes = sdSnapshot.child('investmentResponse/day' + challengeDay + '/context').val()
             if (!iRes)
               iRes = 0
-            updateChallengeData(sevenDayChalRef,
-                                {phase: 'invest',
-                                 nextPhase: 'action',
-                                 context: getNextMealEvent(mealEvent)
-                                })
+            utils.updateChallengeData(
+              userId,
+              {phase: 'invest', nextPhase: 'action',
+               context: getNextMealEvent(mealEvent)}
+            )
             sevenDayChalRef.child('investmentResponse/day' + challengeDay).update({
               context: iRes + 1
             })

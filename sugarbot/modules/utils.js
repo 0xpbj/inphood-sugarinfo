@@ -32,6 +32,15 @@ exports.calculateMealEvent = function(timezone) {
   return exports.mealEvents[3]
 }
 
+// Centralized means for updating challenge data / consolidating path references
+function updateChallengeData(userId, keyValueDict) {
+  const sugarinfoRef = firebase.database().ref("/global/sugarinfoai")
+  const sevenDayChalRef = sugarinfoRef.child("sevenDayChallenge/" + userId)
+
+  sevenDayChalRef.update(keyValueDict)
+}
+
+
 // Duplicated out of webview FoodJournalEntry:
 // TODO: unify
 // TODO: probably better to move this elsewhere and dynamically update when
