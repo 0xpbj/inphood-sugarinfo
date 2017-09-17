@@ -23,27 +23,21 @@ const constants = require('../sugarbot/modules/constants.js')
 const timeUtils = require('../sugarbot/modules/timeUtils.js')
 const utils = require('../sugarbot/modules/utils.js')
 
-let dotEnvConfig = require('dotenv').config({path: '.env-production'})
+let dotEnvConfig = require('dotenv').config({path: './.env-production'})
 
 // production token
-const accessToken = dotEnvConfig.FACEBOOK_BEARER_TOKEN
+const accessToken = process.env.FACEBOOK_BEARER_TOKEN
 
 const firebase = require('firebase')
 if (firebase.apps.length === 0) {
+  console.log('DEBUG: FIREBASE_API_KEY= ' + process.env.FIREBASE_API_KEY)
   firebase.initializeApp({
-    apiKey: dotEnvConfig.FIREBASE_API_KEY,
-    authDomain: dotEnvConfig.FIREBASE_AUTH_DOMAIN,
-    databaseURL: dotEnvConfig.FIREBASE_DATABASE_URL,
-    projectId: dotEnvConfig.FIREBASE_PROJECT_ID,
-    storageBucket: dotEnvConfig.FIREBASE_STORAGE_BUCKET
+    apiKey: process.env.FIREBASE_API_KEY,
+    authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+    databaseURL: process.env.FIREBASE_DATABASE_URL,
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    storageBucket: process.env.FIREBASE_STORAGE_BUCKET
   })
-}
-
-function valIfExistsOr(snapshot, childPath, valIfUndefined = undefined) {
-  if (snapshot.child(childPath).exists()) {
-    return snapshot.child(childPath).val()
-  }
-  return valIfUndefined
 }
 
 function isProcessUsersSkipKey(key, restrictToDevs) {
@@ -52,6 +46,12 @@ function isProcessUsersSkipKey(key, restrictToDevs) {
   }
 
   if (restrictToDevs && !constants.testUsers.includes(key)) {
+    return true
+  }
+
+  // TODO: remove this
+  const AC = 0
+  if (key !== constants.testUsers[AC]) {
     return true
   }
 
@@ -93,7 +93,7 @@ function getTriggerMessage(context, userName) {
 
 function messageUser(userId, message) {
   const url = 'https://graph.facebook.com/v2.6/me/messages?access_token=' +
-              dotEnvConfig.FACEBOOK_BEARER_TOKEN
+              process.env.FACEBOOK_BEARER_TOKEN
 
   const options = {
     uri: url,
@@ -114,7 +114,7 @@ function messageUser(userId, message) {
 function sendTriggerMessage(userId, userName, userTime, currentTimeUTC) {
   const triggerContext = getTriggerContext(userTime)
   if (!triggerContext) {
-    continue
+    return
   }
 
   // Update the user data regardless of it's current values to match
@@ -127,41 +127,57 @@ function sendTriggerMessage(userId, userName, userTime, currentTimeUTC) {
     nextPhase: 'action',
     lastTriggerUTC: currentTimeUTC
   }
-  utils.updateChallengeData(userId, updateData)
+  utils.updateChallengeData(firebase, userId, updateData)
 
+  console.log('Sending trigger message to ' + userId + " at userTime: " + userTime)
   messageUser(userId, getTriggerMessage(triggerContext, userName))
 }
 
 function incrementChallengeDay(userId, day, userTime, startTime) {
   const currentDay = 1 + userTime.day - startTime.day
   if (day !== currentDay) {
-    utils.updateChallengeData(userId, {day: currentDay})
+    console.log('      incrementing challenge day for ' + userId)
+    utils.updateChallengeData(firebase, userId, {day: currentDay})
   }
 }
 
-function processUsers(sendTriggers, incrementDays, restrictToDevs = false) {
+function processUsers(sendTriggers, incrementDays,
+                      restrictToDevs = false, simulatedTime = undefined) {
+  console.log('processUsers called:')
+
   const currentTimeUTC = Date.now()
   const dbRefSevenDayChallenge =
-    firebase.database().ref('/global/sugarinfoAI/sevenDayChallenge')
+    firebase.database().ref('global/sugarinfoai/sevenDayChallenge')
 
   return dbRefSevenDayChallenge.once('value',
     function(sdcSnapshot) {
-      for (let key in sdcSnapshot) {
+      let sdcData = sdcSnapshot.val()
+      for (let key in sdcData) {
         if (isProcessUsersSkipKey(key, restrictToDevs)) {
           continue
         }
         const userId = key
+        console.log('   processing userId: ' + userId)
 
-        const userData = sdcSnapshot.child(userId).val()
-        if (! 'profile' in userData) {
+        const userData = sdcData[userId]
+        if (! userData.hasOwnProperty('profile')) {
           // TODO: error / determine user's time zone.
           continue
         }
 
-        const userName = userData[profile].first_name
-        const timeZone = userData[profile].timezone
-        const userTime = timeUtils.getUserTimeObj(currentTimeUTC, timeZone)
+        const userName = userData['profile'].first_name
+        const timeZone = userData['profile'].timezone
+        let userTime = timeUtils.getUserTimeObj(currentTimeUTC, timeZone)
+        // Simulating time (hour specifically--modify userTime if
+        // value specified in FBase):
+        if (userData.hasOwnProperty('simUserHour')) {
+          userTime.hour = userData.simUserHour
+        }
+        if (simulatedTime) {
+          userTime = simulatedTime
+        }
 
+        console.log('      userTime hour = ' + userTime.hour)
         if (sendTriggers) {
           sendTriggerMessage(userId, userName, userTime, currentTimeUTC)
         }
@@ -176,14 +192,18 @@ function processUsers(sendTriggers, incrementDays, restrictToDevs = false) {
   )
 }
 
-function processUserTriggers(restrictToDevs = false) {
+function processUserTriggers(restrictToDevs = false, simulatedTime = undefined) {
+  console.log('processUserTriggers called')
+
   const sendTriggers = true
-  processUsers(sendTriggers, false, restrictToDevs)
+  processUsers(sendTriggers, false, restrictToDevs, simulatedTime)
 }
 
-function processUserDays(restrictToDevs = false) {
+function processUserDays(restrictToDevs = false, simulatedTime = undefined) {
+  console.log('processUserDays called')
+
   const incrementDays = true
-  processUsers(false, incrementDays, restrictToDevs)
+  processUsers(false, incrementDays, restrictToDevs, simulatedTime)
 }
 
 const port = 3000
@@ -193,20 +213,46 @@ app.listen(port, function () {
 
   return firebase.auth().signInAnonymously()
   .then(() => {
-    const challengeDayJob =
-      schedule.scheduleJob('1 * * * *', processUserDays)
-    const sendTriggerJob =
-      schedule.scheduleJob('20 * * * *', processUserTriggers)
+    // TODO: uncomment these lines when ready
+    // const challengeDayJob =
+    //   schedule.scheduleJob('1 * * * *', processUserDays)
+    // const sendTriggerJob =
+    //   schedule.scheduleJob('20 * * * *', processUserTriggers)
 
     const dbRefServerControl =
       firebase.database().ref('/global/sugarinfoai/sevenDayChallenge/server')
 
     return dbRefServerControl.on(
-      'child_added', function(snapshot, prevChildKey) {
-        const functionName = valIfExistsOr(snapshot, 'functionName')
-        const simulateTime = valIfExistsOr(snapshot, 'simulateTime')
+      'child_added', function(scSnapshot, prevChildKey) {
 
-        // TODO: code to invoke processUserDays and processUserTriggers
+        console.log('Server control instruction recieved.')
+
+        console.log('   ' + scSnapshot.key + ': ' + scSnapshot.val())
+        const functionName = utils.ssValIfExistsOr(scSnapshot, 'functionName')
+        const simulatedTime = utils.ssValIfExistsOr(scSnapshot, 'simulatedTime')
+        const restrictToDevs = true
+
+        console.log('   functionName ' + functionName +
+                    ', simulatedTime ' + simulatedTime)
+        switch(functionName) {
+          case 'processUserDays': {
+            // Clear the request from FBase...
+            const dbRefServerControlRequest = dbRefServerControl.child('request')
+            dbRefServerControlRequest.set(null)
+
+            processUserDays(restrictToDevs, simulatedTime)
+            break
+          }
+          case 'processUserTriggers': {
+            // Clear the request from FBase...
+            const dbRefServerControlRequest = dbRefServerControl.child('request')
+            dbRefServerControlRequest.set(null)
+
+            processUserTriggers(restrictToDevs, simulatedTime)
+            break
+          }
+          default: {}
+        }
       }
     )
   })

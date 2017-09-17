@@ -8,14 +8,7 @@ const utils = require('./../utils.js')
 const botBuilder = require('claudia-bot-builder')
 const fbTemplate = botBuilder.fbTemplate
 
-function valIfExistsOr(snapshot, childPath, valIfUndefined = undefined) {
-  if (snapshot.child(childPath).exists()) {
-    return snapshot.child(childPath).val()
-  }
-  return valIfUndefined
-}
-
-function initChallengeData(userId, dbProfilePath, userTime, mealEvent) {
+function initChallengeData(firebase, userId, dbProfilePath, userTime, mealEvent) {
   const sevenDayChalData = {
     startTime: userTime,
     day: 1,
@@ -23,12 +16,12 @@ function initChallengeData(userId, dbProfilePath, userTime, mealEvent) {
     phase: 'trigger',
     nextPhase: 'action'
   }
-  utils.updateChallengeData(userId, sevenDayChalData)
+  utils.updateChallengeData(firebase, userId, sevenDayChalData)
 
   // Copy in the user's profile data. Do it asynchronously to prevent delays/
   // blocking.
   dbProfilePath.once('value', function(profileSnapshot) {
-    utils.updateChallengeData(userId, {profile: profileSnapshot.val()})
+    utils.updateChallengeData(firebase, userId, {profile: profileSnapshot.val()})
   })
 }
 
@@ -74,6 +67,129 @@ function getNextMealEventRespSuffix(mealEvent) {
          ((mealEvent === utils.mealEvents[2]) ? ', tomorrow' : '')
 }
 
+function processDCommands(firebase, messageText, sdSnapshot, userId, userTime) {
+  // AC's debug / server simulation bot function:
+  switch(messageText.toLowerCase()) {
+    case 'd-incday': {
+      // Increment the current day in the challenge manually
+      const currDay = utils.ssValIfExistsOr(sdSnapshot, 'day')
+      const incrDay = currDay + 1
+      utils.updateChallengeData(firebase, userId, {day: incrDay})
+      return 'dbg: incremented day to ' + incrDay
+    }
+    case 'ds-meadv' : {
+      // Toggles the meal event advance mode. Under normal circumstances,
+      // the current/next meal event determination depends on the current time.
+      // This toggles between that and a mode where it just goes sequentially
+      // to the next meal event automatically.
+      let newMeAdv = 'time'
+      if (meAdv === 'time') {
+        newMeAdv = 'sequential'
+      }
+      utils.updateChallengeData(firebase, userId, {dbg: {mealEventAdvance: newMeAdv}})
+      return 'dbg: meal adance mode ' + newMeAdv
+    }
+    case 'ds-calcday': {
+      // Updates the current day in the challenge
+      //   (simulates a cron job in the server that calculates user time at
+      //    *:01 daily and then determines the user's challenge day by
+      //    subtracting the date day)
+      const startDateDay = utils.ssValIfExistsOr(sdSnapshot, 'startTime/day')
+      const currDateDay = userTime.day
+      // Now that we have both date days, calculate the current day of the
+      // challenge:
+      const currDay = 1 + currDateDay - startDateDay
+      utils.updateChallengeData(firebase, userId, {day: currDay})
+      return 'dbg: updated current day to ' + currDay + ' (based on calc.)'
+    }
+    case 'ds-trigger': {
+      // Outputs the next trigger question expected from the server
+      //  (actual server code would look at context to see if it matches
+      //   the trigger statement it's about to send--this is in case a user
+      //   entered data before the trigger question arrived so we wouldn't
+      //   ask them to track breakfast if they did already, e.g.:
+      //   if (mealEvent === context) {
+      //     // ask the trigger
+      //   } else {
+      //     // otherwise skip to next trigger time
+      //   }
+      const context = utils.ssValIfExistsOr(sdSnapshot, 'context')
+      switch(context) {
+        case utils.mealEvents[0]: {
+          return "Good morning! I hope you had a good breakfast. What did you eat?" +
+                 " (e.g. bacon and eggs)"
+        }
+        case utils.mealEvents[1]: {
+          return "Good afternoon! I was so busy, I skipped lunch 😐--what did you eat?"
+        }
+        case utils.mealEvents[2]: {
+          return "Nice to see you back again. What did you eat for dinner?"
+        }
+        default: {
+          return 'dbg: no trigger for context=' + context
+        }
+      }
+    }
+    case 'dv-trigger': {
+      // Tell the server to process user triggers.
+      utils.updateChallengeData(firebase, 'server', {request: {functionName: 'processUserTriggers'}})
+      return 'dbg: issuing trigger request to server'
+    }
+    case 'dv-updateday': {
+      // Tell the server to process user days.
+      utils.updateChallengeData(firebase, 'server', {request: {functionName: 'processUserDays'}})
+      return 'dbg: issuing day advance request to server'
+    }
+    case 'dv-breakfast': {
+      utils.updateChallengeData(firebase, userId, {simUserHour: 10})
+      return 'dbg: simulating breakfast reminder hour for user'
+    }
+    case 'dv-lunch': {
+      utils.updateChallengeData(firebase, userId, {simUserHour: 14})
+      return 'dbg: simulating lunch reminder hour for user'
+    }
+    case 'dv-dinner': {
+      utils.updateChallengeData(firebase, userId, {simUserHour: 19})
+      return 'dbg: simulating dinner reminder hour for user'
+    }
+    case 'dv-clearhour': {
+      utils.updateChallengeData(firebase, userId, {simUserHour: null})
+      return 'dbg: clearing simulated user hour'
+    }
+    case 'dv-tbreakfast': {
+      let simulatedTime = userTime
+      simulatedTime.hour = 10
+      utils.updateChallengeData(firebase, 'server', {request: {
+                                  functionName: 'processUserTriggers',
+                                  simulatedTime: simulatedTime}})
+
+      return 'dbg: issuing trigger breakfast request to server'
+    }
+    case 'dv-tlunch': {
+      let simulatedTime = userTime
+      simulatedTime.hour = 14
+      utils.updateChallengeData(firebase, 'server', {request: {
+                                  functionName: 'processUserTriggers',
+                                  simulatedTime: simulatedTime}})
+
+      return 'dbg: issuing trigger lunch request to server'
+    }
+    case 'dv-tdinner': {
+      let simulatedTime = userTime
+      simulatedTime.hour = 19
+      utils.updateChallengeData(firebase, 'server', {request: {
+                                  functionName: 'processUserTriggers',
+                                  simulatedTime: simulatedTime}})
+
+      return 'dbg: issuing trigger dinner request to server'
+    }
+    default: {
+      // No-op (go to regular bot function)
+      return undefined
+    }
+  }
+}
+
 exports.processWit = function(firebase, data,
                               messageText, userId,
                               favorites, timezone, name, timestamp, date) {
@@ -88,8 +204,7 @@ exports.processWit = function(firebase, data,
   const profileRef = sugarinfoRef.child(userId + "/profile")
   const sevenDayChalRef = sugarinfoRef.child("sevenDayChallenge/" + userId)
 
-  let mealEvent = utils.calculateMealEvent(timezone)
-  const userTime = timeUtils.getUserTimeObj(Date.now(), timezone)
+  let userTime = timeUtils.getUserTimeObj(Date.now(), timezone)
 
   if (featureString === 'start') {
     //
@@ -102,7 +217,7 @@ exports.processWit = function(firebase, data,
         //
         // if user restarts conversation by hitting 'get started'
         //
-        const userName = valIfExistsOr(npSnapshot, 'first_name', '')
+        const userName = utils.ssValIfExistsOr(npSnapshot, 'first_name', '')
         // if (npSnapshot.child('challenge').val() === 'in progress') {
         //   return [
         //     'Welcome back to the 7-day challenge ' + userName,
@@ -138,77 +253,27 @@ exports.processWit = function(firebase, data,
     return sevenDayChalRef.once("value")
     .then(function(sdSnapshot) {
       console.log('read from sevenDayChalRef')
-      let meAdv = valIfExistsOr(sdSnapshot, 'dbg/mealEventAdvance')
+
+      // Simulating time (hour specifically--modify userTime if
+      // value specified in FBase):
+      const simUserHour = utils.ssValIfExistsOr(sdSnapshot, 'simUserHour')
+      if (simUserHour) {
+        userTime.hour = simUserHour
+      }
+
+      let mealEvent = utils.calculateMealEvent(timezone, userTime)
+      let meAdv = utils.ssValIfExistsOr(sdSnapshot, 'dbg/mealEventAdvance')
       if (meAdv === 'sequential') {
-        mealEvent = valIfExistsOr(sdSnapshot, 'context')
+        mealEvent = utils.ssValIfExistsOr(sdSnapshot, 'context')
       }
 
       // AC's debug / server simulation bot function:
-      switch(messageText.toLowerCase()) {
-        case 'd-incday': {
-          // Increment the current day in the challenge manually
-          const currDay = valIfExistsOr(sdSnapshot, 'day')
-          const incrDay = currDay + 1
-          utils.updateChallengeData(userId, {day: incrDay})
-          return 'dbg: incremented day to ' + incrDay
-        }
-        case 'ds-meadv' : {
-          // Toggles the meal event advance mode. Under normal circumstances,
-          // the current/next meal event determination depends on the current time.
-          // This toggles between that and a mode where it just goes sequentially
-          // to the next meal event automatically.
-          let newMeAdv = 'time'
-          if (meAdv === 'time') {
-            newMeAdv = 'sequential'
-          }
-          utils.updateChallengeData(userId, {dbg: {mealEventAdvance: newMeAdv}})
-          return 'dbg: meal adance mode ' + newMeAdv
-        }
-        case 'ds-calcday': {
-          // Updates the current day in the challenge
-          //   (simulates a cron job in the server that calculates user time at
-          //    *:01 daily and then determines the user's challenge day by
-          //    subtracting the date day)
-          const startDateDay = valIfExistsOr(sdSnapshot, 'startTime/day')
-          const currDateDay = userTime.day
-          // Now that we have both date days, calculate the current day of the
-          // challenge:
-          const currDay = 1 + currDateDay - startDateDay
-          utils.updateChallengeData(userId, {day: currDay})
-          return 'dbg: updated current day to ' + currDay + ' (based on calc.)'
-        }
-        case 'ds-trigger': {
-          // Outputs the next trigger question expected from the server
-          //  (actual server code would look at context to see if it matches
-          //   the trigger statement it's about to send--this is in case a user
-          //   entered data before the trigger question arrived so we wouldn't
-          //   ask them to track breakfast if they did already, e.g.:
-          //   if (mealEvent === context) {
-          //     // ask the trigger
-          //   } else {
-          //     // otherwise skip to next trigger time
-          //   }
-          const context = valIfExistsOr(sdSnapshot, 'context')
-          switch(context) {
-            case utils.mealEvents[0]: {
-              return "Good morning! I hope you had a good breakfast. What did you eat?" +
-                     " (e.g. bacon and eggs)"
-            }
-            case utils.mealEvents[1]: {
-              return "Good afternoon! I was so busy, I skipped lunch 😐--what did you eat?"
-            }
-            case utils.mealEvents[2]: {
-              return "Nice to see you back again. What did you eat for dinner?"
-            }
-            default: {
-              return 'dbg: no trigger for context=' + context
-            }
-          }
-        }
-        default: {
-          // No-op (go to regular bot function)
-        }
+      const dMessage =
+        processDCommands(firebase, messageText, sdSnapshot, userId, userTime)
+      if (dMessage) {
+        return dMessage
       }
+
       // Regular bot function:
       if (messageText.toLowerCase() === startChallengeButton.toLowerCase()) {
         console.log('  initializing user\'s seven day challenge data')
@@ -217,7 +282,7 @@ exports.processWit = function(firebase, data,
         //   The trigger question will come from Lambda instead of the server for
         //   this special case.
         //
-        initChallengeData(userId, profileRef, userTime, mealEvent)
+        initChallengeData(firebase, userId, profileRef, userTime, mealEvent)
         return getInitTriggerQuestion(mealEvent)
       }
       // if user ignores item and wants to track something else
@@ -240,11 +305,11 @@ exports.processWit = function(firebase, data,
         // be revisited until a certain condition is met (i.e. nutritionix
         // is able to recognize a food.)
         //
-        let prevPhase = valIfExistsOr(sdSnapshot, 'phase')
-        let phase = valIfExistsOr(sdSnapshot, 'nextPhase')
+        let prevPhase = utils.ssValIfExistsOr(sdSnapshot, 'phase')
+        let phase = utils.ssValIfExistsOr(sdSnapshot, 'nextPhase')
         switch (phase) {
           case 'action': {
-            utils.updateChallengeData(
+            utils.updateChallengeData(firebase,
               userId, {phase: 'action', nextPhase: 'reward'})
             // Thoughts (TODO): the values below fed into nutritionix, will
             //                  probably need to come from firebase because
@@ -280,7 +345,7 @@ exports.processWit = function(firebase, data,
                 // TODO: if the user ignores adding an item, should we give them
                 //       a chance to track another item? (afterall, we're trying
                 //       to get them to track all three meals)
-                utils.updateChallengeData(
+                utils.updateChallengeData(firebase,
                   userId, {phase: 'trigger', nextPhase: 'action'})
 
                 return [new fbTemplate.Button("Ok, would you like to track something else?")
@@ -291,7 +356,7 @@ exports.processWit = function(firebase, data,
                 // TODO: we need to update the challenge data to indicate that
                 //       one of the three key contexts is complete (as regards
                 //       tracking).
-                utils.updateChallengeData(
+                utils.updateChallengeData(firebase,
                   userId, {phase: 'reward', nextPhase: 'invest'})
 
                 // Add the last item, but hide the response.
@@ -322,13 +387,16 @@ exports.processWit = function(firebase, data,
             }
           }
           case 'invest': {
+            console.log('mealEvent:' + mealEvent)
+            console.log('nextMealEvent:' + getNextMealEvent(mealEvent))
+            console.log('resp sfx:' + getNextMealEventRespSuffix(mealEvent))
             // Store the user's response in firebase
             const challengeDay = sdSnapshot.child('day').val()
             let iRes = sdSnapshot.child('investmentResponse/day' + challengeDay + '/context').val()
             if (!iRes)
               iRes = 0
             utils.updateChallengeData(
-              userId,
+              firebase, userId,
               {phase: 'invest', nextPhase: 'action',
                context: getNextMealEvent(mealEvent)}
             )

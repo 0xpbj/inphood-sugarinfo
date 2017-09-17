@@ -13,10 +13,26 @@ exports.stringToNum = function(aNum) {
   return Math.ceil(aNum)
 }
 
+// Return the value at the childPath in the given snapshot or
+// valIfUndefined:
+exports.ssValIfExistsOr = function(snapshot, childPath,
+                                   valIfUndefined = undefined) {
+  if (snapshot.child(childPath).exists()) {
+    return snapshot.child(childPath).val()
+  }
+  return valIfUndefined
+}
+
 exports.mealEvents = ['breakfast', 'lunch', 'dinner', 'snack']
 
-exports.calculateMealEvent = function(timezone) {
-  const userTime = timeUtils.getUserTimeObj(Date.now(), timezone)
+exports.calculateMealEvent = function(timezone, priorityUserTime=undefined) {
+
+  let userTime = timeUtils.getUserTimeObj(Date.now(), timezone)
+  if (priorityUserTime) {
+    console.log('Overriding userTime calculation with provided time (hour): ' + priorityUserTime.hour)
+    userTime = priorityUserTime
+  }
+
   const {hour} = userTime
   console.log('calculateMealEvent:')
   console.log('  userTime: '+userTime)
@@ -33,7 +49,7 @@ exports.calculateMealEvent = function(timezone) {
 }
 
 // Centralized means for updating challenge data / consolidating path references
-function updateChallengeData(userId, keyValueDict) {
+exports.updateChallengeData = function(firebase, userId, keyValueDict) {
   const sugarinfoRef = firebase.database().ref("/global/sugarinfoai")
   const sevenDayChalRef = sugarinfoRef.child("sevenDayChallenge/" + userId)
 

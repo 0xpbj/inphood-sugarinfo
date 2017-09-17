@@ -7,13 +7,6 @@ const witClient = new Wit({accessToken: process.env.WIT_TOKEN})
 const oc = require('./conversations/originalConv.js')
 const sdc = require('./conversations/sevenDayClient.js')
 
-function valIfExistsOr(snapshot, childPath, valIfUndefined = undefined) {
-  if (snapshot.child(childPath).exists()) {
-    return snapshot.child(childPath).val()
-  }
-  return valIfUndefined
-}
-
 exports.msgTxtProcessor = function(firebase, messageText, userId,
                                    favorites, timezone, name, timestamp, date) {
   // console.log('Entering wit proccessing area for: ', messageText)
