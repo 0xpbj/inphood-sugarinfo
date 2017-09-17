@@ -200,7 +200,7 @@ function processUserDays(restrictToDevs = false, simulatedTime = undefined) {
   processUsers(false, incrementDays, restrictToDevs, simulatedTime)
 }
 
-const port = 3000
+const port = 3035
 
 app.listen(port, function () {
   console.log('App listening on port ' + port + '!')
