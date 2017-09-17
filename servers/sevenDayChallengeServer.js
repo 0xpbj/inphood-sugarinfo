@@ -49,12 +49,6 @@ function isProcessUsersSkipKey(key, restrictToDevs) {
     return true
   }
 
-  // TODO: remove this
-  const AC = 0
-  if (key !== constants.testUsers[AC]) {
-    return true
-  }
-
   return false
 }
 
@@ -213,11 +207,10 @@ app.listen(port, function () {
 
   return firebase.auth().signInAnonymously()
   .then(() => {
-    // TODO: uncomment these lines when ready
-    // const challengeDayJob =
-    //   schedule.scheduleJob('1 * * * *', processUserDays)
-    // const sendTriggerJob =
-    //   schedule.scheduleJob('20 * * * *', processUserTriggers)
+   const challengeDayJob =
+     schedule.scheduleJob('1 * * * *', processUserDays)
+   const sendTriggerJob =
+     schedule.scheduleJob('7 * * * *', processUserTriggers)
 
     const dbRefServerControl =
       firebase.database().ref('/global/sugarinfoai/sevenDayChallenge/server')
