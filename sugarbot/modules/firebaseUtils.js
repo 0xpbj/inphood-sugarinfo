@@ -216,7 +216,7 @@ exports.addLastItem = function(firebase, userId, date) {
 }
 
 exports.getYourSugarNumbers = function(firebase, userId, date, currSugarIntake) {
-  console.lgo('getYourSugarNumbers:')
+  console.log('getYourSugarNumbers:')
   const userRef = firebase.database().ref(
     "/global/sugarinfoai/" + userId);
   return userRef.child("/sugarIntake/" + date).once("value")
@@ -246,6 +246,7 @@ exports.getYourSugarNumbers = function(firebase, userId, date, currSugarIntake) 
 }
 
 exports.addSugarToFirebase = function(firebase, userId, date, fulldate, barcode, data, favorite) {
+  console.log('addSugarToFirebase:')
   var userRef = firebase.database().ref("/global/sugarinfoai/" + userId)
   return userRef.once("value")
   .then(function(snapshot) {
@@ -291,7 +292,7 @@ exports.addSugarToFirebase = function(firebase, userId, date, fulldate, barcode,
       val = {nsugar: 0, psugar: 0}
     if (!goalSugar)
       goalSugar = 36
-    console.log('###########################\nDATA BEING ADDED TO JOURNAL', data)
+    console.log('  ###########################\nDATA BEING ADDED TO JOURNAL', data)
     const newNSugar = parseInt(val.nsugar) + parseInt(nsugar)
     const newPSugar = parseInt(val.psugar) + parseInt(psugar)
     let cleanPath = subSlashes(cleanText)
@@ -314,83 +315,61 @@ exports.addSugarToFirebase = function(firebase, userId, date, fulldate, barcode,
       ingredientsSugarsCaps
     })
     .then(() => {
+      console.log('  adding item to "myfoods"')
       return userRef.child('/myfoods/' +  cleanPath + '/date').push({
         timestamp: Date.now(),
       })
       .then(() => {
+        console.log('  updating "dailyTotal"')
         return userRef.child('/sugarIntake/' + date + '/dailyTotal/').update({ nsugar: newNSugar, psugar: newPSugar })
         .then(() => {
           if (favorite) {
+            console.log('  adding last item becuase favorite, returning...')
             return exports.addLastItem(firebase, userId, date)
           }
+          console.log('  reading sevenDayChallenge data')
           const objRef = firebase.database().ref('/global/sugarinfoai/sevenDayChallenge/' + userId)
           return objRef.once("value")
           .then(function(snapshot) {
+            console.log('  composing response')
             const challengeDay = snapshot.child('day').val()
             const challengeMeal = snapshot.child('context').val()
             const rewardData = challenge ? hookedConstants.rewards[challengeDay] : null
             const rewardOptions = challenge ? rewardData[challengeMeal] : null
             const sugarPercentage = Math.ceil(psugar*100/goalSugar)
             const roundSugar = Math.round(psugar)
-            if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && roundSugar >= 3) {
-              let retArr = [
-                'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
-                roundSugar + 'g of sugar found']
-              if ((challenge && rewardOptions['visual']) || !challenge) {
-                retArr.push('Sugar Visualization: 🍪🍭🍩🍫')
-                retArr.push(new fbTemplate.Image(sugarUtils.getGifUrl(roundSugar)).get())
-              }
-              retArr.push(new fbTemplate.Button("Would you like to add the item to your journal?")
-                              .addButton('Add Item ✅', 'add last item')
-                              .addButton('Ignore Item ❌', 'ignore last item')
-                              .get())
-              return retArr
-            }
-            else if (roundSugar > 2) {
-              let retArr = [
-                roundSugar + 'g of sugar found']
-              console.log('reward options', rewardOptions)
-              if ((challenge && rewardOptions['visual']) || !challenge) {
-                retArr.push('Sugar Visualization: 🍪🍭🍩🍫')
-                retArr.push(new fbTemplate.Image(sugarUtils.getGifUrl(roundSugar)).get())
-              }
-              retArr.push(new fbTemplate.Button("Would you like to add the item to your journal?")
-                              .addButton('Add Item ✅', 'add last item')
-                              .addButton('Ignore Item ❌', 'ignore last item')
-                              .get())
-              return retArr
-            }
-            else if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown' && roundSugar > 0) {
-              let retArr = [
-                'Ingredients (sugars in caps): ' + ingredientsSugarsCaps,
-                roundSugar + 'g of sugar found'
-              ]
-              retArr.push(new fbTemplate.Button("Would you like to add the item to your journal?")
-                          .addButton('Add Item ✅', 'add last item')
-                          .addButton('Ignore Item ❌', 'ignore last item')
-                          .get())
-              return retArr
-            }
-            else if (roundSugar > 0) {
-              let retArr = [roundSugar + 'g of sugars found']
-              retArr.push(new fbTemplate.Button("Would you like to add the item to your journal?")
-                              .addButton('Add Item ✅', 'add last item')
-                              .addButton('Ignore Item ❌', 'ignore last item')
-                              .get())
-              return retArr
-            }
-            else if (psugar === 0) {
-              const roundNSugar = Math.round(nsugar)
-              let reply = (roundNSugar) ? roundNSugar + 'g of natural sugars found.\nCongratulations! 🎉🎉 No refined sugars found!'
-                : 'Congratulations! 🎉🎉 No refined sugars found!'
 
-              let retArr = [reply]
+            let retArr = []
+            if (roundSugar > 0) {
+              if (ingredientsSugarsCaps && ingredientsSugarsCaps !== 'unknown') {
+                retArr.push(
+                  'Ingredients (sugars in caps): ' + ingredientsSugarsCaps)
+              }
+
+              retArr.push(roundSugar + 'g of sugar found')
+
+              if (roundSugar >= 3 &&
+                  ((challenge && rewardOptions['visual']) || !challenge)) {
+                retArr.push('Sugar Visualization: 🍪🍭🍩🍫')
+                retArr.push(new fbTemplate.Image(sugarUtils.getGifUrl(roundSugar)).get())
+              }
+            } else if (psugar === 0) {
+              const roundNSugar = Math.round(nsugar)
+              if (roundNSugar) {
+                retArr.push(roundNSugar + 'g of natural sugars found.\n')
+              }
+              retArr.push('Congratulations! 🎉🎉 No refined sugars found!')
+            }
+
+            if (roundSugar > 0 || psugar === 0) {
               retArr.push(new fbTemplate.Button("Would you like to add the item to your journal?")
                               .addButton('Add Item ✅', 'add last item')
                               .addButton('Ignore Item ❌', 'ignore last item')
                               .get())
-              return retArr
+            } else {
+              retArr.push('No information available for ' + cleanText)
             }
+            return retArr
           })
         })
       })

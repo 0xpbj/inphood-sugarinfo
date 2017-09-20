@@ -292,7 +292,6 @@ exports.processWit = function(firebase, data,
         return 'Great! Tell me what you would like to track.'
       }
       else {
-        console.log('  in regular processing')
         //
         // Regular operation happens here. Processing is determined by
         // the state (phase and nextPhase) stored in Firebase.
@@ -309,6 +308,8 @@ exports.processWit = function(firebase, data,
         //
         let prevPhase = utils.ssValIfExistsOr(sdSnapshot, 'phase')
         let phase = utils.ssValIfExistsOr(sdSnapshot, 'nextPhase')
+
+        console.log('  Regular processing. Phase = ' + phase)
         switch (phase) {
           case 'action': {
             utils.updateChallengeData(firebase,
@@ -325,7 +326,6 @@ exports.processWit = function(firebase, data,
             // day5: sugar metric + progress bar + sugar visual (b, d), fact (l)
             // day6: sugar metric + visuals, fact (l)
             // day7: sugar metric + progress bar + recipe (b), facts (l), visual (d)
-            console.log('+++++++++++++++++++++++++++Am I in action?')
             return nutrition.getNutritionix(
                         firebase, messageText, userId,
                         date, timestamp)

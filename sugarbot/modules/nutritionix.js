@@ -22,6 +22,7 @@ function randomUmame() {
 }
 
 exports.getNutritionix = function(firebase, messageText, userId, date, fulldate) {
+  console.log('getNutritionix: ' + messageText)
   const url = 'https://trackapi.nutritionix.com/v2/natural/nutrients'
   const request = require('request-promise')
   const cleanText = cleanQuestion(messageText)
