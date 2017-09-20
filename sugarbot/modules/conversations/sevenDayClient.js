@@ -257,11 +257,13 @@ exports.processWit = function(firebase, data,
       // Simulating time (hour specifically--modify userTime if
       // value specified in FBase):
       const simUserHour = utils.ssValIfExistsOr(sdSnapshot, 'simUserHour')
+      let simTime = undefined
       if (simUserHour) {
-        userTime.hour = simUserHour
+        simTime = userTime
+        simTime.hour = simUserHour
       }
 
-      let mealEvent = utils.calculateMealEvent(timezone, userTime)
+      let mealEvent = utils.calculateMealEvent(timezone, simTime)
       let meAdv = utils.ssValIfExistsOr(sdSnapshot, 'dbg/mealEventAdvance')
       if (meAdv === 'sequential') {
         mealEvent = utils.ssValIfExistsOr(sdSnapshot, 'context')
@@ -360,8 +362,7 @@ exports.processWit = function(firebase, data,
                   userId, {phase: 'reward', nextPhase: 'invest'})
 
                 // Add the last item, but hide the response.
-                const noResponse = true
-                fire.addLastItem(firebase, userId, date, noResponse)
+                fire.addLastItem(firebase, userId, date)
                 if (investmentQuestion === 'alert') {
                   return utils.trackAlertness()
                 }

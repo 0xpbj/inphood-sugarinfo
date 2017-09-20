@@ -100,6 +100,7 @@ exports.addLastItemChallenge = function(firebase, userId, date) {
     const challengeMeal = snapshot.child('context').val()
     const rewardOptions = hookedConstants.rewards[challengeDay][challengeMeal]
     let userResponse = ''
+
     //sugar fact
     if (rewardOptions['fact']) {
       userResponse += utils.randomSugarFacts().data + '\n' + utils.randomSugarFacts().source
@@ -108,24 +109,58 @@ exports.addLastItemChallenge = function(firebase, userId, date) {
     if (rewardOptions['recipe']) {
       userResponse += utils.todaysSugarRecipe(date).recipe + ': ' + utils.todaysSugarRecipe(date).link
     }
-    //progress bar logic
-    if (!rewardOptions['bar']) {
-      const userRef = firebase.database().ref(
-        "/global/sugarinfoai/" + userId);
-      return userRef.once("value")
-      .then(function(snapshot) {
-        let currSugarIntake = snapshot.child("/sugarIntake/" + date).val();
-        return exports.getYourSugarNumbers(firebase, userId, date, currSugarIntake)
-        .then((sugarPercentage) => {
+
+    const userRef =
+      firebase.database().ref("/global/sugarinfoai/" + userId);
+
+    return userRef.once("value")
+    .then(function(snapshot) {
+      let currSugarIntake = snapshot.child("/sugarIntake/" + date).val();
+
+      // A. Get the most recent item logged by the user today.
+      //    Note:  sugarIntakeDict is a dict of uniqueified time based keys followed by
+      //         one user defined key: 'dailyTotal'. We should be able to iterate
+      //         through this dictionary and choose the 2nd last element to
+      //         consistently find the last item a user ate. The last element will be
+      //         'dailyTotal'.
+      //
+      const keyArr = Object.keys(currSugarIntake);
+      const dictLength = keyArr.length;
+      if (dictLength < 2) {
+        console.log('Unexpected error. Found underpopulated intake dictionary.');
+        return;
+      }
+      const lastKey = keyArr[dictLength - 2]
+      if (lastKey === 'dailyTotal') {
+        console.log('Unexpected error. Retrieved daily total from intake dictionary as last intake key.');
+        return;
+      }
+      // B. Set the removed key to true on the most recent item and messages
+      //    the user that we've deleted their entry.
+      //
+      const lastFoodRef = userRef.child("/sugarIntake/" + date + '/' + lastKey);
+      const lastFoodRemovedRef = lastFoodRef.child('removed');
+      lastFoodRemovedRef.set(false);
+
+      // #ReadMeBhardwaj:  Gotta run this promise everytime b/c it sums up
+      //                   the sugar totals or TODO: refactor that code out.
+      //                   I threw your progress bar predicate in here so
+      //                   the calculation would happen.
+      //
+      return exports.getYourSugarNumbers(firebase, userId, date, currSugarIntake)
+      .then((sugarPercentage) => {
+        //progress bar logic
+        if (!rewardOptions['bar']) {
           const wvImgUrl = constants.bucketRoot + '/progressBars/' + sugarPercentage + '.png'
           return [
             userResponse,
             new fbTemplate.Image(wvImgUrl).get()
           ]
-        })
+        } else {
+          return userResponse
+        }
       })
-    }
-    return userResponse
+    })
   })
 }
 
@@ -181,6 +216,7 @@ exports.addLastItem = function(firebase, userId, date) {
 }
 
 exports.getYourSugarNumbers = function(firebase, userId, date, currSugarIntake) {
+  console.lgo('getYourSugarNumbers:')
   const userRef = firebase.database().ref(
     "/global/sugarinfoai/" + userId);
   return userRef.child("/sugarIntake/" + date).once("value")
@@ -189,6 +225,7 @@ exports.getYourSugarNumbers = function(firebase, userId, date, currSugarIntake) 
     if (updatedSugarIntake) {
       const dailyTotalRef = firebase.database().ref(
         "/global/sugarinfoai/" + userId + "/sugarIntake/" + date + "/dailyTotal");
+      console.log('  calling updateTotalSugar')
       utils.updateTotalSugar(updatedSugarIntakeSnapshot, dailyTotalRef);
       return dailyTotalRef.once("value")
       .then(function(dailyTotalSnapShot) {
