@@ -10,10 +10,10 @@
     <meta name="author" content="">
     <meta name="google-site-verification" content="cRKZL2WYi2bo6OpzFL2UpH3tSFIp5KHtsJpE7AzZJuI" />
 
-    <title>inPhood - Health Chatbots</title>
+    <title>diagnoserAI - Raising Diabetes Awarness</title>
 
     <!-- Bootstrap Core CSS -->
-    <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Custom Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
@@ -21,13 +21,13 @@
     <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet">
 
     <!-- Plugin CSS -->
-    <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="lib/simple-line-icons/css/simple-line-icons.css">
-    <link rel="stylesheet" href="lib/device-mockups/device-mockups.min.css">
+    <link rel="stylesheet" href="../lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../lib/simple-line-icons/css/simple-line-icons.css">
+    <link rel="stylesheet" href="../lib/device-mockups/device-mockups.min.css">
 
     <!-- Theme CSS -->
-    <link href="css/new-age.min.css" rel="stylesheet">
-    <link href="css/scroll.css" rel="stylesheet">
+    <link href="../css/new-age.min.css" rel="stylesheet">
+    <link href="../css/scroll.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -47,14 +47,20 @@
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                     <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
                 </button>
-                <a style="font-size:20px;font-weight:400;" class="navbar-brand page-scroll" href="#page-top">inPhood Inc.</a>
+                <a style="font-size:20px;font-weight:400;" class="navbar-brand page-scroll" href="https://www.inphood.com/">inPhood Inc.</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-right">
+                    <!-- <li>
+                        <a style="font-size:16px" class="page-scroll" href="/">home</a>
+                    </li>
                     <li>
-                        <a style="font-size:16px" class="page-scroll" href="#bottom">About</a>
+                        <a style="font-size:16px" class="page-scroll" href="#features">Features</a>
+                    </li> -->
+                    <li>
+                        <a style="font-size:16px" class="page-scroll" href="#contact">Contact</a>
                     </li>
                 </ul>
             </div>
@@ -62,18 +68,26 @@
         </div>
         <!-- /.container-fluid -->
     </nav>
+
     <header>
         <div class="container">
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-sm-7">
                     <div class="header-content" style="text-align:center;">
                         <div class="header-content-inner">
-                            <h1 style="color:white;font-size:55px;font-weight:bold;">
-                                <span style="color:#ffa500;">AI</span>
-                                <span style="color:white;"> + </span>
-                                <span style="color:#02c8a7;">Health</span>
-                                <span style="color:black;"> Chat </span> 🤖
-                            </h1>
+                            <h1 style="color:white;font-size:65px;font-weight:bold;">diagnoser<span style="color:#0084ff;">AI</span></h1>
+                            <h3>Check your Diabetes risk</h3>
+                            <a href="sms:+14159174663">
+                                <img src="../img/message.svg" height="50" width="50">
+                            </a>
+                            &nbsp;&nbsp;&nbsp;
+                            <a href="https://m.me/diagnoserAI" target="_blank">
+                                <img src="../img/facebook.png" height="50" width="50">
+                            </a>
+                            &nbsp;&nbsp;&nbsp;
+                            <a href="https://t.me/diagnoserAI" target="_blank">
+                                <img src="../img/telegram.png" height="50" width="50">
+                            </a>
                             <!-- <img src="img/facebook.png" height="50" width="50">
                             &nbsp;&nbsp;&nbsp;
                             <img src="img/message.svg" height="50" width="50">
@@ -81,32 +95,18 @@
                             <img src="img/telegram.png" height="50" width="50">
                             &nbsp;&nbsp;&nbsp;
                             <img src="img/slack.png" height="50" width="50"> -->
-                            <h2>
-                                <a style="font-size:30px;font-weight:bold;color:white" href="diagnoserAI/index.html">
-                                    <button type="button" class="btn btn-lg" style="background-color:#fff;color:#fff;border-radius:5px;padding-top:15px;">
-                                        <img src="img/diag.jpg" height="40" width="40">&nbsp;&nbsp;&nbsp;<span style="color:#0084ff;">diagnoser</span>
-                                    </button>
-                                </a>
-                                &nbsp;&nbsp;&nbsp;
-                                <a style="font-size:30px;font-weight:bold;color:white" href="sugarinfoAI/index.html">
-                                    <button type="button" class="btn btn-lg" style="background-color:#fff;color:#fff;border-radius:5px;padding-top:15px;">
-                                        <img src="img/sugar.jpg" height="40" width="40">&nbsp;&nbsp;&nbsp;<span style="color:#0084ff;">sugarinfo</span>
-                                    </button>
-                                </a>
-                            </h2>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-2"></div>
-                <div class="col-sm-4">
+                <div class="col-sm-5">
                     <div class="device-container">
                         <div class="device-mockup iphone6_plus portrait white">
                             <div class="device">
                                 <div class="screen">
                                     <!-- Demo image for screen mockup, you can put an image here, some HTML, an animation, video, or anything else! -->
-                                    <img src="img/start.gif" class="img-responsive" alt="">
+                                    <img src="../img/diagn.gif" class="img-responsive" alt="">
                                     <!-- <video width="750" height="1334" controls>
-                                      <source src="img/movie.mp4" type="video/mp4">
+                                      <source src="../img/movie.mp4" type="video/mp4">
                                     </video> -->
                                 </div>
                                 <div class="button">
@@ -119,8 +119,18 @@
             </div>
         </div>
     </header>
+    <section id="contact" class="contact bg-primary">
+        <div class="container">
+            <h2>Like <i class="fa fa-thumbs-up"></i> us on Facebook!</h2>
+            <ul class="list-inline list-social">
+                <li class="social-facebook">
+                    <a href="https://www.facebook.com/diagnoserAI/" target="_blank"><i class="fa fa-facebook"></i></a>
+                </li>
+            </ul>
+        </div>
+    </section>
     <footer>
-        <div class="container" id="bottom">
+        <div class="container">
             <p style="font-size:16px">Copyright &copy; inPhood Inc. 2017. All Rights Reserved.</p>
             <ul class="list-inline">
                 <li>
@@ -129,25 +139,25 @@
                 <li>
                     <a href="https://www.inphood.com/Terms.pdf" target="_blank">Terms</a>
                 </li>
-                <!-- <li>
+                <li>
                     <a href="#">FAQ</a>
-                </li> -->
+                </li>
             </ul>
         </div>
     </footer>
 
     <!-- jQuery -->
-    <script src="lib/jquery/jquery.min.js"></script>
+    <script src="../lib/jquery/jquery.min.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../lib/bootstrap/js/bootstrap.min.js"></script>
 
     <!-- Plugin JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
 
     <!-- Theme JavaScript -->
-    <script src="js/new-age.min.js"></script>
-    <script src="js/scroll.js"></script>
+    <script src="../js/new-age.min.js"></script>
+    <script src="../js/scroll.js"></script>
 
 </body>
 
